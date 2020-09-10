@@ -131,18 +131,24 @@ module EssaFlow {
  * excludes SSA flow through instance fields.
  */
 predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo) {
-  not nodeFrom.(EssaNode).getVar() instanceof GlobalSsaVariable and
-  not nodeTo.(EssaNode).getVar() instanceof GlobalSsaVariable and
-  EssaFlow::essaFlowStep(update(nodeFrom), nodeTo)
+  exists(Node preUpdate |
+    not preUpdate.(EssaNode).getVar() instanceof GlobalSsaVariable and
+    not nodeTo.(EssaNode).getVar() instanceof GlobalSsaVariable and
+    EssaFlow::essaFlowStep(preUpdate, nodeTo) and
+    nodeFrom = update(preUpdate)
+  )
 }
 
+/**
+ * If a node `n` has a post-update node `pun(n)`, we want forward flow to go from
+ * `pun(n)` as well as from `n`.
+ */
 private Node update(Node node) {
   exists(PostUpdateNode pun |
     node = pun.getPreUpdateNode() and
     result = pun
   )
   or
-  not exists(PostUpdateNode pun | node = pun.getPreUpdateNode()) and
   result = node
 }
 
