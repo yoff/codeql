@@ -387,14 +387,21 @@ private module SsaComputeImpl {
       SsaDefinitionsImpl::reachesEndOfBlock(v, _, _, b)
     }
 
+    pragma[noinline]
+    private predicate varOccursInBlockWithSuccessor(
+      SsaSourceVariable v, BasicBlock b1, BasicBlock b2
+    ) {
+      varOccursInBlock(v, b1) and
+      b2 = b1.getASuccessor()
+    }
+
     /**
      * Holds if `b2` is a transitive successor of `b1` and `v` occurs in `b1` and
      * in `b2` or one of its transitive successors but not in any block on the path
      * between `b1` and `b2`.
      */
     private predicate varBlockReaches(SsaSourceVariable v, BasicBlock b1, BasicBlock b2) {
-      varOccursInBlock(v, b1) and
-      b2 = b1.getASuccessor() and
+      varOccursInBlockWithSuccessor(v, b1, b2) and
       blockPrecedesVar(v, b2)
       or
       exists(BasicBlock mid |

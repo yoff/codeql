@@ -941,8 +941,9 @@ private module InterModulePointsTo {
 
 module InterProceduralPointsTo {
   cached
-  predicate call(CallNode call, PointsToContext caller, ObjectInternal value) {
-    PointsToInternal::pointsTo(call.getFunction(), caller, value, _)
+  predicate call(CallNode call, PointsToContext caller, ObjectInternal value, Scope scope) {
+    PointsToInternal::pointsTo(call.getFunction(), caller, value, _) and
+    scope = call.getScope()
   }
 
   cached
@@ -981,7 +982,7 @@ module InterProceduralPointsTo {
   private predicate call_points_to_from_callee(
     CallNode f, PointsToContext context, ObjectInternal value, ControlFlowNode origin
   ) {
-    exists(ObjectInternal func | call(f, context, func) |
+    exists(ObjectInternal func, Scope scope | call(f, context, func, scope) |
       exists(CfgOrigin orig, PointsToContext callee |
         callee.fromCall(f, context) and
         func.callResult(callee, value, orig) and
@@ -997,7 +998,7 @@ module InterProceduralPointsTo {
         func.callResult(value, orig) and
         origin = orig.asCfgNodeOrHere(f)
       ) and
-      context.appliesTo(f)
+      context.appliesToScope(scope)
     )
   }
 

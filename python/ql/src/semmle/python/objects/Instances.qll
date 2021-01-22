@@ -6,6 +6,19 @@ private import semmle.python.pointsto.MRO
 private import semmle.python.pointsto.PointsToContext
 private import semmle.python.types.Builtins
 
+pragma[nomagic]
+private predicate lookupClassAttribute(ClassObjectInternal cls, string name, ObjectInternal cls_attr) {
+  cls.lookup(name, cls_attr, _)
+}
+
+pragma[nomagic]
+private predicate instanceLookupClassAttribute(
+  InstanceObject i, ClassObjectInternal cls, string name, ObjectInternal cls_attr
+) {
+  cls.lookup(name, cls_attr, _) and
+  i.getClass() = cls
+}
+
 /** A class representing instances */
 abstract class InstanceObject extends ObjectInternal {
   pragma[nomagic]
@@ -30,8 +43,20 @@ abstract class InstanceObject extends ObjectInternal {
 
   pragma[noinline]
   private predicate classAttribute(string name, ObjectInternal cls_attr) {
-    PointsToInternal::attributeRequired(this, name) and
-    this.getClass().(ClassObjectInternal).lookup(name, cls_attr, _)
+    // PointsToInternal::attributeRequired(this, name) and
+    // this.getClass().(ClassObjectInternal).lookup(name, cls_attr, _)
+    // name = this.attributeRequired() and
+    // lookupClassAttribute(this.getClass(), name, cls_attr) and
+    exists(ClassObjectInternal cls |
+      lookupClassAttribute(cls, name, cls_attr) and
+      name = this.attributeRequired(cls)
+    )
+  }
+
+  pragma[nomagic]
+  private string attributeRequired(ClassObjectInternal cls) {
+    cls = this.getClass() and
+    PointsToInternal::attributeRequired(this, result)
   }
 
   pragma[noinline]
