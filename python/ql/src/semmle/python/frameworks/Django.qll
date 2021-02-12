@@ -2201,6 +2201,8 @@ private module Django {
     override string getSourceType() { result = "django.http.request.HttpRequest" }
   }
 
+  private class DRS extends DjangoRequestHandlerRequestParam, DataFlow::RecursiveSourceNode { }
+
   private class DjangoHttpRequstAdditionalTaintStep extends TaintTracking::AdditionalTaintStep {
     override predicate step(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
       nodeFrom = django::http::request::HttpRequest::instance() and

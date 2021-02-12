@@ -71,9 +71,13 @@ newtype TNode =
    */
   TIterableElementNode(UnpackingAssignmentTarget consumer) or
   /**
-   * A synthethis node for transferring recursive content.
+   * A synthethic node for transferring recursive content.
    */
-  TRecursiveElement(Node node) { nonRecursiveReadStep(node, _, _) }
+  TRecursiveElement(Node node) { nonRecursiveReadStep(node, _, _) } or
+  /**
+   * A synthethic node for populating sources with recursive content.
+   */
+  TRecursiveSourceNode(RecursiveSourceNode source)
 
 /** Helper for `Node::getEnclosingCallable`. */
 private DataFlowCallable getCallableScope(Scope s) {
@@ -92,7 +96,7 @@ class Node extends TNode {
   string toString() { result = "Data flow node" }
 
   /** Gets the scope of this node. */
-  Scope getScope() { none() }
+  abstract Scope getScope();
 
   /** Gets the enclosing callable of this node. */
   DataFlowCallable getEnclosingCallable() { result = getCallableScope(this.getScope()) }
@@ -117,7 +121,7 @@ class Node extends TNode {
   EssaVariable asVar() { none() }
 
   /** Convenience method for casting to CfgNode and calling getNode. */
-  ControlFlowNode asCfgNode() { none() }
+  ControlFlowNode asCfgNode() { result = this.(CfgNode).getNode() }
 
   /** Convenience method for casting to ExprNode and calling getNode and getNode again. */
   Expr asExpr() { none() }
@@ -148,6 +152,10 @@ class EssaNode extends Node, TEssaNode {
   override Scope getScope() { result = var.getScope() }
 
   override Location getLocation() { result = var.getLocation() }
+
+  predicate isGlobal() { var instanceof GlobalSsaVariable }
+
+  predicate isLocal() { not var instanceof GlobalSsaVariable }
 }
 
 /** A data-flow node corresponding to a control-flow node. */
@@ -159,8 +167,7 @@ class CfgNode extends Node, TCfgNode {
   /** Gets the `ControlFlowNode` represented by this data-flow node. */
   ControlFlowNode getNode() { result = node }
 
-  override ControlFlowNode asCfgNode() { result = node }
-
+  // override ControlFlowNode asCfgNode() { result = node }
   /** Gets a textual representation of this element. */
   override string toString() { result = node.toString() }
 
@@ -168,6 +175,9 @@ class CfgNode extends Node, TCfgNode {
 
   override Location getLocation() { result = node.getLocation() }
 }
+
+/** A data-flow node that serves as source for recursive content. */
+abstract class RecursiveSourceNode extends CfgNode { }
 
 /**
  * An expression, viewed as a node in a data flow graph.
@@ -220,6 +230,8 @@ class ArgumentNode extends Node {
 
   /** Gets the call in which this node is an argument. */
   final DataFlowCall getCall() { this.argumentOf(result, _) }
+
+  override Scope getScope() { result = this.getScope() }
 }
 
 /**
@@ -290,9 +302,10 @@ class ModuleVariableNode extends Node, TModuleVariableNode {
 
   /** Gets a node that reads this variable. */
   Node getARead() {
-    result.asCfgNode() = var.getALoad().getAFlowNode() and
-    // Ignore reads that happen when the module is imported. These are only executed once.
-    not result.getScope() = mod
+    // result.asCfgNode() = var.getALoad().getAFlowNode() and
+    // // Ignore reads that happen when the module is imported. These are only executed once.
+    // not result.getScope() = mod
+    exists(NameNode n | n = var.getALoad().getAFlowNode() | result.asCfgNode() = n and n.isLocal())
   }
 
   /** Gets an `EssaNode` that corresponds to an assignment of this global variable. */
@@ -324,6 +337,8 @@ class PosOverflowNode extends Node, TPosOverflowNode {
   }
 
   override Location getLocation() { result = call.getLocation() }
+
+  override Scope getScope() { result = call.getScope() }
 }
 
 /**
@@ -345,6 +360,8 @@ class KwOverflowNode extends Node, TKwOverflowNode {
   }
 
   override Location getLocation() { result = call.getLocation() }
+
+  override Scope getScope() { result = call.getScope() }
 }
 
 /**
@@ -367,6 +384,8 @@ class KwUnpackedNode extends Node, TKwUnpackedNode {
   }
 
   override Location getLocation() { result = call.getLocation() }
+
+  override Scope getScope() { result = call.getScope() }
 }
 
 /**
@@ -386,6 +405,8 @@ class IterableSequenceNode extends Node, TIterableSequenceNode {
   override DataFlowCallable getEnclosingCallable() { result = consumer.getEnclosingCallable() }
 
   override Location getLocation() { result = consumer.getLocation() }
+
+  override Scope getScope() { none() }
 }
 
 /**
@@ -403,6 +424,8 @@ class IterableElementNode extends Node, TIterableElementNode {
   override DataFlowCallable getEnclosingCallable() { result = consumer.getEnclosingCallable() }
 
   override Location getLocation() { result = consumer.getLocation() }
+
+  override Scope getScope() { none() }
 }
 
 class RecursiveElement extends Node, TRecursiveElement {
@@ -415,6 +438,8 @@ class RecursiveElement extends Node, TRecursiveElement {
   override DataFlowCallable getEnclosingCallable() { result = consumer.getEnclosingCallable() }
 
   override Location getLocation() { result = consumer.getLocation() }
+
+  override Scope getScope() { none() }
 }
 
 /**
@@ -459,11 +484,17 @@ class BarrierGuard extends GuardNode {
  * - Function parameters
  */
 class LocalSourceNode extends Node {
-  LocalSourceNode() { not simpleLocalFlowStep(_, this) }
+  LocalSourceNode() {
+    this instanceof ParameterNode
+    // not simpleLocalFlowStep(_, this)
+    // simpleLocalFlowStep(_, this) implies this instanceof RecursiveSourceNode
+  }
 
   /** Holds if this `LocalSourceNode` can flow to `nodeTo` in one or more local flow steps. */
   cached
   predicate flowsTo(Node nodeTo) { simpleLocalFlowStep*(this, nodeTo) }
+
+  override Scope getScope() { result = this.getScope() }
 }
 
 /**

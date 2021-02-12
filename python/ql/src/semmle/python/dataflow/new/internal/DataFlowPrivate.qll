@@ -236,8 +236,10 @@ predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo) {
     EssaFlow::essaFlowStep(node, nodeTo) and
     nodeFrom = update(node) and
     (
-      not node instanceof EssaNode or
-      not nodeTo instanceof EssaNode or
+      node instanceof CfgNode or
+      nodeTo instanceof CfgNode or
+      // not node instanceof EssaNode or
+      // not nodeTo instanceof EssaNode or
       localEssaStep(node, nodeTo)
     )
   )
@@ -250,11 +252,24 @@ predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo) {
 private predicate localEssaStep(EssaNode nodeFrom, EssaNode nodeTo) {
   EssaFlow::essaFlowStep(nodeFrom, nodeTo) and
   (
-    nodeFrom.getVar() instanceof GlobalSsaVariable and
-    nodeTo.getVar() instanceof GlobalSsaVariable
+    // nodeFrom.getVar() instanceof GlobalSsaVariable and
+    // nodeTo.getVar() instanceof GlobalSsaVariable
+    // or
+    // not nodeFrom.getVar() instanceof GlobalSsaVariable and
+    // not nodeTo.getVar() instanceof GlobalSsaVariable
+    nodeFrom.isGlobal() and nodeTo.isGlobal()
     or
-    not nodeFrom.getVar() instanceof GlobalSsaVariable and
-    not nodeTo.getVar() instanceof GlobalSsaVariable
+    nodeFrom.isLocal() and nodeTo.isLocal()
+    // (
+    //   nodeFrom.getVar() instanceof GlobalSsaVariable
+    //   implies
+    //   nodeTo.getVar() instanceof GlobalSsaVariable
+    // ) and
+    // (
+    //   nodeTo.getVar() instanceof GlobalSsaVariable
+    //   implies
+    //   nodeFrom.getVar() instanceof GlobalSsaVariable
+    // )
   )
 }
 
@@ -915,6 +930,14 @@ predicate recursiveStoreStep(Node nodeFrom, Content c, Node nodeTo) {
   exists(Node readFrom |
     nonRecursiveReadStep(readFrom, _, nodeTo) and
     nodeFrom = TRecursiveElement(readFrom) and
+    c instanceof RecursiveElementContent
+  )
+}
+
+predicate recursiveSourceStoreStep(Node nodeFrom, Content c, Node nodeTo) {
+  exists(Node source |
+    nodeFrom = TRecursiveSourceNode(source) and
+    nodeTo = source and
     c instanceof RecursiveElementContent
   )
 }

@@ -258,6 +258,8 @@ private module Tornado {
             this.(DataFlow::AttrRead).getObject() = instance() and
             this.(DataFlow::AttrRead).getAttributeName() = "request"
           }
+
+          override Scope getScope() { result = this.getScope() }
         }
       }
 
