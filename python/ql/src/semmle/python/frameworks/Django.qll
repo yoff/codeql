@@ -2230,4 +2230,14 @@ private module Django {
       )
     }
   }
+
+  private class DjangoRequestRecursiveContentAdditionalTaintStep extends TaintTracking::AdditionalTaintStep {
+    override predicate step(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
+      nodeFrom instanceof DataFlow::RecursiveContentSource and
+      nodeTo instanceof DjangoRequestHandlerRequestParam //= django::http::request::HttpRequest::instance()
+      // or
+      // nodeFrom instanceof DjangoRequestHandlerRequestParam and
+      // nodeTo instanceof DataFlow::Remote
+    }
+  }
 }

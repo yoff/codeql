@@ -73,7 +73,11 @@ newtype TNode =
   /**
    * A synthethis node for transferring recursive content.
    */
-  TRecursiveElement(Node node) { nonRecursiveReadStep(node, _, _) }
+  TRecursiveElement(Node node) { nonRecursiveReadStep(node, _, _) } or
+  /** A node representing remote source of content. */
+  TRemote() or
+  /** A node with recursive content, can be used to tranfer to sources. */
+  TRecursiveContentSource()
 
 /** Helper for `Node::getEnclosingCallable`. */
 private DataFlowCallable getCallableScope(Scope s) {
@@ -415,6 +419,26 @@ class RecursiveElement extends Node, TRecursiveElement {
   override DataFlowCallable getEnclosingCallable() { result = consumer.getEnclosingCallable() }
 
   override Location getLocation() { result = consumer.getLocation() }
+}
+
+class Remote extends Node, TRemote {
+  Remote() { this = TRemote() }
+
+  override string toString() { result = "Remote" }
+
+  override DataFlowCallable getEnclosingCallable() { result instanceof Aether }
+
+  override Location getLocation() { none() }
+}
+
+class RecursiveContentSource extends Node, TRecursiveContentSource {
+  RecursiveContentSource() { this = TRecursiveContentSource() }
+
+  override string toString() { result = "RecursiveContentSource" }
+
+  override DataFlowCallable getEnclosingCallable() { result instanceof Aether }
+
+  override Location getLocation() { none() }
 }
 
 /**

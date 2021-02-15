@@ -532,7 +532,8 @@ newtype TDataFlowCallable =
     callable instanceof ClassValue
   } or
   TLambda(Function lambda) { lambda.isLambda() } or
-  TModule(Module m)
+  TModule(Module m) or
+  TAether()
 
 /** Represents a callable. */
 abstract class DataFlowCallable extends TDataFlowCallable {
@@ -610,6 +611,22 @@ class DataFlowModuleScope extends DataFlowCallable, TModule {
   override NameNode getParameter(int n) { none() }
 
   override string getName() { result = mod.getName() }
+
+  override CallableValue getCallableValue() { none() }
+}
+
+class Aether extends DataFlowCallable, TAether {
+  Aether() { this = TAether() }
+
+  override string toString() { result = "Aether" }
+
+  override CallNode getACall() { none() }
+
+  override Scope getScope() { result = min(Scope s | | s order by s.getName()) }
+
+  override NameNode getParameter(int n) { none() }
+
+  override string getName() { result = this.toString() }
 
   override CallableValue getCallableValue() { none() }
 }
@@ -906,9 +923,11 @@ predicate storeStep(Node nodeFrom, Content c, Node nodeTo) {
   or
   kwOverflowStoreStep(nodeFrom, c, nodeTo)
   or
-  jsonLoadsStoreStep(nodeFrom, c, nodeTo)
-  or
+  // jsonLoadsStoreStep(nodeFrom, c, nodeTo)
+  // or
   recursiveStoreStep(nodeFrom, c, nodeTo)
+  or
+  recursiveSourceStoreStep(nodeFrom, c, nodeTo)
 }
 
 predicate recursiveStoreStep(Node nodeFrom, Content c, Node nodeTo) {
@@ -917,6 +936,12 @@ predicate recursiveStoreStep(Node nodeFrom, Content c, Node nodeTo) {
     nodeFrom = TRecursiveElement(readFrom) and
     c instanceof RecursiveElementContent
   )
+}
+
+predicate recursiveSourceStoreStep(Node nodeFrom, Content c, Node nodeTo) {
+  nodeFrom = TRemote() and
+  nodeTo = TRecursiveContentSource() and
+  c instanceof RecursiveElementContent
 }
 
 /** Data flows from an element of a list to the list. */
