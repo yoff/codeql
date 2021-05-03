@@ -157,3 +157,16 @@ SINK(Customized.a)  #$ MISSING:flow="SOURCE, l:-8 -> customized.a"
 SINK_F(Customized.b)
 SINK(customized.a)  #$ MISSING:flow="SOURCE, l:-10 -> customized.a"
 SINK(customized.b)  #$ flow="SOURCE, l:-7 -> customized.b"
+
+
+def foo(**kwargs):
+    SINK(kwargs['delimiter'])
+
+def bar():
+    foo(delimiter=SOURCE)
+
+def baz(argsdict):
+    SINK(argsdict['delimiter'])
+
+def quux():
+    baz({'delimiter': SOURCE})
