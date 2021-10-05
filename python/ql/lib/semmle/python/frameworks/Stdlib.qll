@@ -1952,7 +1952,8 @@ private module StdlibPrivate {
     abstract class InstanceSource extends DataFlow::Node { }
 
     /** The `self` parameter in a method on the `BaseHttpRequestHandler` class or any subclass. */
-    private class SelfParam extends InstanceSource, RemoteFlowSource::Range, DataFlow::ParameterNode {
+    private class SelfParam extends InstanceSource, RemoteFlowSource::Range,
+      DataFlow::SourceParameterNode {
       SelfParam() {
         exists(HttpRequestHandlerClassDef cls | cls.getAMethod().getArg(0) = this.getParameter())
       }
@@ -2080,7 +2081,7 @@ private module StdlibPrivate {
      *
      * See https://docs.python.org/3.10/library/wsgiref.html#wsgiref.simple_server.WSGIRequestHandler.get_environ
      */
-    class WSGIEnvirontParameter extends RemoteFlowSource::Range, DataFlow::ParameterNode {
+    class WSGIEnvirontParameter extends RemoteFlowSource::Range, DataFlow::SourceParameterNode {
       WSGIEnvirontParameter() {
         exists(WsgirefSimpleServerApplication func |
           if func.isMethod()
@@ -2104,8 +2105,8 @@ private module StdlibPrivate {
       t.start() and
       exists(WsgirefSimpleServerApplication func |
         if func.isMethod()
-        then result.(DataFlow::ParameterNode).getParameter() = func.getArg(2)
-        else result.(DataFlow::ParameterNode).getParameter() = func.getArg(1)
+        then result.(DataFlow::SourceParameterNode).getParameter() = func.getArg(2)
+        else result.(DataFlow::SourceParameterNode).getParameter() = func.getArg(1)
       )
       or
       exists(DataFlow::TypeTracker t2 | result = startResponse(t2).track(t2, t))

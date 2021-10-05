@@ -33,7 +33,7 @@ pragma[nomagic]
 private DataFlowPrivate::DataFlowCallable getCallableForArgument(
   DataFlowPublic::ArgumentNode nodeFrom, int i
 ) {
-  exists(DataFlowPrivate::DataFlowCall call |
+  exists(DataFlowPrivate::DataFlowSourceCall call |
     nodeFrom.argumentOf(call, i) and
     result = call.getCallable()
   )
@@ -50,7 +50,7 @@ predicate callStep(DataFlowPublic::ArgumentNode nodeFrom, DataFlowPublic::Parame
 
 /** Holds if `nodeFrom` steps to `nodeTo` by being returned from a call. */
 predicate returnStep(DataFlowPrivate::ReturnNode nodeFrom, Node nodeTo) {
-  exists(DataFlowPrivate::DataFlowCall call |
+  exists(DataFlowPrivate::DataFlowSourceCall call |
     nodeFrom.getEnclosingCallable() = call.getCallable() and nodeTo.asCfgNode() = call.getNode()
   )
 }
