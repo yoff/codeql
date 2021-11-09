@@ -191,8 +191,7 @@ module EssaFlow {
     exists(With with, ControlFlowNode var |
       nodeFrom.(CfgNode).getNode() = var and
       nodeTo.(EssaNode).getVar().getDefinition().(WithDefinition).getDefiningNode() = var and
-      with.getOptionalVars() = var.getNode() and
-      with.isAsync()
+      with.getOptionalVars() = var.getNode()
     )
     or
     // Parameter definition
@@ -843,7 +842,7 @@ class ReturnNode extends CfgNode {
 
 /** A data flow node that represents the output of a call. */
 class OutNode extends CfgNode {
-  OutNode() { node instanceof CallNode }
+  OutNode() { node = any(DataFlowCall c).getNode() }
 }
 
 /**

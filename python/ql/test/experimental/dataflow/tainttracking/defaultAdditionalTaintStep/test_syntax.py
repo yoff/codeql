@@ -33,7 +33,7 @@ class Context_taint:
 def test_with_taint():
     ctx = Context_taint()
     with ctx as tainted:
-        ensure_tainted(tainted) # $ MISSING: tainted
+        ensure_tainted(tainted) # $ tainted
 
 
 class Context_arg:

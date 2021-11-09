@@ -99,6 +99,25 @@ module SpecialMethod {
 
     override string getSpecialMethodName() { result = "__delitem__" }
   }
+
+  class SpecialWithEnterNode extends Potential {
+    ControlFlowNode ctx;
+    string name;
+
+    SpecialWithEnterNode() {
+      exists(With with |
+        ctx.getNode() = with.getContextExpr() and
+        this.getNode() = with.getOptionalVars() and
+        if with.isAsync() then name = "__aenter__" else name = "__enter__"
+      )
+    }
+
+    override string getSpecialMethodName() { result = name }
+
+    override ControlFlowNode getArg(int n) { none() }
+
+    override ControlFlowNode getSelf() { result = ctx }
+  }
 }
 
 /** A control flow node corresponding to a special method call. */
