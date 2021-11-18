@@ -8,7 +8,7 @@ import semmle.python.Files
  * column `startcol` of line `startline` to column `endcol` of line `endline`
  * in file `filepath`.
  *
- * For more information, see [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
+ * For more information, see [Locations](https://help.semmle.com/QL/learn-ql/ql/locations.html).
  */
 external predicate defectResults(
   int id, string queryPath, string filepath, int startline, int startcol, int endline, int endcol,
@@ -54,7 +54,7 @@ class DefectResult extends int {
    * The location spans column `startcolumn` of line `startline` to
    * column `endcolumn` of line `endline` in file `filepath`.
    * For more information, see
-   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
+   * [Locations](https://help.semmle.com/QL/learn-ql/ql/locations.html).
    */
   predicate hasLocationInfo(
     string filepath, int startline, int startcolumn, int endline, int endcolumn

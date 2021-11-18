@@ -4,7 +4,7 @@
  * (in that the `.expected` file should always be empty).
  *
  * To add this framework to a new language:
- * - Add a file `InlineExpectationsTestPrivate.qll` that defines a `ExpectationComment` class. This class
+ * - Add a file `InlineExpectationsTestPrivate.qll` that defines a `LineComment` class. This class
  *   must support a `getContents` method that returns the contents of the given comment, _excluding_
  *   the comment indicator itself. It should also define `toString` and `getLocation` as usual.
  *
@@ -60,8 +60,8 @@
  *
  * Example:
  * ```cpp
- * int i = x + 5;  // $ const=5
- * int j = y + (7 - 3)  // $ const=7 const=3 const=4  // The result of the subtraction is a constant.
+ * int i = x + 5;  // $const=5
+ * int j = y + (7 - 3)  // $const=7 const=3 const=4  // The result of the subtraction is a constant.
  * ```
  *
  * For tests that contain known missing and spurious results, it is possible to further
@@ -194,7 +194,7 @@ private int getEndOfColumnPosition(int start, string content) {
 }
 
 private predicate getAnExpectation(
-  ExpectationComment comment, TColumn column, string expectation, string tags, string value
+  LineComment comment, TColumn column, string expectation, string tags, string value
 ) {
   exists(string content |
     content = comment.getContents().regexpCapture(expectationCommentPattern(), 1) and
@@ -247,14 +247,14 @@ private newtype TFailureLocatable =
   ) {
     test.hasActualResult(location, element, tag, value)
   } or
-  TValidExpectation(ExpectationComment comment, string tag, string value, string knownFailure) {
+  TValidExpectation(LineComment comment, string tag, string value, string knownFailure) {
     exists(TColumn column, string tags |
       getAnExpectation(comment, column, _, tags, value) and
       tag = tags.splitAt(",") and
       knownFailure = getColumnString(column)
     )
   } or
-  TInvalidExpectation(ExpectationComment comment, string expectation) {
+  TInvalidExpectation(LineComment comment, string expectation) {
     getAnExpectation(comment, _, expectation, _, _) and
     not expectation.regexpMatch(expectationPattern())
   }
@@ -292,7 +292,7 @@ class ActualResult extends FailureLocatable, TActualResult {
 }
 
 abstract private class Expectation extends FailureLocatable {
-  ExpectationComment comment;
+  LineComment comment;
 
   override string toString() { result = comment.toString() }
 

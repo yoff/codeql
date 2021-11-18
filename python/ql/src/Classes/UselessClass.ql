@@ -52,7 +52,11 @@ predicate is_stateful(Class c) {
     call.getFunc() = a and
     a.getName() = name
   |
-    name in ["pop", "remove", "discard", "extend", "append"]
+    name = "pop" or
+    name = "remove" or
+    name = "discard" or
+    name = "extend" or
+    name = "append"
   )
 }
 

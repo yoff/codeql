@@ -44,16 +44,7 @@ def test_taint(name = "World!", number="0", foo="foo"):  # $requestHandler route
         # werkzeug.datastructures.Authorization (a dict, with some properties)
         request.authorization, # $ tainted
         request.authorization['username'], # $ tainted
-        request.authorization.username, # $ tainted
-        request.authorization.password, # $ tainted
-        request.authorization.realm, # $ tainted
-        request.authorization.nonce, # $ tainted
-        request.authorization.uri, # $ tainted
-        request.authorization.nc, # $ tainted
-        request.authorization.cnonce, # $ tainted
-        request.authorization.response, # $ tainted
-        request.authorization.opaque, # $ tainted
-        request.authorization.qop, # $ tainted
+        request.authorization.username, # $ MISSING: tainted
 
         # werkzeug.datastructures.RequestCacheControl
         request.cache_control, # $ tainted
@@ -77,16 +68,14 @@ def test_taint(name = "World!", number="0", foo="foo"):  # $requestHandler route
         # a werkzeug.datastructures.MultiDict, mapping [str, werkzeug.datastructures.FileStorage]
         request.files, # $ tainted
         request.files['key'], # $ tainted
-        request.files['key'].filename, # $ tainted
-        request.files['key'].stream, # $ tainted
-        request.files['key'].read(), # $ tainted
-        request.files['key'].stream.read(), # $ tainted
+        request.files['key'].filename, # $ MISSING: tainted
+        request.files['key'].stream, # $ MISSING: tainted
         request.files.get('key'), # $ tainted
-        request.files.get('key').filename, # $ tainted
-        request.files.get('key').stream, # $ tainted
+        request.files.get('key').filename, # $ MISSING: tainted
+        request.files.get('key').stream, # $ MISSING: tainted
         request.files.getlist('key'), # $ tainted
-        request.files.getlist('key')[0].filename, # $ tainted
-        request.files.getlist('key')[0].stream, # $ tainted
+        request.files.getlist('key')[0].filename, # $ MISSING: tainted
+        request.files.getlist('key')[0].stream, # $ MISSING: tainted
 
         # By default werkzeug.datastructures.ImmutableMultiDict -- although can be changed :\
         request.form, # $ tainted
@@ -105,15 +94,11 @@ def test_taint(name = "World!", number="0", foo="foo"):  # $requestHandler route
         request.headers, # $ tainted
         request.headers['key'], # $ tainted
         request.headers.get('key'), # $ tainted
-        request.headers.get_all('key'), # $ tainted
-        request.headers.getlist('key'), # $ tainted
-        # popitem returns `(key, value)`
-        request.headers.popitem(), # $ tainted
-        request.headers.popitem()[0], # $ tainted
-        request.headers.popitem()[1], # $ tainted
+        request.headers.get_all('key'), # $ MISSING: tainted
+        request.headers.getlist('key'), # $ MISSING: tainted
         # two ways to get (k, v) lists
         list(request.headers), # $ tainted
-        request.headers.to_wsgi_list(), # $ tainted
+        request.headers.to_wsgi_list(), # $ MISSING: tainted
 
         request.json, # $ tainted
         request.json['foo'], # $ tainted

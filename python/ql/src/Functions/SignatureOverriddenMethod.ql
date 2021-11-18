@@ -24,6 +24,7 @@ where
   not derived.getScope().isSpecialMethod() and
   derived.getName() != "__init__" and
   derived.isNormalMethod() and
+  not derived.getScope().isSpecialMethod() and
   // call to overrides distributed for efficiency
   (
     derived.overrides(base) and derived.minParameters() > base.maxParameters()

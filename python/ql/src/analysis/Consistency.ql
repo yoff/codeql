@@ -8,10 +8,15 @@ import python
 import DefinitionTracking
 
 predicate uniqueness_error(int number, string what, string problem) {
-  what in [
-      "toString", "getLocation", "getNode", "getDefinition", "getEntryNode", "getOrigin",
-      "getAnInferredType"
-    ] and
+  (
+    what = "toString" or
+    what = "getLocation" or
+    what = "getNode" or
+    what = "getDefinition" or
+    what = "getEntryNode" or
+    what = "getOrigin" or
+    what = "getAnInferredType"
+  ) and
   (
     number = 0 and problem = "no results for " + what + "()"
     or
@@ -136,7 +141,7 @@ predicate builtin_object_consistency(string clsname, string problem, string what
     or
     not exists(o.toString()) and
     problem = "no toString" and
-    not exists(string name | name.matches("\\_semmle%") | py_special_objects(o, name)) and
+    not exists(string name | name.prefix(7) = "_semmle" | py_special_objects(o, name)) and
     not o = unknownValue()
   )
 }

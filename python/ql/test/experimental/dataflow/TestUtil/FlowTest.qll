@@ -1,7 +1,7 @@
 import python
 import semmle.python.dataflow.new.DataFlow
 import TestUtilities.InlineExpectationsTest
-private import semmle.python.dataflow.new.internal.PrintNode
+import experimental.dataflow.TestUtil.PrintNode
 
 abstract class FlowTest extends InlineExpectationsTest {
   bindingset[this]

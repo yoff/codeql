@@ -197,7 +197,7 @@ class CommentedOutCodeBlock extends @py_comment {
    * The location spans column `startcolumn` of line `startline` to
    * column `endcolumn` of line `endline` in file `filepath`.
    * For more information, see
-   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
+   * [Locations](https://help.semmle.com/QL/learn-ql/ql/locations.html).
    */
   predicate hasLocationInfo(
     string filepath, int startline, int startcolumn, int endline, int endcolumn
@@ -210,9 +210,9 @@ class CommentedOutCodeBlock extends @py_comment {
 
   /** Whether this commented-out code block is likely to be example code embedded in a larger comment. */
   predicate maybeExampleCode() {
-    exists(CommentBlock block | block.contains(this) |
+    exists(CommentBlock block | block.contains(this.(Comment)) |
       exists(int all_code |
-        all_code = sum(CommentedOutCodeBlock code | block.contains(code) | code.length()) and
+        all_code = sum(CommentedOutCodeBlock code | block.contains(code.(Comment)) | code.length()) and
         /* This ratio may need fine tuning */
         block.length() > all_code * 2
       )
@@ -297,17 +297,41 @@ private predicate file_or_url(Comment c) {
   c.getText().regexpMatch("#[^'\"]+(\\[a-zA-Z]\\w*)+\\.[a-zA-Z]+.*")
 }
 
-private string operator_keyword() { result in ["import", "and", "is", "or", "in", "not", "as"] }
+private string operator_keyword() {
+  result = "import" or
+  result = "and" or
+  result = "is" or
+  result = "or" or
+  result = "in" or
+  result = "not" or
+  result = "as"
+}
 
 private string keyword_requiring_colon() {
-  result in ["try", "while", "elif", "else", "if", "except", "def", "class"]
+  result = "try" or
+  result = "while" or
+  result = "elif" or
+  result = "else" or
+  result = "if" or
+  result = "except" or
+  result = "def" or
+  result = "class"
 }
 
 private string other_keyword() {
-  result in [
-      "del", "lambda", "raise", "return", "for", "from", "global", "with", "assert", "yield",
-      "finally", "print", "exec"
-    ]
+  result = "del" or
+  result = "lambda" or
+  result = "from" or
+  result = "global" or
+  result = "with" or
+  result = "assert" or
+  result = "yield" or
+  result = "finally" or
+  result = "print" or
+  result = "exec" or
+  result = "raise" or
+  result = "return" or
+  result = "for"
 }
 
 private string a_keyword() {

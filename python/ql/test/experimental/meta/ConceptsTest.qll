@@ -2,7 +2,7 @@ import python
 import semmle.python.dataflow.new.DataFlow
 import semmle.python.Concepts
 import TestUtilities.InlineExpectationsTest
-private import semmle.python.dataflow.new.internal.PrintNode
+import experimental.dataflow.TestUtil.PrintNode
 
 class SystemCommandExecutionTest extends InlineExpectationsTest {
   SystemCommandExecutionTest() { this = "SystemCommandExecutionTest" }
@@ -96,7 +96,7 @@ class EncodingTest extends InlineExpectationsTest {
 class LoggingTest extends InlineExpectationsTest {
   LoggingTest() { this = "LoggingTest" }
 
-  override string getARelevantTag() { result = "loggingInput" }
+  override string getARelevantTag() { result in ["loggingInput"] }
 
   override predicate hasActualResult(Location location, string element, string tag, string value) {
     exists(location.getFile().getRelativePath()) and
@@ -124,24 +124,6 @@ class CodeExecutionTest extends InlineExpectationsTest {
       element = code.toString() and
       value = prettyNodeForInlineTest(code) and
       tag = "getCode"
-    )
-  }
-}
-
-class SqlConstructionTest extends InlineExpectationsTest {
-  SqlConstructionTest() { this = "SqlConstructionTest" }
-
-  override string getARelevantTag() { result = "constructedSql" }
-
-  override predicate hasActualResult(Location location, string element, string tag, string value) {
-    exists(location.getFile().getRelativePath()) and
-    exists(SqlConstruction e, DataFlow::Node sql |
-      exists(location.getFile().getRelativePath()) and
-      sql = e.getSql() and
-      location = e.getLocation() and
-      element = sql.toString() and
-      value = prettyNodeForInlineTest(sql) and
-      tag = "constructedSql"
     )
   }
 }
@@ -199,7 +181,7 @@ class EscapingTest extends InlineExpectationsTest {
 class HttpServerRouteSetupTest extends InlineExpectationsTest {
   HttpServerRouteSetupTest() { this = "HttpServerRouteSetupTest" }
 
-  override string getARelevantTag() { result = "routeSetup" }
+  override string getARelevantTag() { result in ["routeSetup"] }
 
   override predicate hasActualResult(Location location, string element, string tag, string value) {
     exists(location.getFile().getRelativePath()) and

@@ -8,7 +8,6 @@
  * @id py/weak-sensitive-data-hashing
  * @tags security
  *       external/cwe/cwe-327
- *       external/cwe/cwe-328
  *       external/cwe/cwe-916
  */
 

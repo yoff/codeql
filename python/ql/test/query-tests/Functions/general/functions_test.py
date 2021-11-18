@@ -163,15 +163,11 @@ def guarded_modification(z=[]):
         z.append(0)
     return z
 
-# This function causes a discrepancy between the
-# Python 2 and 3 versions of the analysis.
-# We comment it out until we have resoved the issue.
-#
-# def issue1143(expr, param=[]):
-#     if not param:
-#         return result
-#     for i in param:
-#         param.remove(i) # Mutation here
+def issue1143(expr, param=[]):
+    if not param:
+        return result
+    for i in param:
+        param.remove(i) # Mutation here
 
 
 # Type guarding of modification of parameter with default:

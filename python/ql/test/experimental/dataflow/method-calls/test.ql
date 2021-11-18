@@ -1,6 +1,6 @@
 import python
 import semmle.python.dataflow.new.DataFlow
-private import semmle.python.dataflow.new.internal.PrintNode
+import experimental.dataflow.TestUtil.PrintNode
 
 query predicate conjunctive_lookup(
   DataFlow::MethodCallNode methCall, string call, string object, string methodName

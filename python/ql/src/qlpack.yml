@@ -1,8 +1,5 @@
-name: codeql/python-queries
-version: 0.0.2
-dependencies:
-    codeql/python-all: "*"
-    codeql/suite-helpers: "*"
+name: codeql-python
+version: 0.0.0
+dbscheme: semmlecode.python.dbscheme
 suites: codeql-suites
 extractor: python
-defaultSuiteFile: codeql-suites/python-code-scanning.qls
