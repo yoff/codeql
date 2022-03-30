@@ -21,11 +21,8 @@ module SummaryComponent {
 
   predicate content = SC::content/1;
 
-  /** Gets a summary component that represents a qualifier. */
-  SummaryComponent qualifier() { result = argument(-1) }
-
-  /** Gets a summary component that represents a block argument. */
-  SummaryComponent block() { result = argument(-2) }
+  /** Gets a summary component that represents a list element. */
+  SummaryComponent listElement() { result = content(any(ListElementContent c)) }
 
   /** Gets a summary component that represents the return value of a call. */
   SummaryComponent return() { result = SC::return(any(ReturnKind rk)) }

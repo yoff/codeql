@@ -514,7 +514,8 @@
     "csharp/ql/lib/semmle/code/csharp/dataflow/internal/AccessPathSyntax.qll",
     "java/ql/lib/semmle/code/java/dataflow/internal/AccessPathSyntax.qll",
     "javascript/ql/lib/semmle/javascript/frameworks/data/internal/AccessPathSyntax.qll",
-    "ruby/ql/lib/codeql/ruby/dataflow/internal/AccessPathSyntax.qll"
+    "ruby/ql/lib/codeql/ruby/dataflow/internal/AccessPathSyntax.qll",
+    "python/ql/lib/semmle/python/dataflow/new/internal/AccessPathSyntax.qll"
   ],
   "Concepts Python/Ruby/JS": [
     "python/ql/lib/semmle/python/internal/ConceptsShared.qll",

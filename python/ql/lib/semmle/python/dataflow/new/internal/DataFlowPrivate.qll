@@ -20,11 +20,15 @@ DataFlowCallable nodeGetEnclosingCallable(Node n) { result = n.getEnclosingCalla
 /** A parameter position represented by an integer. */
 class ParameterPosition extends int {
   ParameterPosition() { exists(any(DataFlowCallable c).getParameter(this)) }
+
+  predicate isPositional(int i) { i = this }
 }
 
 /** An argument position represented by an integer. */
 class ArgumentPosition extends int {
   ArgumentPosition() { exists(any(DataFlowSourceCall c).getArg(this)) }
+
+  predicate isPositional(int i) { i = this }
 }
 
 /** Holds if arguments at position `apos` match parameters at position `ppos`. */
@@ -807,6 +811,19 @@ abstract class DataFlowCall extends TDataFlowCall {
 
   /** Gets the location of this dataflow call. */
   abstract Location getLocation();
+
+  /**
+   * Holds if this element is at the specified location.
+   * The location spans column `startcolumn` of line `startline` to
+   * column `endcolumn` of line `endline` in file `filepath`.
+   * For more information, see
+   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
+   */
+  predicate hasLocationInfo(
+    string filepath, int startline, int startcolumn, int endline, int endcolumn
+  ) {
+    this.getLocation().hasLocationInfo(filepath, startline, startcolumn, endline, endcolumn)
+  }
 }
 
 abstract class DataFlowSourceCall extends DataFlowCall, TDataFlowSourceCall {

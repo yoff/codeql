@@ -58,13 +58,31 @@ predicate summaryElement(DataFlowCallable c, string input, string output, string
 /**
  * Gets the summary component for specification component `c`, if any.
  *
- * This covers all the Ruby-specific components of a flow summary, and
- * is currently restricted to `"BlockArgument"`.
+ * This covers all the Python-specific components of a flow summary, and
+ * is currently empty.
  */
 SummaryComponent interpretComponentSpecific(string c) {
-  c = "BlockArgument" and
-  result = FlowSummary::SummaryComponent::block()
+  c = "ListElement" and
+  result = FlowSummary::SummaryComponent::listElement()
 }
+
+/** Gets the textual representation of a summary component in the format used for flow summaries. */
+string getComponentSpecificCsv(SummaryComponent sc) {
+  sc = TContentSummaryComponent(any(ListElementContent c)) and
+  result = "ListElement"
+}
+
+/** Gets the textual representation of a parameter position in the format used for flow summaries. */
+string getParameterPositionCsv(ParameterPosition pos) { result = pos.toString() }
+
+/** Gets the textual representation of an argument position in the format used for flow summaries. */
+string getArgumentPositionCsv(ArgumentPosition pos) { result = pos.toString() }
+
+/** Holds if input specification component `c` needs a reference. */
+predicate inputNeedsReferenceSpecific(string c) { none() }
+
+/** Holds if output specification component `c` needs a reference. */
+predicate outputNeedsReferenceSpecific(string c) { none() }
 
 /** Gets the return kind corresponding to specification `"ReturnValue"`. */
 ReturnKind getReturnValueKind() { any() }
@@ -115,3 +133,47 @@ private module UnusedSourceSinkInterpretation {
 }
 
 import UnusedSourceSinkInterpretation
+
+module ParsePositions {
+  private import FlowSummaryImpl
+
+  private predicate isParamBody(string body) {
+    exists(AccessPathToken tok |
+      tok.getName() = "Parameter" and
+      body = tok.getAnArgument()
+    )
+  }
+
+  private predicate isArgBody(string body) {
+    exists(AccessPathToken tok |
+      tok.getName() = "Argument" and
+      body = tok.getAnArgument()
+    )
+  }
+
+  predicate isParsedParameterPosition(string c, int i) {
+    isParamBody(c) and
+    i = AccessPath::parseInt(c)
+  }
+
+  predicate isParsedArgumentPosition(string c, int i) {
+    isArgBody(c) and
+    i = AccessPath::parseInt(c)
+  }
+}
+
+/** Gets the argument position obtained by parsing `X` in `Parameter[X]`. */
+ArgumentPosition parseParamBody(string s) {
+  exists(int i |
+    ParsePositions::isParsedParameterPosition(s, i) and
+    result.isPositional(i)
+  )
+}
+
+/** Gets the parameter position obtained by parsing `X` in `Argument[X]`. */
+ParameterPosition parseArgBody(string s) {
+  exists(int i |
+    ParsePositions::isParsedArgumentPosition(s, i) and
+    result.isPositional(i)
+  )
+}
