@@ -27,24 +27,24 @@ class SafeSnakeYamlConstruction extends ClassInstanceExpr {
  * The class `org.yaml.snakeyaml.Yaml`.
  */
 class Yaml extends RefType {
-  Yaml() { this.getASupertype*().hasQualifiedName("org.yaml.snakeyaml", "Yaml") }
+  Yaml() { this.getAnAncestor().hasQualifiedName("org.yaml.snakeyaml", "Yaml") }
 }
 
-private class SafeYamlConstructionFlowConfig extends DataFlow2::Configuration {
+private class SafeYamlConstructionFlowConfig extends DataFlow3::Configuration {
   SafeYamlConstructionFlowConfig() { this = "SnakeYaml::SafeYamlConstructionFlowConfig" }
 
   override predicate isSource(DataFlow::Node src) {
     src.asExpr() instanceof SafeSnakeYamlConstruction
   }
 
-  override predicate isSink(DataFlow::Node sink) { sink = yamlClassInstanceExprArgument(_) }
+  override predicate isSink(DataFlow::Node sink) { sink = this.yamlClassInstanceExprArgument(_) }
 
   private DataFlow::ExprNode yamlClassInstanceExprArgument(ClassInstanceExpr cie) {
     cie.getConstructedType() instanceof Yaml and
     result.getExpr() = cie.getArgument(0)
   }
 
-  ClassInstanceExpr getSafeYaml() { hasFlowTo(yamlClassInstanceExprArgument(result)) }
+  ClassInstanceExpr getSafeYaml() { this.hasFlowTo(this.yamlClassInstanceExprArgument(result)) }
 }
 
 /**
@@ -65,18 +65,18 @@ private class SnakeYamlParse extends MethodAccess {
   }
 }
 
-private class SafeYamlFlowConfig extends DataFlow3::Configuration {
+private class SafeYamlFlowConfig extends DataFlow2::Configuration {
   SafeYamlFlowConfig() { this = "SnakeYaml::SafeYamlFlowConfig" }
 
   override predicate isSource(DataFlow::Node src) { src.asExpr() instanceof SafeYaml }
 
-  override predicate isSink(DataFlow::Node sink) { sink = yamlParseQualifier(_) }
+  override predicate isSink(DataFlow::Node sink) { sink = this.yamlParseQualifier(_) }
 
   private DataFlow::ExprNode yamlParseQualifier(SnakeYamlParse syp) {
     result.getExpr() = syp.getQualifier()
   }
 
-  SnakeYamlParse getASafeSnakeYamlParse() { hasFlowTo(yamlParseQualifier(result)) }
+  SnakeYamlParse getASafeSnakeYamlParse() { this.hasFlowTo(this.yamlParseQualifier(result)) }
 }
 
 /**

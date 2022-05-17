@@ -3,7 +3,7 @@
  */
 
 private import javascript
-private import semmle.javascript.security.dataflow.Xss
+private import semmle.javascript.security.dataflow.DomBasedXssCustomizations
 private import semmle.javascript.security.dataflow.CodeInjectionCustomizations
 private import semmle.javascript.security.dataflow.ClientSideUrlRedirectCustomizations
 private import semmle.javascript.DynamicPropertyAccess
@@ -152,7 +152,7 @@ module Angular2 {
   /** A value that is about to be promoted to a trusted script value. */
   private class AngularCodeInjectionSink extends CodeInjection::Sink {
     AngularCodeInjectionSink() {
-      this = domSanitizer().getAMethodCall(["bypassSecurityTrustScript"]).getArgument(0)
+      this = domSanitizer().getAMethodCall("bypassSecurityTrustScript").getArgument(0)
     }
   }
 

@@ -29,7 +29,7 @@ private predicate pyxl_tag(Call c, string name) {
 }
 
 class PyxlHtmlTag extends PyxlTag {
-  PyxlHtmlTag() { this.getPyxlTagName().prefix(2) = "x_" }
+  PyxlHtmlTag() { this.getPyxlTagName().matches("x\\_%") }
 
   string getTagName() { result = this.getPyxlTagName().suffix(2) }
 
@@ -57,7 +57,7 @@ class PyxlEndIfTag extends PyxlTag {
 class PyxlRawHtml extends PyxlTag {
   PyxlRawHtml() { this.getPyxlTagName() = "rawhtml" }
 
-  /** The text for this raw html, if it is simple text. */
+  /** Gets the text for this raw html, if it is simple text. */
   string getText() {
     exists(Unicode text |
       text = this.getValue() and

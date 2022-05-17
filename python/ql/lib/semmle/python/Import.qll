@@ -1,5 +1,6 @@
 import python
 private import semmle.python.types.Builtins
+private import semmle.python.internal.CachedStages
 
 /**
  * An alias in an import statement, the `mod as name` part of `import mod as name`. May be artificial;
@@ -31,10 +32,12 @@ class ImportExpr extends ImportExpr_ {
     // relative imports are no longer allowed in Python 3
     major_version() < 3 and
     // and can be explicitly turned off in later versions of Python 2
-    not getEnclosingModule().hasFromFuture("absolute_import")
+    not this.getEnclosingModule().hasFromFuture("absolute_import")
   }
 
   /**
+   * Gets the level of this import.
+   *
    * The language specifies level as -1 if relative imports are to be tried first, 0 for absolute imports,
    * and level > 0 for explicit relative imports.
    */
@@ -53,8 +56,8 @@ class ImportExpr extends ImportExpr_ {
    * the name of the topmost module that will be imported.
    */
   private string relativeTopName() {
-    getLevel() = -1 and
-    result = basePackageName(1) + "." + this.getTopName() and
+    this.getLevel() = -1 and
+    result = this.basePackageName(1) + "." + this.getTopName() and
     valid_module_name(result)
   }
 
@@ -62,7 +65,7 @@ class ImportExpr extends ImportExpr_ {
     if this.getLevel() <= 0
     then result = this.getTopName()
     else (
-      result = basePackageName(this.getLevel()) and
+      result = this.basePackageName(this.getLevel()) and
       valid_module_name(result)
     )
   }
@@ -73,17 +76,17 @@ class ImportExpr extends ImportExpr_ {
    * which may not be the name of the module.
    */
   string bottomModuleName() {
-    result = relativeTopName() + this.remainderOfName()
+    result = this.relativeTopName() + this.remainderOfName()
     or
-    not exists(relativeTopName()) and
+    not exists(this.relativeTopName()) and
     result = this.qualifiedTopName() + this.remainderOfName()
   }
 
   /** Gets the name of topmost module or package being imported */
   string topModuleName() {
-    result = relativeTopName()
+    result = this.relativeTopName()
     or
-    not exists(relativeTopName()) and
+    not exists(this.relativeTopName()) and
     result = this.qualifiedTopName()
   }
 
@@ -94,7 +97,7 @@ class ImportExpr extends ImportExpr_ {
    */
   string getImportedModuleName() {
     exists(string bottomName | bottomName = this.bottomModuleName() |
-      if this.isTop() then result = topModuleName() else result = bottomName
+      if this.isTop() then result = this.topModuleName() else result = bottomName
     )
   }
 
@@ -165,13 +168,6 @@ class Import extends Import_ {
     result = this.getAName().getValue().(ImportMember).getModule()
   }
 
-  /**
-   * Use getAnImportedModuleName(),
-   * possibly combined with ModuleObject.importedAs()
-   * Gets a module imported by this import statement
-   */
-  deprecated Module getAModule() { result.getName() = this.getAnImportedModuleName() }
-
   /** Whether this a `from ... import ...` statement */
   predicate isFromImport() { this.getAName().getValue() instanceof ImportMember }
 
@@ -188,7 +184,7 @@ class Import extends Import_ {
    * For example, for the import statement `import bar` which
    * is a relative import in package "foo", this would return
    * "foo.bar".
-   * The import statment `from foo import bar` would return
+   * The import statement `from foo import bar` would return
    * `foo` and `foo.bar`
    */
   string getAnImportedModuleName() {
@@ -208,20 +204,15 @@ class Import extends Import_ {
 /** An import * statement */
 class ImportStar extends ImportStar_ {
   /* syntax: from modname import * */
+  cached
   ImportExpr getModuleExpr() {
+    Stages::AST::ref() and
     result = this.getModule()
     or
     result = this.getModule().(ImportMember).getModule()
   }
 
   override string toString() { result = "from " + this.getModuleExpr().getName() + " import *" }
-
-  /**
-   * Use getAnImportedModuleName(),
-   * possibly combined with ModuleObject.importedAs()
-   * Gets the module imported by this import * statement
-   */
-  deprecated Module getTheModule() { result.getName() = this.getImportedModuleName() }
 
   override Expr getASubExpression() { result = this.getModule() }
 

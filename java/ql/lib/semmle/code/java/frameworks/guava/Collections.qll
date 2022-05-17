@@ -3,102 +3,575 @@
 import java
 private import semmle.code.java.dataflow.DataFlow
 private import semmle.code.java.dataflow.FlowSteps
+private import semmle.code.java.dataflow.ExternalFlow
 private import semmle.code.java.Collections
 
 private string guavaCollectPackage() { result = "com.google.common.collect" }
 
-/** A reference type that extends a parameterization of one of the various immutable container types. */
-private class ImmutableContainerType extends RefType {
-  string kind;
-
-  ImmutableContainerType() {
-    this.getSourceDeclaration().getASourceSupertype*().hasQualifiedName(guavaCollectPackage(), kind) and
-    kind = ["ImmutableCollection", "ImmutableMap", "ImmutableMultimap", "ImmutableTable"]
+private class GuavaCollectCsv extends SummaryModelCsv {
+  override predicate row(string row) {
+    row =
+      [
+        //"package;type;overrides;name;signature;ext;inputspec;outputspec;kind",
+        // Methods depending on lambda flow are not currently modelled
+        // Methods depending on stronger aliasing properties than we support are also not modelled.
+        "com.google.common.collect;ArrayListMultimap;true;create;(Multimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ArrayListMultimap;true;create;(Multimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ArrayTable;true;create;(Iterable,Iterable);;Argument[0].Element;ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;ArrayTable;true;create;(Iterable,Iterable);;Argument[1].Element;ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;ArrayTable;true;create;(Table);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ArrayTable;true;create;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;ArrayTable;true;create;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;BiMap;true;forcePut;(Object,Object);;Argument[0];Argument[-1].MapKey;value",
+        "com.google.common.collect;BiMap;true;forcePut;(Object,Object);;Argument[1];Argument[-1].MapValue;value",
+        "com.google.common.collect;BiMap;true;inverse;();;Argument[-1].MapKey;ReturnValue.MapValue;value",
+        "com.google.common.collect;BiMap;true;inverse;();;Argument[-1].MapValue;ReturnValue.MapKey;value",
+        "com.google.common.collect;ClassToInstanceMap;true;getInstance;(Class);;Argument[-1].MapValue;ReturnValue;value",
+        "com.google.common.collect;ClassToInstanceMap;true;putInstance;(Class,Object);;Argument[1];Argument[-1].MapValue;value",
+        "com.google.common.collect;ClassToInstanceMap;true;putInstance;(Class,Object);;Argument[-1].MapValue;ReturnValue;value",
+        "com.google.common.collect;Collections2;false;filter;(Collection,Predicate);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Collections2;false;orderedPermutations;(Iterable);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Collections2;false;orderedPermutations;(Iterable,Comparator);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Collections2;false;permutations;(Collection);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;ConcurrentHashMultiset;true;create;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;HashBasedTable;true;create;(Table);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;HashBasedTable;true;create;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;HashBasedTable;true;create;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;HashBiMap;true;create;(Map);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;HashBiMap;true;create;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;HashMultimap;true;create;(Multimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;HashMultimap;true;create;(Multimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;HashMultiset;true;create;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[0];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[1];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[2];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[3];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[4];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[5];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[6];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[7];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[8];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableBiMap;true;of;;;Argument[9];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableClassToInstanceMap;true;copyOf;(Map);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableClassToInstanceMap;true;copyOf;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableClassToInstanceMap;true;of;(Class,Object);;Argument[0];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableClassToInstanceMap;true;of;(Class,Object);;Argument[1];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableCollection$Builder;true;add;(Object);;Argument[0];Argument[-1].Element;value",
+        "com.google.common.collect;ImmutableCollection$Builder;true;add;(Object[]);;Argument[0].ArrayElement;Argument[-1].Element;value",
+        "com.google.common.collect;ImmutableCollection$Builder;true;add;;;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableCollection$Builder;true;addAll;(Iterable);;Argument[0].Element;Argument[-1].Element;value",
+        "com.google.common.collect;ImmutableCollection$Builder;true;addAll;(Iterator);;Argument[0].Element;Argument[-1].Element;value",
+        "com.google.common.collect;ImmutableCollection$Builder;true;addAll;;;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableCollection$Builder;true;build;();;Argument[-1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableCollection;true;asList;();;Argument[-1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableList;true;copyOf;(Collection);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableList;true;copyOf;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableList;true;copyOf;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableList;true;copyOf;(Object[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableList;true;of;;;Argument[0..11];ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableList;true;of;;;Argument[12].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableList;true;reverse;();;Argument[-1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableList;true;sortedCopyOf;(Comparator,Iterable);;Argument[1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableList;true;sortedCopyOf;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[0];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[1];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[2];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[3];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[4];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[5];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[6];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[7];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[8];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableListMultimap;true;of;;;Argument[9];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;build;();;Argument[-1].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;build;();;Argument[-1].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;orderEntriesByValue;(Comparator);;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;put;(Entry);;Argument[0].MapKey;Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;put;(Entry);;Argument[0].MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;put;(Object,Object);;Argument[0];Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;put;(Object,Object);;Argument[1];Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;put;;;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;putAll;(Iterable);;Argument[0].Element.MapKey;Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;putAll;(Iterable);;Argument[0].Element.MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;putAll;(Map);;Argument[0].MapKey;Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;putAll;(Map);;Argument[0].MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMap$Builder;true;putAll;;;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableMap;true;copyOf;(Iterable);;Argument[0].Element.MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMap;true;copyOf;(Iterable);;Argument[0].Element.MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMap;true;copyOf;(Map);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMap;true;copyOf;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[0];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[1];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[2];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[3];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[4];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[5];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[6];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[7];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[8];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMap;true;of;;;Argument[9];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;build;();;Argument[-1].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;build;();;Argument[-1].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;orderKeysBy;(Comparator);;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;orderValuesBy;(Comparator);;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;put;(Entry);;Argument[0].MapKey;Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;put;(Entry);;Argument[0].MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;put;(Object,Object);;Argument[0];Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;put;(Object,Object);;Argument[1];Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;put;;;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;putAll;(Iterable);;Argument[0].Element.MapKey;Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;putAll;(Iterable);;Argument[0].Element.MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;putAll;(Multimap);;Argument[0].MapKey;Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;putAll;(Multimap);;Argument[0].MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;putAll;(Object,Iterable);;Argument[0];Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;putAll;(Object,Iterable);;Argument[1].Element;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;putAll;(Object,Object[]);;Argument[0];Argument[-1].MapKey;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;putAll;(Object,Object[]);;Argument[1].ArrayElement;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableMultimap$Builder;true;putAll;;;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableMultimap;true;copyOf;(Iterable);;Argument[0].Element.MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMultimap;true;copyOf;(Iterable);;Argument[0].Element.MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultimap;true;copyOf;(Multimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMultimap;true;copyOf;(Multimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultimap;true;inverse;();;Argument[-1].MapKey;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultimap;true;inverse;();;Argument[-1].MapValue;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[0];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[1];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[2];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[3];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[4];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[5];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[6];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[7];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[8];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableMultimap;true;of;;;Argument[9];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableMultiset$Builder;true;addCopies;(Object,int);;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableMultiset$Builder;true;addCopies;(Object,int);;Argument[0];Argument[-1].Element;value",
+        "com.google.common.collect;ImmutableMultiset$Builder;true;setCount;(Object,int);;Argument[0];Argument[-1].Element;value",
+        "com.google.common.collect;ImmutableMultiset;true;copyOf;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableMultiset;true;copyOf;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableMultiset;true;copyOf;(Object[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableMultiset;true;of;;;Argument[0..5];ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableMultiset;true;of;;;Argument[6].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSet;true;copyOf;(Collection);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSet;true;copyOf;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSet;true;copyOf;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSet;true;copyOf;(Object[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSet;true;of;;;Argument[0..5];ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSet;true;of;;;Argument[6].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[0];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[1];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[2];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[3];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[4];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[5];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[6];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[7];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[8];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSetMultimap;true;of;;;Argument[9];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOf;(Iterable);;Argument[0].Element.MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOf;(Iterable);;Argument[0].Element.MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOf;(Iterable,Comparator);;Argument[0].Element.MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOf;(Iterable,Comparator);;Argument[0].Element.MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOf;(Map);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOf;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOf;(Map,Comparator);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOf;(Map,Comparator);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOfSorted;(SortedMap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;copyOfSorted;(SortedMap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[0];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[1];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[2];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[3];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[4];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[5];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[6];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[7];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[8];ReturnValue.MapKey;value",
+        "com.google.common.collect;ImmutableSortedMap;true;of;;;Argument[9];ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableSortedMultiset;true;copyOf;(Comparable[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedMultiset;true;copyOf;(Comparator,Iterable);;Argument[1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedMultiset;true;copyOf;(Comparator,Iterator);;Argument[1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedMultiset;true;copyOf;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedMultiset;true;copyOf;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedMultiset;true;copyOfSorted;(SortedMultiset);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedMultiset;true;of;;;Argument[0..5];ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedMultiset;true;of;;;Argument[6].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;copyOf;(Collection);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;copyOf;(Comparable[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;copyOf;(Comparator,Collection);;Argument[1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;copyOf;(Comparator,Iterable);;Argument[1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;copyOf;(Comparator,Iterator);;Argument[1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;copyOf;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;copyOf;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;copyOfSorted;(SortedSet);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;of;;;Argument[0..5];ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableSortedSet;true;of;;;Argument[6].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;build;();;Argument[-1].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;build;();;Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;ImmutableTable$Builder;true;build;();;Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;ImmutableTable$Builder;true;orderColumnsBy;(Comparator);;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;orderRowsBy;(Comparator);;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;put;(Cell);;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;put;(Cell);;Argument[0].MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;put;(Cell);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;ImmutableTable$Builder;true;put;(Cell);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;ImmutableTable$Builder;true;put;(Object,Object,Object);;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;put;(Object,Object,Object);;Argument[0];Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;ImmutableTable$Builder;true;put;(Object,Object,Object);;Argument[1];Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;ImmutableTable$Builder;true;put;(Object,Object,Object);;Argument[2];Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;putAll;(Table);;Argument[-1];ReturnValue;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;putAll;(Table);;Argument[0].MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;ImmutableTable$Builder;true;putAll;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;ImmutableTable$Builder;true;putAll;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;ImmutableTable;true;copyOf;(Table);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ImmutableTable;true;copyOf;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;ImmutableTable;true;copyOf;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;ImmutableTable;true;of;(Object,Object,Object);;Argument[0];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;ImmutableTable;true;of;(Object,Object,Object);;Argument[1];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;ImmutableTable;true;of;(Object,Object,Object);;Argument[2];ReturnValue.MapValue;value",
+        "com.google.common.collect;Iterables;false;addAll;(Collection,Iterable);;Argument[1].Element;Argument[0].Element;value",
+        "com.google.common.collect;Iterables;false;concat;(Iterable);;Argument[0].Element.Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;concat;(Iterable,Iterable);;Argument[0..1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;concat;(Iterable,Iterable,Iterable);;Argument[0..2].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;concat;(Iterable,Iterable,Iterable,Iterable);;Argument[0..3].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;concat;(Iterable[]);;Argument[0].ArrayElement.Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;consumingIterable;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;cycle;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;cycle;(Object[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;filter;(Iterable,Class);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;filter;(Iterable,Predicate);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;find;(Iterable,Predicate);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterables;false;find;(Iterable,Predicate,Object);;Argument[2];ReturnValue;value",
+        "com.google.common.collect;Iterables;false;find;(Iterable,Predicate,Object);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterables;false;get;(Iterable,int);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterables;false;get;(Iterable,int,Object);;Argument[2];ReturnValue;value",
+        "com.google.common.collect;Iterables;false;get;(Iterable,int,Object);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterables;false;getLast;(Iterable);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterables;false;getLast;(Iterable,Object);;Argument[1];ReturnValue;value",
+        "com.google.common.collect;Iterables;false;getLast;(Iterable,Object);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterables;false;getOnlyElement;(Iterable);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterables;false;getOnlyElement;(Iterable,Object);;Argument[1];ReturnValue;value",
+        "com.google.common.collect;Iterables;false;getOnlyElement;(Iterable,Object);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterables;false;limit;(Iterable,int);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;mergeSorted;(Iterable,Comparator);;Argument[0].Element.Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;paddedPartition;(Iterable,int);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Iterables;false;partition;(Iterable,int);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Iterables;false;skip;(Iterable,int);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;toArray;(Iterable,Class);;Argument[0].Element;ReturnValue.ArrayElement;value",
+        //"com.google.common.collect;Iterables;false;toString;(Iterable);;Element of Argument[0];ReturnValue;taint",
+        "com.google.common.collect;Iterables;false;tryFind;(Iterable,Predicate);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;unmodifiableIterable;(ImmutableCollection);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterables;false;unmodifiableIterable;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;addAll;(Collection,Iterator);;Argument[1].Element;Argument[0].Element;value",
+        "com.google.common.collect;Iterators;false;asEnumeration;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;concat;(Iterator);;Argument[0].Element.Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;concat;(Iterator,Iterator);;Argument[0..1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;concat;(Iterator,Iterator,Iterator);;Argument[0..2].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;concat;(Iterator,Iterator,Iterator,Iterator);;Argument[0..3].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;concat;(Iterator[]);;Argument[0].ArrayElement.Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;consumingIterator;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;cycle;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;cycle;(Object[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;filter;(Iterator,Class);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;filter;(Iterator,Predicate);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;find;(Iterator,Predicate);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterators;false;find;(Iterator,Predicate,Object);;Argument[2];ReturnValue;value",
+        "com.google.common.collect;Iterators;false;find;(Iterator,Predicate,Object);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterators;false;forArray;(Object[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;forEnumeration;(Enumeration);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;get;(Iterator,int);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterators;false;get;(Iterator,int,Object);;Argument[2];ReturnValue;value",
+        "com.google.common.collect;Iterators;false;get;(Iterator,int,Object);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterators;false;getLast;(Iterator);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterators;false;getLast;(Iterator,Object);;Argument[1];ReturnValue;value",
+        "com.google.common.collect;Iterators;false;getLast;(Iterator,Object);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterators;false;getNext;(Iterator,Object);;Argument[1];ReturnValue;value",
+        "com.google.common.collect;Iterators;false;getNext;(Iterator,Object);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterators;false;getOnlyElement;(Iterator);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterators;false;getOnlyElement;(Iterator,Object);;Argument[1];ReturnValue;value",
+        "com.google.common.collect;Iterators;false;getOnlyElement;(Iterator,Object);;Argument[0].Element;ReturnValue;value",
+        "com.google.common.collect;Iterators;false;limit;(Iterator,int);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;mergeSorted;(Iterable,Comparator);;Argument[0].Element.Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;paddedPartition;(Iterator,int);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Iterators;false;partition;(Iterator,int);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Iterators;false;peekingIterator;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;peekingIterator;(PeekingIterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;singletonIterator;(Object);;Argument[0];ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;toArray;(Iterator,Class);;Argument[0].Element;ReturnValue.ArrayElement;value",
+        "com.google.common.collect;Iterators;false;tryFind;(Iterator,Predicate);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;unmodifiableIterator;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Iterators;false;unmodifiableIterator;(UnmodifiableIterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;LinkedHashMultimap;true;create;(Multimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;LinkedHashMultimap;true;create;(Multimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;LinkedHashMultiset;true;create;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;LinkedListMultimap;true;create;(Multimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;LinkedListMultimap;true;create;(Multimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Lists;false;asList;(Object,Object,Object[]);;Argument[0..1];ReturnValue.Element;value",
+        "com.google.common.collect;Lists;false;asList;(Object,Object,Object[]);;Argument[2].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;Lists;false;asList;(Object,Object[]);;Argument[0];ReturnValue.Element;value",
+        "com.google.common.collect;Lists;false;asList;(Object,Object[]);;Argument[1].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;Lists;false;cartesianProduct;(List);;Argument[0].Element.Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Lists;false;cartesianProduct;(List[]);;Argument[0].ArrayElement.Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Lists;false;charactersOf;(CharSequence);;Argument[0];ReturnValue.Element;taint",
+        "com.google.common.collect;Lists;false;charactersOf;(String);;Argument[0];ReturnValue.Element;taint",
+        "com.google.common.collect;Lists;false;newArrayList;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Lists;false;newArrayList;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Lists;false;newArrayList;(Object[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;Lists;false;newCopyOnWriteArrayList;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Lists;false;newLinkedList;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Lists;false;partition;(List,int);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Lists;false;reverse;(List);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;MapDifference$ValueDifference;true;leftValue;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.left];ReturnValue;value",
+        "com.google.common.collect;MapDifference$ValueDifference;true;rightValue;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.right];ReturnValue;value",
+        "com.google.common.collect;MapDifference;true;entriesDiffering;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.left].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;MapDifference;true;entriesDiffering;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.right].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;MapDifference;true;entriesDiffering;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.left].MapValue;ReturnValue.MapValue.SyntheticField[com.google.common.collect.MapDifference.left];value",
+        "com.google.common.collect;MapDifference;true;entriesDiffering;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.right].MapValue;ReturnValue.MapValue.SyntheticField[com.google.common.collect.MapDifference.right];value",
+        "com.google.common.collect;MapDifference;true;entriesInCommon;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.left].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;MapDifference;true;entriesInCommon;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.right].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;MapDifference;true;entriesInCommon;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.left].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;MapDifference;true;entriesInCommon;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.right].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;MapDifference;true;entriesOnlyOnLeft;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.left].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;MapDifference;true;entriesOnlyOnLeft;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.left].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;MapDifference;true;entriesOnlyOnRight;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.right].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;MapDifference;true;entriesOnlyOnRight;();;Argument[-1].SyntheticField[com.google.common.collect.MapDifference.right].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;asMap;(NavigableSet,Function);;Argument[0].Element;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;asMap;(Set,Function);;Argument[0].Element;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;asMap;(SortedSet,Function);;Argument[0].Element;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;difference;(Map,Map);;Argument[0].MapKey;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.left].MapKey;value",
+        "com.google.common.collect;Maps;false;difference;(Map,Map);;Argument[1].MapKey;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.right].MapKey;value",
+        "com.google.common.collect;Maps;false;difference;(Map,Map);;Argument[0].MapValue;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.left].MapValue;value",
+        "com.google.common.collect;Maps;false;difference;(Map,Map);;Argument[1].MapValue;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.right].MapValue;value",
+        "com.google.common.collect;Maps;false;difference;(Map,Map,Equivalence);;Argument[0].MapKey;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.left].MapKey;value",
+        "com.google.common.collect;Maps;false;difference;(Map,Map,Equivalence);;Argument[1].MapKey;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.right].MapKey;value",
+        "com.google.common.collect;Maps;false;difference;(Map,Map,Equivalence);;Argument[0].MapValue;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.left].MapValue;value",
+        "com.google.common.collect;Maps;false;difference;(Map,Map,Equivalence);;Argument[1].MapValue;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.right].MapValue;value",
+        "com.google.common.collect;Maps;false;difference;(SortedMap,Map);;Argument[0].MapKey;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.left].MapKey;value",
+        "com.google.common.collect;Maps;false;difference;(SortedMap,Map);;Argument[1].MapKey;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.right].MapKey;value",
+        "com.google.common.collect;Maps;false;difference;(SortedMap,Map);;Argument[0].MapValue;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.left].MapValue;value",
+        "com.google.common.collect;Maps;false;difference;(SortedMap,Map);;Argument[1].MapValue;ReturnValue.SyntheticField[com.google.common.collect.MapDifference.right].MapValue;value",
+        "com.google.common.collect;Maps;false;filterEntries;;;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;filterKeys;;;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;filterValues;;;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;fromProperties;(Properties);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;fromProperties;(Properties);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;immutableEntry;(Object,Object);;Argument[0];ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;immutableEntry;(Object,Object);;Argument[1];ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;immutableEnumMap;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;newEnumMap;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;newHashMap;(Map);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;newHashMap;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;newLinkedHashMap;(Map);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;newLinkedHashMap;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;newTreeMap;(SortedMap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;newTreeMap;(SortedMap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;subMap;(NavigableMap,Range);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;subMap;(NavigableMap,Range);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;synchronizedBiMap;(BiMap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;synchronizedBiMap;(BiMap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;synchronizedNavigableMap;(NavigableMap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;synchronizedNavigableMap;(NavigableMap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;toMap;(Iterable,Function);;Argument[0].Element;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;toMap;(Iterator,Function);;Argument[0].Element;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;transformValues;(Map,Function);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;transformValues;(NavigableMap,Function);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;transformValues;(SortedMap,Function);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;uniqueIndex;(Iterable,Function);;Argument[0].Element;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;uniqueIndex;(Iterator,Function);;Argument[0].Element;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;unmodifiableBiMap;(BiMap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;unmodifiableBiMap;(BiMap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Maps;false;unmodifiableNavigableMap;(NavigableMap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Maps;false;unmodifiableNavigableMap;(NavigableMap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimap;true;asMap;();;Argument[-1].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimap;true;asMap;();;Argument[-1].MapValue;ReturnValue.MapValue.Element;value",
+        "com.google.common.collect;Multimap;true;entries;();;Argument[-1].MapKey;ReturnValue.Element.MapKey;value",
+        "com.google.common.collect;Multimap;true;entries;();;Argument[-1].MapValue;ReturnValue.Element.MapValue;value",
+        "com.google.common.collect;Multimap;true;get;(Object);;Argument[-1].MapValue;ReturnValue.Element;value",
+        "com.google.common.collect;Multimap;true;keySet;();;Argument[-1].MapKey;ReturnValue.Element;value",
+        "com.google.common.collect;Multimap;true;keys;();;Argument[-1].MapKey;ReturnValue.Element;value",
+        "com.google.common.collect;Multimap;true;put;(Object,Object);;Argument[0];Argument[-1].MapKey;value",
+        "com.google.common.collect;Multimap;true;put;(Object,Object);;Argument[1];Argument[-1].MapValue;value",
+        "com.google.common.collect;Multimap;true;putAll;(Multimap);;Argument[0].MapKey;Argument[-1].MapKey;value",
+        "com.google.common.collect;Multimap;true;putAll;(Multimap);;Argument[0].MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;Multimap;true;putAll;(Object,Iterable);;Argument[0];Argument[-1].MapKey;value",
+        "com.google.common.collect;Multimap;true;putAll;(Object,Iterable);;Argument[1].Element;Argument[-1].MapValue;value",
+        "com.google.common.collect;Multimap;true;removeAll;(Object);;Argument[-1].MapValue;ReturnValue.Element;value",
+        "com.google.common.collect;Multimap;true;replaceValues;(Object,Iterable);;Argument[0];Argument[-1].MapKey;value",
+        "com.google.common.collect;Multimap;true;replaceValues;(Object,Iterable);;Argument[1].Element;Argument[-1].MapValue;value",
+        "com.google.common.collect;Multimap;true;replaceValues;(Object,Iterable);;Argument[-1].MapValue;ReturnValue.Element;value",
+        "com.google.common.collect;Multimap;true;values;();;Argument[-1].MapValue;ReturnValue.Element;value",
+        "com.google.common.collect;Multimaps;false;asMap;(ListMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;asMap;(ListMultimap);;Argument[0].MapValue;ReturnValue.MapValue.Element;value",
+        "com.google.common.collect;Multimaps;false;asMap;(Multimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;asMap;(Multimap);;Argument[0].MapValue;ReturnValue.MapValue.Element;value",
+        "com.google.common.collect;Multimaps;false;asMap;(SetMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;asMap;(SetMultimap);;Argument[0].MapValue;ReturnValue.MapValue.Element;value",
+        "com.google.common.collect;Multimaps;false;asMap;(SortedSetMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;asMap;(SortedSetMultimap);;Argument[0].MapValue;ReturnValue.MapValue.Element;value",
+        "com.google.common.collect;Multimaps;false;filterEntries;(Multimap,Predicate);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;filterEntries;(Multimap,Predicate);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;filterEntries;(SetMultimap,Predicate);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;filterEntries;(SetMultimap,Predicate);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;filterKeys;(Multimap,Predicate);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;filterKeys;(Multimap,Predicate);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;filterKeys;(SetMultimap,Predicate);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;filterKeys;(SetMultimap,Predicate);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;filterValues;(Multimap,Predicate);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;filterValues;(Multimap,Predicate);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;filterValues;(SetMultimap,Predicate);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;filterValues;(SetMultimap,Predicate);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;forMap;(Map);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;forMap;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;index;(Iterable,Function);;Argument[0].Element;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;index;(Iterator,Function);;Argument[0].Element;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;invertFrom;(Multimap,Multimap);;Argument[1];ReturnValue;value",
+        "com.google.common.collect;Multimaps;false;invertFrom;(Multimap,Multimap);;Argument[0].MapKey;Argument[1].MapValue;value",
+        "com.google.common.collect;Multimaps;false;invertFrom;(Multimap,Multimap);;Argument[0].MapValue;Argument[1].MapKey;value",
+        "com.google.common.collect;Multimaps;false;newListMultimap;(Map,Supplier);;Argument[0].MapValue.Element;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;newListMultimap;(Map,Supplier);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;newMultimap;(Map,Supplier);;Argument[0].MapValue.Element;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;newMultimap;(Map,Supplier);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;newSetMultimap;(Map,Supplier);;Argument[0].MapValue.Element;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;newSetMultimap;(Map,Supplier);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;newSortedSetMultimap;(Map,Supplier);;Argument[0].MapValue.Element;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;newSortedSetMultimap;(Map,Supplier);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;synchronizedListMultimap;(ListMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;synchronizedListMultimap;(ListMultimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;synchronizedMultimap;(Multimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;synchronizedMultimap;(Multimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;synchronizedSetMultimap;(SetMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;synchronizedSetMultimap;(SetMultimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;synchronizedSortedSetMultimap;(SortedSetMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;synchronizedSortedSetMultimap;(SortedSetMultimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;transformValues;(ListMultimap,Function);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;transformValues;(Multimap,Function);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableListMultimap;(ImmutableListMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableListMultimap;(ImmutableListMultimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableListMultimap;(ListMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableListMultimap;(ListMultimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableMultimap;(ImmutableMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableMultimap;(ImmutableMultimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableMultimap;(Multimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableMultimap;(Multimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableSetMultimap;(ImmutableSetMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableSetMultimap;(ImmutableSetMultimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableSetMultimap;(SetMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableSetMultimap;(SetMultimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableSortedSetMultimap;(SortedSetMultimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;Multimaps;false;unmodifiableSortedSetMultimap;(SortedSetMultimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Multiset$Entry;true;getElement;();;Argument[-1].Element;ReturnValue;value",
+        "com.google.common.collect;Multiset;true;add;(Object,int);;Argument[0];Argument[-1].Element;value",
+        "com.google.common.collect;Multiset;true;elementSet;();;Argument[-1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Multiset;true;entrySet;();;Argument[-1].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Multiset;true;setCount;(Object,int);;Argument[0];Argument[-1].Element;value",
+        "com.google.common.collect;Multiset;true;setCount;(Object,int,int);;Argument[0];Argument[-1].Element;value",
+        "com.google.common.collect;Multisets;false;copyHighestCountFirst;(Multiset);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Multisets;false;difference;(Multiset,Multiset);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Multisets;false;filter;(Multiset,Predicate);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Multisets;false;immutableEntry;(Object,int);;Argument[0];ReturnValue.Element;value",
+        "com.google.common.collect;Multisets;false;intersection;(Multiset,Multiset);;Argument[0..1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Multisets;false;sum;(Multiset,Multiset);;Argument[0..1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Multisets;false;union;(Multiset,Multiset);;Argument[0..1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Multisets;false;unmodifiableMultiset;(ImmutableMultiset);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Multisets;false;unmodifiableMultiset;(Multiset);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Multisets;false;unmodifiableSortedMultiset;(SortedMultiset);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;MutableClassToInstanceMap;true;create;(Map);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;MutableClassToInstanceMap;true;create;(Map);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;ObjectArrays;false;concat;(Object,Object[]);;Argument[0];ReturnValue.ArrayElement;value",
+        "com.google.common.collect;ObjectArrays;false;concat;(Object,Object[]);;Argument[1].ArrayElement;ReturnValue.ArrayElement;value",
+        "com.google.common.collect;ObjectArrays;false;concat;(Object[],Object);;Argument[1];ReturnValue.ArrayElement;value",
+        "com.google.common.collect;ObjectArrays;false;concat;(Object[],Object);;Argument[0].ArrayElement;ReturnValue.ArrayElement;value",
+        "com.google.common.collect;ObjectArrays;false;concat;(Object[],Object[],Class);;Argument[0..1].ArrayElement;ReturnValue.ArrayElement;value",
+        "com.google.common.collect;Queues;false;drain;(BlockingQueue,Collection,int,Duration);;Argument[0].Element;Argument[1].Element;value",
+        "com.google.common.collect;Queues;false;drain;(BlockingQueue,Collection,int,long,TimeUnit);;Argument[0].Element;Argument[1].Element;value",
+        "com.google.common.collect;Queues;false;newArrayDeque;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Queues;false;newConcurrentLinkedQueue;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Queues;false;newLinkedBlockingDeque;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Queues;false;newLinkedBlockingQueue;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Queues;false;newPriorityBlockingQueue;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Queues;false;newPriorityQueue;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Queues;false;synchronizedDeque;(Deque);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Queues;false;synchronizedQueue;(Queue);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets$SetView;true;copyInto;(Set);;Argument[-1].Element;Argument[0].Element;value",
+        "com.google.common.collect;Sets$SetView;true;immutableCopy;();;Argument[-1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;cartesianProduct;(List);;Argument[0].Element.Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Sets;false;cartesianProduct;(Set[]);;Argument[0].ArrayElement.Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Sets;false;combinations;(Set,int);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Sets;false;difference;(Set,Set);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;filter;(NavigableSet,Predicate);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;filter;(Set,Predicate);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;filter;(SortedSet,Predicate);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;intersection;(Set,Set);;Argument[0..1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;newConcurrentHashSet;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;newConcurrentHashSet;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;newCopyOnWriteArraySet;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;newHashSet;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;newHashSet;(Iterator);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;newHashSet;(Object[]);;Argument[0].ArrayElement;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;newLinkedHashSet;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;newSetFromMap;(Map);;Argument[0].MapKey;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;newTreeSet;(Iterable);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;powerSet;(Set);;Argument[0].Element;ReturnValue.Element.Element;value",
+        "com.google.common.collect;Sets;false;subSet;(NavigableSet,Range);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;symmetricDifference;(Set,Set);;Argument[0..1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;synchronizedNavigableSet;(NavigableSet);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;union;(Set,Set);;Argument[0..1].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Sets;false;unmodifiableNavigableSet;(NavigableSet);;Argument[0].Element;ReturnValue.Element;value",
+        "com.google.common.collect;Table$Cell;true;getColumnKey;();;Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue;value",
+        "com.google.common.collect;Table$Cell;true;getRowKey;();;Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue;value",
+        "com.google.common.collect;Table$Cell;true;getValue;();;Argument[-1].MapValue;ReturnValue;value",
+        "com.google.common.collect;Table;true;cellSet;();;Argument[-1].MapValue;ReturnValue.Element.MapValue;value",
+        "com.google.common.collect;Table;true;cellSet;();;Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.Element.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Table;true;cellSet;();;Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.Element.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;Table;true;column;(Object);;Argument[-1].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Table;true;column;(Object);;Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.MapKey;value",
+        "com.google.common.collect;Table;true;columnKeySet;();;Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.Element;value",
+        "com.google.common.collect;Table;true;columnMap;();;Argument[-1].MapValue;ReturnValue.MapValue.MapValue;value",
+        "com.google.common.collect;Table;true;columnMap;();;Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.MapKey;value",
+        "com.google.common.collect;Table;true;columnMap;();;Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.MapValue.MapKey;value",
+        "com.google.common.collect;Table;true;get;(Object,Object);;Argument[-1].MapValue;ReturnValue;value",
+        "com.google.common.collect;Table;true;put;(Object,Object,Object);;Argument[0];Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;Table;true;put;(Object,Object,Object);;Argument[1];Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Table;true;put;(Object,Object,Object);;Argument[2];Argument[-1].MapValue;value",
+        "com.google.common.collect;Table;true;putAll;(Table);;Argument[0].MapValue;Argument[-1].MapValue;value",
+        "com.google.common.collect;Table;true;putAll;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Table;true;putAll;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;Table;true;remove;(Object,Object);;Argument[-1].MapValue;ReturnValue;value",
+        "com.google.common.collect;Table;true;row;(Object);;Argument[-1].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Table;true;row;(Object);;Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.MapKey;value",
+        "com.google.common.collect;Table;true;rowKeySet;();;Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.Element;value",
+        "com.google.common.collect;Table;true;rowMap;();;Argument[-1].MapValue;ReturnValue.MapValue.MapValue;value",
+        "com.google.common.collect;Table;true;rowMap;();;Argument[-1].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.MapValue.MapKey;value",
+        "com.google.common.collect;Table;true;rowMap;();;Argument[-1].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.MapKey;value",
+        "com.google.common.collect;Table;true;values;();;Argument[-1].MapValue;ReturnValue.Element;value",
+        "com.google.common.collect;Tables;false;immutableCell;(Object,Object,Object);;Argument[0];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;Tables;false;immutableCell;(Object,Object,Object);;Argument[1];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Tables;false;immutableCell;(Object,Object,Object);;Argument[2];ReturnValue.MapValue;value",
+        "com.google.common.collect;Tables;false;newCustomTable;(Map,Supplier);;Argument[0].MapKey;ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;Tables;false;newCustomTable;(Map,Supplier);;Argument[0].MapValue.MapKey;ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Tables;false;newCustomTable;(Map,Supplier);;Argument[0].MapValue.MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Tables;false;synchronizedTable;(Table);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Tables;false;synchronizedTable;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Tables;false;synchronizedTable;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;Tables;false;transformValues;(Table,Function);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Tables;false;transformValues;(Table,Function);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;Tables;false;transpose;(Table);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Tables;false;transpose;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;Tables;false;transpose;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Tables;false;unmodifiableRowSortedTable;(RowSortedTable);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Tables;false;unmodifiableRowSortedTable;(RowSortedTable);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Tables;false;unmodifiableRowSortedTable;(RowSortedTable);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;Tables;false;unmodifiableTable;(Table);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;Tables;false;unmodifiableTable;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;Tables;false;unmodifiableTable;(Table);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;TreeBasedTable;true;create;(TreeBasedTable);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;TreeBasedTable;true;create;(TreeBasedTable);;Argument[0].SyntheticField[com.google.common.collect.Table.columnKey];ReturnValue.SyntheticField[com.google.common.collect.Table.columnKey];value",
+        "com.google.common.collect;TreeBasedTable;true;create;(TreeBasedTable);;Argument[0].SyntheticField[com.google.common.collect.Table.rowKey];ReturnValue.SyntheticField[com.google.common.collect.Table.rowKey];value",
+        "com.google.common.collect;TreeMultimap;true;create;(Multimap);;Argument[0].MapKey;ReturnValue.MapKey;value",
+        "com.google.common.collect;TreeMultimap;true;create;(Multimap);;Argument[0].MapValue;ReturnValue.MapValue;value",
+        "com.google.common.collect;TreeMultiset;true;create;(Iterable);;Argument[0].Element;ReturnValue.Element;value"
+      ]
   }
-
-  /**
-   * Gets the name of the most general superclass of this type
-   * from among `ImmutableCollection`, `ImmutableMap`, `ImmutableMultimap`, and `ImmutableTable`.
-   */
-  string getKind() { result = kind }
-}
-
-/** A nested `Builder` class of one of the various immutable container classes */
-private class ContainerBuilder extends NestedType {
-  ContainerBuilder() {
-    this.hasName("Builder") and
-    this.getEnclosingType() instanceof ImmutableContainerType
-  }
-}
-
-private class BuilderBuildMethod extends TaintPreservingCallable {
-  BuilderBuildMethod() {
-    this.getDeclaringType().getASourceSupertype*() instanceof ContainerBuilder and
-    // abstract ImmutableCollection<E> build()
-    // similar for other builder types
-    this.hasName("build")
-  }
-
-  override predicate returnsTaintFrom(int arg) { arg = -1 }
-}
-
-/** A method on a `Builder` class that adds elements to the container being built */
-private class BuilderAddMethod extends TaintPreservingCallable {
-  int argument;
-
-  BuilderAddMethod() {
-    this.getDeclaringType().getASourceSupertype*() instanceof ContainerBuilder and
-    (
-      // abstract ImmutableCollection.Builder<E> add(E element)
-      // ImmutableCollection.Builder<E> add(E... elements)
-      // ImmutableCollection.Builder<E> addAll(Iterable<? extends E> elements)
-      // ImmutableCollection.Builder<E> addAll(Iterator<? extends E> elements)
-      // ImmutableMultiset.Builder<E> addCopies(E element, int occurrences)
-      // ImmutableMultiset.Builder<E> setCount(E element, int count)
-      this.hasName(["add", "addAll", "addCopies", "setCount"]) and
-      argument = 0
-      or
-      // ImmutableMap.Builder<K,V> put(K key, V value)
-      // ImmutableMap.Builder<K,V> put(Map.Entry<? extends K,? extends V> entry)
-      // ImmutableMap.Builder<K,V> putAll(Map<? extends K,? extends V> map)
-      // ImmutableMap.Builder<K,V> putAll(Iterable<? extends Map.Entry<? extends K,? extends V>> entries)
-      // ImmutableMultimap.Builder<K,V> put(K key, V value)
-      // ImmutableMultimap.Builder<K,V> put(Map.Entry<? extends K,? extends V> entry)
-      // ImmutableMultimap.Builder<K,V> putAll(Iterable<? extends Map.Entry<? extends K,? extends V>> entries)
-      // ImmutableMultimap.Builder<K,V> putAll(K key, Iterable<? extends V> values)
-      // ImmutableMultimap.Builder<K,V> putAll(K key, V... values)
-      // ImmutableMultimap.Builder<K,V> putAll(Multimap<? extends K,? extends V> multimap)
-      // ImmutableTable.Builder<R,C,V> put(R rowKey, C columnKey, V value)
-      // ImmutableTable.Builder<R,C,V> put(Table.Cell<? extends R,? extends C,? extends V> cell)
-      // ImmutableTable.Builder<R,C,V> putAll(Table<? extends R,? extends C,? extends V> table)
-      this.hasName(["put", "putAll"]) and
-      argument = getNumberOfParameters() - 1
-    )
-  }
-
-  override predicate returnsTaintFrom(int arg) { arg = [-1, argument] }
-
-  override predicate transfersTaint(int src, int sink) { src = argument and sink = -1 }
-}
-
-/**
- * In a chained call `b.add(x).add(y).add(z)`, represents a flow step from the return value of
- * this expression to the post update node of `b` (valid because the builder add methods return their qualifier).
- * This is sufficient to express flow from `y` and `z` to `b`.
- */
-private class ChainedBuilderAddStep extends AdditionalTaintStep {
-  override predicate step(DataFlow::Node src, DataFlow::Node sink) {
-    exists(MethodAccess ma |
-      ma.getMethod() instanceof BuilderAddMethod and
-      src.asExpr() = ma and
-      chainedBuilderMethod+(sink.(DataFlow::PostUpdateNode).getPreUpdateNode().asExpr()) = ma
-    )
-  }
-}
-
-private MethodAccess chainedBuilderMethod(Expr e) {
-  result.getQualifier() = e and
-  result.getMethod() instanceof BuilderAddMethod
 }
 
 /**
@@ -124,39 +597,6 @@ class MultimapType extends RefType {
       indirectlyInstantiates(this, map, 1, result)
     )
   }
-}
-
-private class MultimapWriteMethod extends TaintPreservingCallable {
-  MultimapWriteMethod() {
-    this.getDeclaringType() instanceof MultimapType and
-    // boolean put(K key, V value)
-    // boolean putAll(K key, Iterable<? extends V> values)
-    // boolean putAll(Multimap<? extends K,? extends V> multimap)
-    // Collection<V> replaceValues(K key, Iterable<? extends V> values)
-    this.hasName(["put", "putAll", "replaceValues"])
-  }
-
-  override predicate transfersTaint(int src, int sink) {
-    src = getNumberOfParameters() - 1 and
-    sink = -1
-  }
-}
-
-private class MultimapReadMethod extends TaintPreservingCallable {
-  MultimapReadMethod() {
-    this.getDeclaringType() instanceof MultimapType and
-    // Collection<V> replaceValues(K key, Iterable<? extends V> values)
-    // Collection<V> removeAll(@CompatibleWith("K") Object key)
-    // Collection<V> get(K key)
-    // Collection<V> values()
-    // Collection<Map.Entry<K,V>> entries()
-    // Map<K,Collection<V>> asMap()
-    this.hasName(["replaceValues", "removeAll", "get", "values", "entries", "asMap"])
-  }
-
-  override predicate returnsTaintFrom(int arg) { arg = -1 }
-  // Not implemented: Some of these methods return "views", which when modified will modify the map itself.
-  // However, taint flow from these views to the map is not implemented.
 }
 
 /**
@@ -189,172 +629,4 @@ class TableType extends RefType {
       indirectlyInstantiates(this, table, 2, result)
     )
   }
-}
-
-private class TableWriteMethod extends TaintPreservingCallable {
-  TableWriteMethod() {
-    this.getDeclaringType() instanceof TableType and
-    // V put(R rowKey, C columnKey, V value)
-    // void putAll(Table<? extends R,? extends C,? extends V> table)
-    this.hasName(["put", "putAll"])
-  }
-
-  override predicate transfersTaint(int src, int sink) {
-    src = getNumberOfParameters() - 1 and
-    sink = -1
-  }
-}
-
-private class TableReadMethod extends TaintPreservingCallable {
-  TableReadMethod() {
-    this.getDeclaringType() instanceof TableType and
-    // V put(R rowKey, C columnKey, V value)
-    // V remove(@CompatibleWith("R") Object rowKey, @CompatibleWith("C") Object columnKey)
-    // V get(@CompatibleWith("R") Object rowKey, @CompatibleWith("C") Object columnKey)
-    // Map<C,V> row(R rowKey)
-    // Map<R,V> column(C columnKey)
-    // Set<Table.Cell<R,C,V>> cellSet()
-    // Collection<V> values()
-    // Map<R,Map<C,V>> rowMap()
-    // Map<C,Map<R,V>> columnMap()
-    this.hasName([
-        "put", "remove", "get", "row", "column", "cellSet", "values", "rowMap", "columnMap"
-      ])
-  }
-
-  override predicate returnsTaintFrom(int arg) { arg = -1 }
-  // Not implemented: Some of these methods return "views", which when modified will modify the table itself.
-  // However, taint flow from these views to the table is not implemented.
-}
-
-private class TableCellReadMethod extends TaintPreservingCallable {
-  TableCellReadMethod() {
-    exists(NestedType cell |
-      cell.getEnclosingType() instanceof TableType and
-      cell.hasName("Cell") and
-      this.getDeclaringType().getSourceDeclaration().getASourceSupertype*() = cell and
-      // V getValue()
-      this.hasName("getValue")
-    )
-  }
-
-  override predicate returnsTaintFrom(int arg) { arg = -1 }
-}
-
-/**
- * An `of` static method on the various immutable container types.
- */
-private class OfMethod extends TaintPreservingCallable {
-  string kind;
-
-  OfMethod() {
-    this.getDeclaringType().(ImmutableContainerType).getKind() = kind and
-    // static <E> ImmutableList<E> of(E e1, E e2, E e3, E e4, E e5, E e6)
-    // static <K,V> ImmutableMap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4)
-    // static <K,V> ImmutableMultimap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4)
-    // static <R,C,V> ImmutableTable<R,C,V> of(R rowKey, C columnKey, V value)
-    // etc for other types and numbers of parameters
-    this.hasName("of") and
-    this.isStatic()
-  }
-
-  override predicate returnsTaintFrom(int arg) {
-    arg = [0 .. getNumberOfParameters()] and
-    (kind.regexpMatch(".*[Mm]ap") implies arg % 2 = 1) and
-    (kind = "ImmutableTable" implies arg % 3 = 2)
-  }
-}
-
-private class ComparatorType extends RefType {
-  ComparatorType() { this.getASourceSupertype*().hasQualifiedName("java.util", "Comparator") }
-}
-
-/**
- * A `copyOf`, `sortedCopyOf`, or `copyOfSorted` static method on the various immutable container types.
- */
-private class CopyOfMethod extends TaintPreservingCallable {
-  CopyOfMethod() {
-    this.getDeclaringType() instanceof ImmutableContainerType and
-    // static <E> ImmutableList<E> copyOf(E[] elements)
-    // static <E> ImmutableList<E> copyOf(Iterable<? extends E> elements)
-    // static <E> ImmutableList<E> copyOf(Collection<? extends E> elements)
-    // static <E> ImmutableList<E> copyOf(Iterator<? extends E> elements)
-    // static <E extends Comparable<? super E>> ImmutableList<E> sortedCopyOf(Iterable<? extends E> elements)
-    // static <E> ImmutableList<E> sortedCopyOf(Comparator<? super E> comparator, Iterable<? extends E> elements)
-    // static <K,V> ImmutableMap<K,V> copyOf(Map<? extends K,? extends V> map)
-    // static <K,V> ImmutableMap<K,V> copyOf(Iterable<? extends Map.Entry<? extends K,? extends V>> entries)
-    // static <K,V> ImmutableMultimap<K,V> copyOf(Multimap<? extends K,? extends V> multimap)
-    // static <K,V> ImmutableMultimap<K,V> copyOf(Iterable<? extends Map.Entry<? extends K,? extends V>> entries)
-    // static <R,C,V> ImmutableTable<R,C,V> copyOf(Table<? extends R,? extends C,? extends V> table)
-    // static <K, V> ImmutableSortedMap<K, V> copyOf(Map<? extends K, ? extends V> map)
-    // static <K, V> ImmutableSortedMap<K, V> copyOf(Map<? extends K, ? extends V> map, Comparator<? super K> comparator)
-    // static <K, V> ImmutableSortedMap<K, V> copyOfSorted(SortedMap<K, ? extends V> map)
-    // static <E> ImmutableSortedSet<E> copyOf(Iterator<? extends E> elements)
-    // static <E> ImmutableSortedSet<E> copyOf(Comparator<? super E> comparator, Iterator<? extends E> elements)
-    // static <E> ImmutableSortedSet<E> copyOfSorted(SortedSet<E> sortedSet)
-    // etc
-    this.hasName(["copyOf", "sortedCopyOf", "copyOfSorted"]) and
-    this.isStatic()
-  }
-
-  override predicate returnsTaintFrom(int arg) {
-    arg = [0 .. getNumberOfParameters()] and
-    not getParameterType(arg) instanceof ComparatorType
-  }
-}
-
-private class CollectionAsListMethod extends TaintPreservingCallable {
-  CollectionAsListMethod() {
-    this.getDeclaringType()
-        .getASourceSupertype*()
-        .hasQualifiedName(guavaCollectPackage(), "ImmutableCollection") and
-    // public ImmutableList<E> asList()
-    this.hasName("asList")
-  }
-
-  override predicate returnsTaintFrom(int arg) { arg = -1 }
-}
-
-/**
- * A taint-preserving static method of `com.google.common.collect.Sets`.
- */
-private class SetsMethod extends TaintPreservingCallable {
-  int arg;
-
-  SetsMethod() {
-    this.getDeclaringType().hasQualifiedName(guavaCollectPackage(), "Sets") and
-    this.isStatic() and
-    (
-      // static <E> HashSet<E> newHashSet(E... elements)
-      // static <E> Set<E> newConcurrentHashSet(Iterable<? extends E> elements)
-      // static <E> CopyOnWriteArraySet<E> newCopyOnWriteArraySet(Iterable<? extends E> elements)
-      // etc
-      this.getName().matches("new%Set") and
-      arg = 0
-      or
-      // static <B> Set<List<B>> cartesianProduct(List<? extends Set<? extends B>> sets)
-      // static <B> Set<List<B>> cartesianProduct(Set<? extends B>... sets)
-      // static <E> Set<Set<E>> combinations(Set<E> set, int size)
-      // static <E> Sets.SetView<E> difference(Set<E> set1, Set<?> set2)
-      // static <E> NavigableSet<E> filter(NavigableSet<E> unfiltered, Predicate<? super E> predicate)
-      // static <E> Set<E> filter(Set<E> unfiltered, Predicate<? super E> predicate)
-      // static <E> SortedSet<E> filter(SortedSet<E> unfiltered, Predicate<? super E> predicate)
-      // static <E> Set<Set<E>> powerSet(Set<E> set)
-      // static <K extends Comparable<? super K>> NavigableSet<K> subSet(NavigableSet<K> set, Range<K> range)
-      // static <E> NavigableSet<E> synchronizedNavigableSet(NavigableSet<E> navigableSet)
-      // static <E> NavigableSet<E> unmodifiableNavigableSet(NavigableSet<E> set)
-      this.hasName([
-          "cartesianProduct", "combinations", "difference", "filter", "powerSet", "subSet",
-          "synchronizedNavigableSet", "unmodifyableNavigableSet"
-        ]) and
-      arg = 0
-      or
-      // static <E> Sets.SetView<E> symmetricDifference(Set<? extends E> set1, Set<? extends E> set2)
-      // static <E> Sets.SetView<E> union(Set<? extends E> set1, Set<? extends E> set2)
-      this.hasName(["symmetricDifference", "union"]) and
-      arg = [0, 1]
-    )
-  }
-
-  override predicate returnsTaintFrom(int arg_) { arg_ = arg }
 }

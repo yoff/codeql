@@ -74,12 +74,14 @@ private module ThisFlow {
  * Holds if data can flow from `node1` to `node2` in zero or more
  * local (intra-procedural) steps.
  */
+pragma[inline]
 predicate localFlow(Node node1, Node node2) { localFlowStep*(node1, node2) }
 
 /**
  * Holds if data can flow from `e1` to `e2` in zero or more
  * local (intra-procedural) steps.
  */
+pragma[inline]
 predicate localExprFlow(Expr e1, Expr e2) { localFlow(exprNode(e1), exprNode(e2)) }
 
 /**
@@ -100,6 +102,8 @@ predicate hasNonlocalValue(FieldRead fr) {
  */
 predicate localFlowStep(Node node1, Node node2) {
   simpleLocalFlowStep(node1, node2)
+  or
+  adjacentUseUse(node1.asExpr(), node2.asExpr())
   or
   // Simple flow through library code is included in the exposed local
   // step relation, even though flow is technically inter-procedural
@@ -131,7 +135,8 @@ predicate simpleLocalFlowStep(Node node1, Node node2) {
   adjacentUseUse(node1.asExpr(), node2.asExpr()) and
   not exists(FieldRead fr |
     hasNonlocalValue(fr) and fr.getField().isStatic() and fr = node1.asExpr()
-  )
+  ) and
+  not FlowSummaryImpl::Private::Steps::prohibitsUseUseFlow(node1)
   or
   ThisFlow::adjacentThisRefs(node1, node2)
   or
@@ -139,7 +144,7 @@ predicate simpleLocalFlowStep(Node node1, Node node2) {
   or
   ThisFlow::adjacentThisRefs(node1.(PostUpdateNode).getPreUpdateNode(), node2)
   or
-  node2.asExpr().(CastExpr).getExpr() = node1.asExpr()
+  node2.asExpr().(CastingExpr).getExpr() = node1.asExpr()
   or
   node2.asExpr().(ChooseExpr).getAResultExpr() = node1.asExpr()
   or
@@ -147,14 +152,24 @@ predicate simpleLocalFlowStep(Node node1, Node node2) {
   or
   node2.asExpr().(ArrayCreationExpr).getInit() = node1.asExpr()
   or
+  node2.asExpr() = any(StmtExpr stmtExpr | node1.asExpr() = stmtExpr.getResultExpr())
+  or
+  node2.asExpr() = any(NotNullExpr nne | node1.asExpr() = nne.getExpr())
+  or
+  node2.asExpr().(WhenExpr).getBranch(_).getAResult() = node1.asExpr()
+  or
   exists(MethodAccess ma, ValuePreservingMethod m, int argNo |
     ma.getCallee().getSourceDeclaration() = m and m.returnsValue(argNo)
   |
     node2.asExpr() = ma and
-    node1.(ArgumentNode).argumentOf(ma, argNo)
+    node1.(ArgumentNode).argumentOf(any(DataFlowCall c | c.asCall() = ma), argNo)
   )
   or
   FlowSummaryImpl::Private::Steps::summaryLocalStep(node1, node2, true)
+  or
+  any(AdditionalValueStep a).step(node1, node2) and
+  pragma[only_bind_out](node1.getEnclosingCallable()) =
+    pragma[only_bind_out](node2.getEnclosingCallable())
 }
 
 private newtype TContent =
@@ -182,7 +197,7 @@ class Content extends TContent {
    * The location spans column `startcolumn` of line `startline` to
    * column `endcolumn` of line `endline` in file `filepath`.
    * For more information, see
-   * [Locations](https://help.semmle.com/QL/learn-ql/ql/locations.html).
+   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
    */
   predicate hasLocationInfo(string path, int sl, int sc, int el, int ec) {
     path = "" and sl = 0 and sc = 0 and el = 0 and ec = 0
@@ -245,6 +260,34 @@ class SyntheticFieldContent extends Content, TSyntheticFieldContent {
   override DataFlowType getType() { result = getErasedRepr(s.getType()) }
 
   override string toString() { result = s.toString() }
+}
+
+/**
+ * An entity that represents a set of `Content`s.
+ *
+ * The set may be interpreted differently depending on whether it is
+ * stored into (`getAStoreContent`) or read from (`getAReadContent`).
+ */
+class ContentSet instanceof Content {
+  /** Gets a content that may be stored into when storing into this set. */
+  Content getAStoreContent() { result = this }
+
+  /** Gets a content that may be read from when reading from this set. */
+  Content getAReadContent() { result = this }
+
+  /** Gets a textual representation of this content set. */
+  string toString() { result = super.toString() }
+
+  /**
+   * Holds if this element is at the specified location.
+   * The location spans column `startcolumn` of line `startline` to
+   * column `endcolumn` of line `endline` in file `filepath`.
+   * For more information, see
+   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
+   */
+  predicate hasLocationInfo(string path, int sl, int sc, int el, int ec) {
+    super.hasLocationInfo(path, sl, sc, el, ec)
+  }
 }
 
 /**

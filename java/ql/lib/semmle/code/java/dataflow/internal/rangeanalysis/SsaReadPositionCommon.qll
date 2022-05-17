@@ -3,6 +3,7 @@
  */
 
 private import SsaReadPositionSpecific
+import SsaReadPositionSpecific::Public
 
 private newtype TSsaReadPosition =
   TSsaReadPositionBlock(BasicBlock bb) { bb = getAReadBasicBlock(_) } or
@@ -28,7 +29,7 @@ class SsaReadPositionBlock extends SsaReadPosition, TSsaReadPositionBlock {
   /** Gets the basic block corresponding to this position. */
   BasicBlock getBlock() { this = TSsaReadPositionBlock(result) }
 
-  override predicate hasReadOfVar(SsaVariable v) { getBlock() = getAReadBasicBlock(v) }
+  override predicate hasReadOfVar(SsaVariable v) { this.getBlock() = getAReadBasicBlock(v) }
 
   override string toString() { result = "block" }
 }
@@ -49,9 +50,16 @@ class SsaReadPositionPhiInputEdge extends SsaReadPosition, TSsaReadPositionPhiIn
 
   /** Holds if `inp` is an input to `phi` along this edge. */
   predicate phiInput(SsaPhiNode phi, SsaVariable inp) {
-    phi.hasInputFromBlock(inp, getOrigBlock()) and
-    getPhiBlock() = phi.getBasicBlock()
+    phi.hasInputFromBlock(inp, this.getOrigBlock()) and
+    this.getPhiBlock() = phi.getBasicBlock()
   }
 
   override string toString() { result = "edge" }
+}
+
+/**
+ * Holds if `rix` is the number of input edges to `phi`.
+ */
+predicate maxPhiInputRank(SsaPhiNode phi, int rix) {
+  rix = max(int r | rankedPhiInput(phi, _, _, r))
 }

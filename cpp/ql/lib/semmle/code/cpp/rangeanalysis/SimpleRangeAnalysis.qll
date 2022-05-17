@@ -127,17 +127,22 @@ private string getValue(Expr e) {
 private class UnsignedBitwiseAndExpr extends BitwiseAndExpr {
   UnsignedBitwiseAndExpr() {
     (
-      getLeftOperand().getFullyConverted().getType().getUnderlyingType().(IntegralType).isUnsigned() or
-      getValue(getLeftOperand().getFullyConverted()).toInt() >= 0
-    ) and
-    (
-      getRightOperand()
+      this.getLeftOperand()
           .getFullyConverted()
           .getType()
           .getUnderlyingType()
           .(IntegralType)
           .isUnsigned() or
-      getValue(getRightOperand().getFullyConverted()).toInt() >= 0
+      getValue(this.getLeftOperand().getFullyConverted()).toInt() >= 0
+    ) and
+    (
+      this.getRightOperand()
+          .getFullyConverted()
+          .getType()
+          .getUnderlyingType()
+          .(IntegralType)
+          .isUnsigned() or
+      getValue(this.getRightOperand().getFullyConverted()).toInt() >= 0
     )
   }
 }
@@ -433,10 +438,7 @@ private predicate exprDependsOnDef(Expr e, RangeSsaDefinition srcDef, StackVaria
 private predicate phiDependsOnDef(
   RangeSsaDefinition phi, StackVariable v, RangeSsaDefinition srcDef, StackVariable srcVar
 ) {
-  exists(VariableAccess access, Expr guard |
-    access = v.getAnAccess() and
-    phi.isGuardPhi(access, guard, _)
-  |
+  exists(VariableAccess access, Expr guard | phi.isGuardPhi(v, access, guard, _) |
     exprDependsOnDef(guard.(ComparisonOperation).getAnOperand(), srcDef, srcVar) or
     exprDependsOnDef(access, srcDef, srcVar)
   )
@@ -702,24 +704,6 @@ private float getTruncatedUpperBounds(Expr expr) {
     // need to return results for non-arithmetic expressions.
     result = exprMaxVal(expr)
 }
-
-/**
- * Holds if the expression might overflow negatively. This predicate
- * does not consider the possibility that the expression might overflow
- * due to a conversion.
- *
- * DEPRECATED: use `exprMightOverflowNegatively` instead.
- */
-deprecated predicate negative_overflow(Expr expr) { exprMightOverflowNegatively(expr) }
-
-/**
- * Holds if the expression might overflow positively. This predicate
- * does not consider the possibility that the expression might overflow
- * due to a conversion.
- *
- * DEPRECATED: use `exprMightOverflowPositively` instead.
- */
-deprecated predicate positive_overflow(Expr expr) { exprMightOverflowPositively(expr) }
 
 /** Only to be called by `getTruncatedLowerBounds`. */
 private float getLowerBoundsImpl(Expr expr) {
@@ -1204,8 +1188,7 @@ private float boolConversionUpperBound(Expr expr) {
  */
 private float getPhiLowerBounds(StackVariable v, RangeSsaDefinition phi) {
   exists(VariableAccess access, Expr guard, boolean branch, float defLB, float guardLB |
-    access = v.getAnAccess() and
-    phi.isGuardPhi(access, guard, branch) and
+    phi.isGuardPhi(v, access, guard, branch) and
     lowerBoundFromGuard(guard, access, guardLB, branch) and
     defLB = getFullyConvertedLowerBounds(access)
   |
@@ -1230,8 +1213,7 @@ private float getPhiLowerBounds(StackVariable v, RangeSsaDefinition phi) {
 /** See comment for `getPhiLowerBounds`, above. */
 private float getPhiUpperBounds(StackVariable v, RangeSsaDefinition phi) {
   exists(VariableAccess access, Expr guard, boolean branch, float defUB, float guardUB |
-    access = v.getAnAccess() and
-    phi.isGuardPhi(access, guard, branch) and
+    phi.isGuardPhi(v, access, guard, branch) and
     upperBoundFromGuard(guard, access, guardUB, branch) and
     defUB = getFullyConvertedUpperBounds(access)
   |
@@ -1493,8 +1475,7 @@ private predicate isNEPhi(
   exists(
     ComparisonOperation cmp, boolean branch, Expr linearExpr, Expr rExpr, float p, float q, float r
   |
-    access.getTarget() = v and
-    phi.isGuardPhi(access, cmp, branch) and
+    phi.isGuardPhi(v, access, cmp, branch) and
     eqOpWithSwapAndNegate(cmp, linearExpr, rExpr, false, branch) and
     v.getUnspecifiedType() instanceof IntegralOrEnumType and // Float `!=` is too imprecise
     r = getValue(rExpr).toFloat() and
@@ -1503,8 +1484,7 @@ private predicate isNEPhi(
   )
   or
   exists(Expr op, boolean branch, Expr linearExpr, float p, float q |
-    access.getTarget() = v and
-    phi.isGuardPhi(access, op, branch) and
+    phi.isGuardPhi(v, access, op, branch) and
     eqZeroWithNegate(op, linearExpr, false, branch) and
     v.getUnspecifiedType() instanceof IntegralOrEnumType and // Float `!` is too imprecise
     linearAccess(linearExpr, access, p, q) and
@@ -1524,9 +1504,32 @@ private predicate isUnsupportedGuardPhi(Variable v, RangeSsaDefinition phi, Vari
     or
     eqZeroWithNegate(cmp, _, false, branch)
   |
-    access.getTarget() = v and
-    phi.isGuardPhi(access, cmp, branch) and
+    phi.isGuardPhi(v, access, cmp, branch) and
     not isNEPhi(v, phi, access, _)
+  )
+}
+
+/**
+ * Gets the upper bound of the expression, if the expression is guarded.
+ * An upper bound can only be found, if a guard phi node can be found, and the
+ * expression has only one immediate predecessor.
+ */
+private float getGuardedUpperBound(VariableAccess guardedAccess) {
+  exists(
+    RangeSsaDefinition def, StackVariable v, VariableAccess guardVa, Expr guard, boolean branch
+  |
+    def.isGuardPhi(v, guardVa, guard, branch) and
+    // If the basic block for the variable access being examined has
+    // more than one predecessor, the guard phi node could originate
+    // from one of the predecessors. This is because the guard phi
+    // node is attached to the block at the end of the edge and not on
+    // the actual edge. It is therefore not possible to determine which
+    // edge the guard phi node belongs to. The predicate below ensures
+    // that there is one predecessor, albeit somewhat conservative.
+    exists(unique(BasicBlock b | b = def.(BasicBlock).getAPredecessor())) and
+    guardedAccess = def.getAUse(v) and
+    result = max(float ub | upperBoundFromGuard(guard, guardVa, ub, branch)) and
+    not convertedExprMightOverflow(guard.getAChild+())
   )
 }
 
@@ -1565,9 +1568,18 @@ private module SimpleRangeAnalysisCached {
    */
   cached
   float upperBound(Expr expr) {
-    // Combine the upper bounds returned by getTruncatedUpperBounds into a
-    // single maximum value.
-    result = max(float ub | ub = getTruncatedUpperBounds(expr) | ub)
+    // Combine the upper bounds returned by getTruncatedUpperBounds and
+    // getGuardedUpperBound into a single maximum value
+    result = min([max(getTruncatedUpperBounds(expr)), getGuardedUpperBound(expr)])
+  }
+
+  /** Holds if the upper bound of `expr` may have been widened. This means the the upper bound is in practice likely to be overly wide. */
+  cached
+  predicate upperBoundMayBeWidened(Expr e) {
+    isRecursiveExpr(e) and
+    // Widening is not a problem if the post-analysis in `getGuardedUpperBound` has overridden the widening.
+    // Note that the RHS of `<` may be multi-valued.
+    not getGuardedUpperBound(e) < getTruncatedUpperBounds(e)
   }
 
   /**
@@ -1790,5 +1802,3 @@ module SimpleRangeAnalysisInternal {
     defMightOverflowNegatively(def, v) and result = varMaxVal(v)
   }
 }
-
-private import SimpleRangeAnalysisInternal

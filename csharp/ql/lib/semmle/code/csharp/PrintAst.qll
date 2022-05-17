@@ -171,7 +171,7 @@ class PrintAstNode extends TPrintAstNode {
   /**
    * Gets a child of this node.
    */
-  final PrintAstNode getAChild() { result = getChild(_) }
+  final PrintAstNode getAChild() { result = this.getChild(_) }
 
   /**
    * Gets the parent of this node, if any.
@@ -189,7 +189,7 @@ class PrintAstNode extends TPrintAstNode {
    */
   string getProperty(string key) {
     key = "semmle.label" and
-    result = toString()
+    result = this.toString()
   }
 
   /**
@@ -198,7 +198,7 @@ class PrintAstNode extends TPrintAstNode {
    * this.
    */
   string getChildEdgeLabel(int childIndex) {
-    exists(getChild(childIndex)) and
+    exists(this.getChild(childIndex)) and
     result = childIndex.toString()
   }
 }
@@ -265,7 +265,7 @@ class TypeMentionNode extends PrintAstNode, TTypeMentionNode {
   final TypeMention getTypeMention() { result = typeMention }
 
   /**
-   * Gets the `Element` targetted by the `TypeMention`.
+   * Gets the `Element` targeted by the `TypeMention`.
    */
   final Element getTarget() { result = typeMention.getTarget() }
 

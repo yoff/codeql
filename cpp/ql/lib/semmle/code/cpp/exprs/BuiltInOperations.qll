@@ -35,12 +35,12 @@ class BuiltInVarArgsStart extends VarArgsExpr, @vastartexpr {
   /**
    * Gets the `va_list` argument.
    */
-  final Expr getVAList() { result = getChild(0) }
+  final Expr getVAList() { result = this.getChild(0) }
 
   /**
    * Gets the argument that specifies the last named parameter before the ellipsis.
    */
-  final VariableAccess getLastNamedParameter() { result = getChild(1) }
+  final VariableAccess getLastNamedParameter() { result = this.getChild(1) }
 }
 
 /**
@@ -60,7 +60,7 @@ class BuiltInVarArgsEnd extends VarArgsExpr, @vaendexpr {
   /**
    * Gets the `va_list` argument.
    */
-  final Expr getVAList() { result = getChild(0) }
+  final Expr getVAList() { result = this.getChild(0) }
 }
 
 /**
@@ -78,7 +78,7 @@ class BuiltInVarArg extends VarArgsExpr, @vaargexpr {
   /**
    * Gets the `va_list` argument.
    */
-  final Expr getVAList() { result = getChild(0) }
+  final Expr getVAList() { result = this.getChild(0) }
 }
 
 /**
@@ -98,12 +98,12 @@ class BuiltInVarArgCopy extends VarArgsExpr, @vacopyexpr {
   /**
    * Gets the destination `va_list` argument.
    */
-  final Expr getDestinationVAList() { result = getChild(0) }
+  final Expr getDestinationVAList() { result = this.getChild(0) }
 
   /**
    * Gets the the source `va_list` argument.
    */
-  final Expr getSourceVAList() { result = getChild(1) }
+  final Expr getSourceVAList() { result = this.getChild(1) }
 }
 
 /**
@@ -117,11 +117,6 @@ class BuiltInNoOp extends BuiltInOperation, @noopexpr {
 
   override string getAPrimaryQlClass() { result = "BuiltInNoOp" }
 }
-
-/**
- * DEPRECATED: Use `BuiltInOperationBuiltInOffsetOf` instead.
- */
-deprecated class BuiltInOperationOffsetOf = BuiltInOperationBuiltInOffsetOf;
 
 /**
  * A C/C++ `__builtin_offsetof` built-in operation (used by some implementations
@@ -464,11 +459,6 @@ class BuiltInOperationIsUnion extends BuiltInOperation, @isunionexpr {
 
   override string getAPrimaryQlClass() { result = "BuiltInOperationIsUnion" }
 }
-
-/**
- * DEPRECATED: Use `BuiltInOperationBuiltInTypesCompatibleP` instead.
- */
-deprecated class BuiltInOperationBuiltInTypes = BuiltInOperationBuiltInTypesCompatibleP;
 
 /**
  * A C++ `__builtin_types_compatible_p` built-in operation (used by some

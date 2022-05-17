@@ -2,10 +2,10 @@
  * Provides Java-specific definitions for use in sign analysis.
  */
 module Private {
+  private import java as J
   import semmle.code.java.dataflow.RangeUtils as RU
   private import semmle.code.java.dataflow.SSA as Ssa
   private import semmle.code.java.controlflow.Guards as G
-  private import java as J
   private import Sign
   import Impl
 
@@ -27,7 +27,7 @@ module Private {
 
   class LongLiteral = J::LongLiteral;
 
-  class CastExpr extends J::CastExpr {
+  class CastingExpr extends J::CastingExpr {
     /** Gets the source type of this cast. */
     J::Type getSourceType() { result = this.getExpr().getType() }
   }
@@ -49,7 +49,7 @@ module Private {
   /** Class to represent float and double literals. */
   class RealLiteral extends J::Literal {
     RealLiteral() {
-      this instanceof J::FloatingPointLiteral or
+      this instanceof J::FloatLiteral or
       this instanceof J::DoubleLiteral
     }
   }
@@ -191,7 +191,7 @@ private module Impl {
   /** Gets the constant `float` value of non-`ConstantIntegerExpr` expressions. */
   float getNonIntegerValue(Expr e) {
     result = e.(LongLiteral).getValue().toFloat() or
-    result = e.(FloatingPointLiteral).getValue().toFloat() or
+    result = e.(FloatLiteral).getValue().toFloat() or
     result = e.(DoubleLiteral).getValue().toFloat()
   }
 
@@ -307,7 +307,7 @@ private module Impl {
     result = e.(PostIncExpr).getExpr() or
     result = e.(PostDecExpr).getExpr() or
     result = e.(ChooseExpr).getAResultExpr() or
-    result = e.(CastExpr).getExpr()
+    result = e.(CastingExpr).getExpr()
   }
 
   Expr getARead(SsaVariable v) { result = v.getAUse() }

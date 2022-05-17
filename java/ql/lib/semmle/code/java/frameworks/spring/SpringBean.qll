@@ -12,11 +12,11 @@ import semmle.code.java.frameworks.spring.SpringReplacedMethod
  */
 
 /** A `<bean>` element in a Spring XML file. */
-class SpringBean extends SpringXMLElement {
+class SpringBean extends SpringXmlElement {
   SpringBean() {
     this.getName() = "bean" and
     // Do not capture Camel beans, which are different
-    not getNamespace().getURI() = "http://camel.apache.org/schema/spring"
+    not this.getNamespace().getURI() = "http://camel.apache.org/schema/spring"
   }
 
   override string toString() { result = this.getBeanIdentifier() }
@@ -233,7 +233,7 @@ class SpringBean extends SpringXMLElement {
   SpringBean getBeanParent() { result.getBeanIdentifier() = this.getBeanParentName() }
 
   /** Holds if this bean has a parent bean. */
-  predicate hasBeanParent() { exists(SpringBean b | b = this.getBeanParent()) }
+  predicate hasBeanParent() { exists(this.getBeanParent()) }
 
   predicate hasBeanAncestor(SpringBean ancestor) {
     ancestor = this.getBeanParent() or
@@ -268,7 +268,7 @@ class SpringBean extends SpringXMLElement {
   /**
    * Holds if this bean element has the same bean identifier as `other`.
    */
-  override predicate isSimilar(SpringXMLElement other) {
+  override predicate isSimilar(SpringXmlElement other) {
     this.getBeanIdentifier() = other.(SpringBean).getBeanIdentifier()
   }
 
@@ -383,7 +383,7 @@ class SpringBean extends SpringXMLElement {
       // If a factory bean is specified, use that, otherwise use the current bean.
       (
         if exists(this.getFactoryBeanName())
-        then result.getDeclaringType() = getFactoryBean().getClass()
+        then result.getDeclaringType() = this.getFactoryBean().getClass()
         else (
           result.getDeclaringType() = this.getClass() and
           // Must be static because we don't yet have an instance.
@@ -400,9 +400,9 @@ class SpringBean extends SpringXMLElement {
    * the bean identifier if no qualifier is specified.
    */
   string getQualifierValue() {
-    if exists(getQualifier())
-    then result = getQualifier().getQualifierValue()
-    else result = getBeanIdentifier()
+    if exists(this.getQualifier())
+    then result = this.getQualifier().getQualifierValue()
+    else result = this.getBeanIdentifier()
   }
 
   /**

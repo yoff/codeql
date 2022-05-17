@@ -7,6 +7,10 @@ private import semmle.python.regex
  * An element containing a regular expression term, that is, either
  * a string literal (parsed as a regular expression)
  * or another regular expression term.
+ *
+ * For sequences and alternations, we require at least one child.
+ * Otherwise, we wish to represent the term differently.
+ * This avoids multiple representations of the same term.
  */
 newtype TRegExpParent =
   /** A string literal used as a regular expression */
@@ -14,9 +18,18 @@ newtype TRegExpParent =
   /** A quantified term */
   TRegExpQuantifier(Regex re, int start, int end) { re.qualifiedItem(start, end, _, _) } or
   /** A sequence term */
-  TRegExpSequence(Regex re, int start, int end) { re.sequence(start, end) } or
-  /** An alternatio term */
-  TRegExpAlt(Regex re, int start, int end) { re.alternation(start, end) } or
+  TRegExpSequence(Regex re, int start, int end) {
+    re.sequence(start, end) and
+    exists(seqChild(re, start, end, 1)) // if a sequence does not have more than one element, it should be treated as that element instead.
+  } or
+  /** An alternation term */
+  TRegExpAlt(Regex re, int start, int end) {
+    re.alternation(start, end) and
+    exists(int part_end |
+      re.alternationOption(start, end, start, part_end) and
+      part_end < end
+    ) // if an alternation does not have more than one element, it should be treated as that element instead.
+  } or
   /** A character class term */
   TRegExpCharacterClass(Regex re, int start, int end) { re.charSet(start, end) } or
   /** A character range term */
@@ -26,7 +39,12 @@ newtype TRegExpParent =
   /** A special character */
   TRegExpSpecialChar(Regex re, int start, int end) { re.specialCharacter(start, end, _) } or
   /** A normal character */
-  TRegExpNormalChar(Regex re, int start, int end) { re.normalCharacter(start, end) } or
+  TRegExpNormalChar(Regex re, int start, int end) {
+    re.normalCharacterSequence(start, end)
+    or
+    re.escapedCharacter(start, end) and
+    not re.specialCharacter(start, end, _)
+  } or
   /** A back reference */
   TRegExpBackRef(Regex re, int start, int end) { re.backreference(start, end) }
 
@@ -36,16 +54,17 @@ newtype TRegExpParent =
  * or another regular expression term.
  */
 class RegExpParent extends TRegExpParent {
+  /** Gets a textual representation of this element. */
   string toString() { result = "RegExpParent" }
 
   /** Gets the `i`th child term. */
   abstract RegExpTerm getChild(int i);
 
   /** Gets a child term . */
-  RegExpTerm getAChild() { result = getChild(_) }
+  RegExpTerm getAChild() { result = this.getChild(_) }
 
   /** Gets the number of child terms. */
-  int getNumChild() { result = count(getAChild()) }
+  int getNumChild() { result = count(this.getAChild()) }
 
   /** Gets the associated regex. */
   abstract Regex getRegex();
@@ -59,10 +78,18 @@ class RegExpLiteral extends TRegExpLiteral, RegExpParent {
 
   override RegExpTerm getChild(int i) { i = 0 and result.getRegex() = re and result.isRootTerm() }
 
+  /** Holds if dot, `.`, matches all characters, including newlines. */
   predicate isDotAll() { re.getAMode() = "DOTALL" }
+
+  /** Holds if this regex matching is case-insensitive for this regex. */
+  predicate isIgnoreCase() { re.getAMode() = "IGNORECASE" }
+
+  /** Get a string representing all modes for this regex. */
+  string getFlags() { result = concat(string mode | mode = re.getAMode() | mode, " | ") }
 
   override Regex getRegex() { result = re }
 
+  /** Gets the primary QL class for this regex. */
   string getPrimaryQLClass() { result = "RegExpLiteral" }
 }
 
@@ -89,8 +116,7 @@ class RegExpTerm extends RegExpParent {
     or
     this = TRegExpQuantifier(re, start, end)
     or
-    this = TRegExpSequence(re, start, end) and
-    exists(seqChild(re, start, end, 1)) // if a sequence does not have more than one element, it should be treated as that element instead.
+    this = TRegExpSequence(re, start, end)
     or
     this = TRegExpSpecialChar(re, start, end)
   }
@@ -101,7 +127,7 @@ class RegExpTerm extends RegExpParent {
   RegExpTerm getRootTerm() {
     this.isRootTerm() and result = this
     or
-    result = getParent().(RegExpTerm).getRootTerm()
+    result = this.getParent().(RegExpTerm).getRootTerm()
   }
 
   /**
@@ -180,7 +206,7 @@ class RegExpTerm extends RegExpParent {
 
   /** Gets the regular expression term that is matched (textually) before this one, if any. */
   RegExpTerm getPredecessor() {
-    exists(RegExpTerm parent | parent = getParent() |
+    exists(RegExpTerm parent | parent = this.getParent() |
       result = parent.(RegExpSequence).previousElement(this)
       or
       not exists(parent.(RegExpSequence).previousElement(this)) and
@@ -191,7 +217,7 @@ class RegExpTerm extends RegExpParent {
 
   /** Gets the regular expression term that is matched (textually) after this one, if any. */
   RegExpTerm getSuccessor() {
-    exists(RegExpTerm parent | parent = getParent() |
+    exists(RegExpTerm parent | parent = this.getParent() |
       result = parent.(RegExpSequence).nextElement(this)
       or
       not exists(parent.(RegExpSequence).nextElement(this)) and
@@ -230,8 +256,10 @@ class RegExpQuantifier extends RegExpTerm, TRegExpQuantifier {
     result.getEnd() = part_end
   }
 
+  /** Hols if this term may match an unlimited number of times. */
   predicate mayRepeatForever() { may_repeat_forever = true }
 
+  /** Gets the qualifier for this term. That is e.g "?" for "a?". */
   string getQualifier() { result = re.getText().substring(part_end, end) }
 
   override string getPrimaryQLClass() { result = "RegExpQuantifier" }
@@ -306,8 +334,10 @@ class RegExpRange extends RegExpQuantifier {
 
   RegExpRange() { re.multiples(part_end, end, lower, upper) }
 
+  /** Gets the string defining the upper bound of this range, if any. */
   string getUpper() { result = upper }
 
+  /** Gets the string defining the lower bound of this range, if any. */
   string getLower() { result = lower }
 
   /**
@@ -337,15 +367,12 @@ class RegExpRange extends RegExpQuantifier {
  * This is a sequence with the elements `(ECMA|Java)` and `Script`.
  */
 class RegExpSequence extends RegExpTerm, TRegExpSequence {
-  RegExpSequence() {
-    this = TRegExpSequence(re, start, end) and
-    exists(seqChild(re, start, end, 1)) // if a sequence does not have more than one element, it should be treated as that element instead.
-  }
+  RegExpSequence() { this = TRegExpSequence(re, start, end) }
 
   override RegExpTerm getChild(int i) { result = seqChild(re, start, end, i) }
 
   /** Gets the element preceding `element` in this sequence. */
-  RegExpTerm previousElement(RegExpTerm element) { element = nextElement(result) }
+  RegExpTerm previousElement(RegExpTerm element) { element = this.nextElement(result) }
 
   /** Gets the element following `element` in this sequence. */
   RegExpTerm nextElement(RegExpTerm element) {
@@ -418,6 +445,8 @@ class RegExpAlt extends RegExpTerm, TRegExpAlt {
   override string getPrimaryQLClass() { result = "RegExpAlt" }
 }
 
+class RegExpCharEscape = RegExpEscape;
+
 /**
  * An escaped regular expression term, that is, a regular expression
  * term starting with a backslash, which is not a backreference.
@@ -445,17 +474,20 @@ class RegExpEscape extends RegExpNormalChar {
     or
     this.getUnescaped() = "t" and result = "\t"
     or
-    // TODO: Find a way to include a formfeed character
-    // this.getUnescaped() = "f" and result = ""
-    // or
-    isUnicode() and
-    result = getUnicode()
+    this.getUnescaped() = "f" and result = 12.toUnicode()
+    or
+    this.getUnescaped() = "v" and result = 11.toUnicode()
+    or
+    this.isUnicode() and
+    result = this.getUnicode()
   }
 
+  /** Holds if this terms name is given by the part following the escape character. */
   predicate isIdentityEscape() { not this.getUnescaped() in ["n", "r", "t", "f"] }
 
   override string getPrimaryQLClass() { result = "RegExpEscape" }
 
+  /** Gets the part of the term following the escape character. That is e.g. "w" if the term is "\w". */
   string getUnescaped() { result = this.getText().suffix(1) }
 
   /**
@@ -466,7 +498,7 @@ class RegExpEscape extends RegExpNormalChar {
   /**
    * Holds if this is a unicode escape.
    */
-  private predicate isUnicode() { getText().prefix(2) = ["\\u", "\\U"] }
+  private predicate isUnicode() { this.getText().prefix(2) = ["\\u", "\\U"] }
 
   /**
    * Gets the unicode char for this escape.
@@ -512,8 +544,15 @@ private int toHex(string hex) {
 }
 
 /**
+ * A word boundary, that is, a regular expression term of the form `\b`.
+ */
+class RegExpWordBoundary extends RegExpSpecialChar {
+  RegExpWordBoundary() { this.getChar() = "\\b" }
+}
+
+/**
  * A character class escape in a regular expression.
- * That is, an escaped charachter that denotes multiple characters.
+ * That is, an escaped character that denotes multiple characters.
  *
  * Examples:
  *
@@ -523,15 +562,8 @@ private int toHex(string hex) {
  * ```
  */
 class RegExpCharacterClassEscape extends RegExpEscape {
-  // string value;
-  RegExpCharacterClassEscape() {
-    // value = re.getText().substring(start + 1, end) and
-    // value in ["d", "D", "s", "S", "w", "W"]
-    this.getValue() in ["d", "D", "s", "S", "w", "W"]
-  }
+  RegExpCharacterClassEscape() { this.getValue() in ["d", "D", "s", "S", "w", "W"] }
 
-  /** Gets the name of the character class; for example, `w` for `\w`. */
-  // override string getValue() { result = value }
   override RegExpTerm getChild(int i) { none() }
 
   override string getPrimaryQLClass() { result = "RegExpCharacterClassEscape" }
@@ -550,19 +582,22 @@ class RegExpCharacterClassEscape extends RegExpEscape {
 class RegExpCharacterClass extends RegExpTerm, TRegExpCharacterClass {
   RegExpCharacterClass() { this = TRegExpCharacterClass(re, start, end) }
 
+  /** Holds if this character class is inverted, matching the opposite of its content. */
   predicate isInverted() { re.getChar(start + 1) = "^" }
 
+  /** Gets the `i`th char inside this charater class. */
   string getCharThing(int i) { result = re.getChar(i + start) }
 
+  /** Holds if this character class can match anything. */
   predicate isUniversalClass() {
     // [^]
-    isInverted() and not exists(getAChild())
+    this.isInverted() and not exists(this.getAChild())
     or
     // [\w\W] and similar
-    not isInverted() and
+    not this.isInverted() and
     exists(string cce1, string cce2 |
-      cce1 = getAChild().(RegExpCharacterClassEscape).getValue() and
-      cce2 = getAChild().(RegExpCharacterClassEscape).getValue()
+      cce1 = this.getAChild().(RegExpCharacterClassEscape).getValue() and
+      cce2 = this.getAChild().(RegExpCharacterClassEscape).getValue()
     |
       cce1 != cce2 and cce1.toLowerCase() = cce2.toLowerCase()
     )
@@ -607,6 +642,7 @@ class RegExpCharacterRange extends RegExpTerm, TRegExpCharacterRange {
     re.charRange(_, start, lower_end, upper_start, end)
   }
 
+  /** Holds if this range goes from `lo` to `hi`, in effect is `lo-hi`. */
   predicate isRange(string lo, string hi) {
     lo = re.getText().substring(start, lower_end) and
     hi = re.getText().substring(upper_start, end)
@@ -640,8 +676,13 @@ class RegExpCharacterRange extends RegExpTerm, TRegExpCharacterRange {
 class RegExpNormalChar extends RegExpTerm, TRegExpNormalChar {
   RegExpNormalChar() { this = TRegExpNormalChar(re, start, end) }
 
+  /**
+   * Holds if this constant represents a valid Unicode character (as opposed
+   * to a surrogate code point that does not correspond to a character by itself.)
+   */
   predicate isCharacter() { any() }
 
+  /** Gets the string representation of the char matched by this term. */
   string getValue() { result = re.getText().substring(start, end) }
 
   override RegExpTerm getChild(int i) { none() }
@@ -671,15 +712,15 @@ class RegExpConstant extends RegExpTerm {
       qstart <= start and end <= qend
     ) and
     value = this.(RegExpNormalChar).getValue()
-    // This will never hold
-    // or
-    // this = TRegExpSpecialChar(re, start, end) and
-    // re.inCharSet(start) and
-    // value = this.(RegExpSpecialChar).getChar()
   }
 
+  /**
+   * Holds if this constant represents a valid Unicode character (as opposed
+   * to a surrogate code point that does not correspond to a character by itself.)
+   */
   predicate isCharacter() { any() }
 
+  /** Gets the string matched by this constant term. */
   string getValue() { result = value }
 
   override RegExpTerm getChild(int i) { none() }
@@ -712,15 +753,14 @@ class RegExpGroup extends RegExpTerm, TRegExpGroup {
    */
   int getNumber() { result = re.getGroupNumber(start, end) }
 
+  /** Holds if this is a capture group. */
+  predicate isCapture() { exists(this.getNumber()) }
+
   /** Holds if this is a named capture group. */
   predicate isNamed() { exists(this.getName()) }
 
   /** Gets the name of this capture group, if any. */
   string getName() { result = re.getGroupName(start, end) }
-
-  predicate isCharacter() { any() }
-
-  string getValue() { result = re.getText().substring(start, end) }
 
   override RegExpTerm getChild(int i) {
     result.getRegex() = re and
@@ -749,8 +789,13 @@ class RegExpSpecialChar extends RegExpTerm, TRegExpSpecialChar {
     re.specialCharacter(start, end, char)
   }
 
+  /**
+   * Holds if this constant represents a valid Unicode character (as opposed
+   * to a surrogate code point that does not correspond to a character by itself.)
+   */
   predicate isCharacter() { any() }
 
+  /** Gets the char for this term. */
   string getChar() { result = char }
 
   override RegExpTerm getChild(int i) { none() }
@@ -774,7 +819,7 @@ class RegExpDot extends RegExpSpecialChar {
 }
 
 /**
- * A dollar assertion `$` matching the end of a line.
+ * A dollar assertion `$` or `\Z` matching the end of a line.
  *
  * Example:
  *
@@ -783,13 +828,13 @@ class RegExpDot extends RegExpSpecialChar {
  * ```
  */
 class RegExpDollar extends RegExpSpecialChar {
-  RegExpDollar() { this.getChar() = "$" }
+  RegExpDollar() { this.getChar() = ["$", "\\Z"] }
 
   override string getPrimaryQLClass() { result = "RegExpDollar" }
 }
 
 /**
- * A caret assertion `^` matching the beginning of a line.
+ * A caret assertion `^` or `\A` matching the beginning of a line.
  *
  * Example:
  *
@@ -798,7 +843,7 @@ class RegExpDollar extends RegExpSpecialChar {
  * ```
  */
 class RegExpCaret extends RegExpSpecialChar {
-  RegExpCaret() { this.getChar() = "^" }
+  RegExpCaret() { this.getChar() = ["^", "\\A"] }
 
   override string getPrimaryQLClass() { result = "RegExpCaret" }
 }
@@ -814,8 +859,6 @@ class RegExpCaret extends RegExpSpecialChar {
  */
 class RegExpZeroWidthMatch extends RegExpGroup {
   RegExpZeroWidthMatch() { re.zeroWidthMatch(start, end) }
-
-  override predicate isCharacter() { any() }
 
   override RegExpTerm getChild(int i) { none() }
 

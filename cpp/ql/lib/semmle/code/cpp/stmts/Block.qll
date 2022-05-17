@@ -76,9 +76,9 @@ class BlockStmt extends Stmt, @stmt_block {
    * the result is the expression statement `a = b`.
    */
   Stmt getLastStmtIn() {
-    if getLastStmt() instanceof BlockStmt
-    then result = getLastStmt().(BlockStmt).getLastStmtIn()
-    else result = getLastStmt()
+    if this.getLastStmt() instanceof BlockStmt
+    then result = this.getLastStmt().(BlockStmt).getLastStmtIn()
+    else result = this.getLastStmt()
   }
 
   /**
@@ -126,9 +126,3 @@ class BlockStmt extends Stmt, @stmt_block {
 
   override predicate mayBeGloballyImpure() { this.getAStmt().mayBeGloballyImpure() }
 }
-
-/**
- * DEPRECATED: This is now called `BlockStmt` to avoid confusion with
- * `BasicBlock`.
- */
-deprecated class Block = BlockStmt;

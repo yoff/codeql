@@ -467,17 +467,17 @@ Definition getUniqueDefinition(Expr use) {
   not result = TLocalDefinition(use)
 }
 
-/** Helper class to get suitable locations for attributes */
-class NiceLocationExpr extends @py_expr {
+/** A helper class to get suitable locations for attributes */
+class NiceLocationExpr extends Expr {
   /** Gets a textual representation of this element. */
-  string toString() { result = this.(Expr).toString() }
+  override string toString() { result = this.(Expr).toString() }
 
   /**
    * Holds if this element is at the specified location.
    * The location spans column `bc` of line `bl` to
    * column `ec` of line `el` in file `f`.
    * For more information, see
-   * [Locations](https://help.semmle.com/QL/learn-ql/ql/locations.html).
+   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
    */
   predicate hasLocationInfo(string f, int bl, int bc, int el, int ec) {
     /* Attribute location for x.y is that of 'y' so that url does not overlap with that of 'x' */

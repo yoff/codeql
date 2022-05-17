@@ -4,7 +4,7 @@
  * (in that the `.expected` file should always be empty).
  *
  * To add this framework to a new language:
- * - Add a file `InlineExpectationsTestPrivate.qll` that defines a `LineComment` class. This class
+ * - Add a file `InlineExpectationsTestPrivate.qll` that defines a `ExpectationComment` class. This class
  *   must support a `getContents` method that returns the contents of the given comment, _excluding_
  *   the comment indicator itself. It should also define `toString` and `getLocation` as usual.
  *
@@ -60,8 +60,8 @@
  *
  * Example:
  * ```cpp
- * int i = x + 5;  // $const=5
- * int j = y + (7 - 3)  // $const=7 const=3 const=4  // The result of the subtraction is a constant.
+ * int i = x + 5;  // $ const=5
+ * int j = y + (7 - 3)  // $ const=7 const=3 const=4  // The result of the subtraction is a constant.
  * ```
  *
  * For tests that contain known missing and spurious results, it is possible to further
@@ -93,7 +93,7 @@
 private import InlineExpectationsTestPrivate
 
 /**
- * Base class for tests with inline expectations. The test extends this class to provide the actual
+ * The base class for tests with inline expectations. The test extends this class to provide the actual
  * results of the query, which are then compared with the expected results in comments to produce a
  * list of failure messages that point out where the actual results differ from the expected
  * results.
@@ -123,6 +123,17 @@ abstract class InlineExpectationsTest extends string {
    */
   abstract predicate hasActualResult(Location location, string element, string tag, string value);
 
+  /**
+   * Holds if there is an optional result on the specified location.
+   *
+   * This is similar to `hasActualResult`, but returns results that do not require a matching annotation.
+   * A failure will still arise if there is an annotation that does not match any results, but not vice versa.
+   * Override this predicate to specify optional results.
+   */
+  predicate hasOptionalResult(Location location, string element, string tag, string value) {
+    none()
+  }
+
   final predicate hasFailureMessage(FailureLocatable element, string message) {
     exists(ActualResult actualResult |
       actualResult.getTest() = this and
@@ -134,7 +145,8 @@ abstract class InlineExpectationsTest extends string {
         )
         or
         not exists(ValidExpectation expectation | expectation.matchesActualResult(actualResult)) and
-        message = "Unexpected result: " + actualResult.getExpectationText()
+        message = "Unexpected result: " + actualResult.getExpectationText() and
+        not actualResult.isOptional()
       )
     )
     or
@@ -169,7 +181,7 @@ private string expectationCommentPattern() { result = "\\s*\\$((?:[^/]|/[^/])*)(
 /**
  * The possible columns in an expectation comment. The `TDefaultColumn` branch represents the first
  * column in a comment. This column is not precedeeded by a name. `TNamedColumn(name)` represents a
- * column containing expected results preceeded by the string `name:`.
+ * column containing expected results preceded by the string `name:`.
  */
 private newtype TColumn =
   TDefaultColumn() or
@@ -194,7 +206,7 @@ private int getEndOfColumnPosition(int start, string content) {
 }
 
 private predicate getAnExpectation(
-  LineComment comment, TColumn column, string expectation, string tags, string value
+  ExpectationComment comment, TColumn column, string expectation, string tags, string value
 ) {
   exists(string content |
     content = comment.getContents().regexpCapture(expectationCommentPattern(), 1) and
@@ -243,18 +255,22 @@ private string expectationPattern() {
 
 private newtype TFailureLocatable =
   TActualResult(
-    InlineExpectationsTest test, Location location, string element, string tag, string value
+    InlineExpectationsTest test, Location location, string element, string tag, string value,
+    boolean optional
   ) {
-    test.hasActualResult(location, element, tag, value)
+    test.hasActualResult(location, element, tag, value) and
+    optional = false
+    or
+    test.hasOptionalResult(location, element, tag, value) and optional = true
   } or
-  TValidExpectation(LineComment comment, string tag, string value, string knownFailure) {
+  TValidExpectation(ExpectationComment comment, string tag, string value, string knownFailure) {
     exists(TColumn column, string tags |
       getAnExpectation(comment, column, _, tags, value) and
       tag = tags.splitAt(",") and
       knownFailure = getColumnString(column)
     )
   } or
-  TInvalidExpectation(LineComment comment, string expectation) {
+  TInvalidExpectation(ExpectationComment comment, string expectation) {
     getAnExpectation(comment, _, expectation, _, _) and
     not expectation.regexpMatch(expectationPattern())
   }
@@ -277,8 +293,9 @@ class ActualResult extends FailureLocatable, TActualResult {
   string element;
   string tag;
   string value;
+  boolean optional;
 
-  ActualResult() { this = TActualResult(test, location, element, tag, value) }
+  ActualResult() { this = TActualResult(test, location, element, tag, value, optional) }
 
   override string toString() { result = element }
 
@@ -289,10 +306,12 @@ class ActualResult extends FailureLocatable, TActualResult {
   override string getTag() { result = tag }
 
   override string getValue() { result = value }
+
+  predicate isOptional() { optional = true }
 }
 
 abstract private class Expectation extends FailureLocatable {
-  LineComment comment;
+  ExpectationComment comment;
 
   override string toString() { result = comment.toString() }
 

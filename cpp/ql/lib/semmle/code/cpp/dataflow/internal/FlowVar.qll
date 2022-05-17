@@ -113,10 +113,6 @@ private module PartialDefinitions {
   abstract class PartialDefinition extends Expr {
     ControlFlowNode node;
 
-    abstract deprecated predicate partiallyDefines(Variable v);
-
-    abstract deprecated predicate partiallyDefinesThis(ThisExpr e);
-
     /**
      * Gets the subBasicBlock where this `PartialDefinition` is defined.
      */
@@ -189,10 +185,6 @@ private module PartialDefinitions {
       )
     }
 
-    deprecated override predicate partiallyDefines(Variable v) { v = collection }
-
-    deprecated override predicate partiallyDefinesThis(ThisExpr e) { none() }
-
     override predicate definesExpressions(Expr inner, Expr outer) {
       inner = innerDefinedExpr and
       outer = this
@@ -216,12 +208,6 @@ private module PartialDefinitions {
     Expr innerDefinedExpr;
 
     VariablePartialDefinition() { innerDefinedExpr = getInnerDefinedExpr(this, node) }
-
-    deprecated override predicate partiallyDefines(Variable v) {
-      innerDefinedExpr = v.getAnAccess()
-    }
-
-    deprecated override predicate partiallyDefinesThis(ThisExpr e) { innerDefinedExpr = e }
 
     /**
      * Holds if this partial definition may modify `inner` (or what it points
@@ -353,9 +339,9 @@ module FlowVar_internal {
         // indirection.
         result = def.getAUse(v)
         or
-        exists(SsaDefinition descendentDef |
-          getASuccessorSsaVar+() = TSsaVar(descendentDef, _) and
-          result = descendentDef.getAUse(v)
+        exists(SsaDefinition descendantDef |
+          this.getASuccessorSsaVar+() = TSsaVar(descendantDef, _) and
+          result = descendantDef.getAUse(v)
         )
       )
       or
@@ -435,7 +421,7 @@ module FlowVar_internal {
       parameterIsNonConstReference(p) and
       p = v and
       // This definition reaches the exit node of the function CFG
-      getAReachedBlockVarSBB(this).getANode() = p.getFunction()
+      getAReachedBlockVarSBB(this).getEnd() = p.getFunction()
     }
 
     override predicate definedByInitialValue(StackVariable lsv) {
@@ -515,7 +501,7 @@ module FlowVar_internal {
       this.bbInLoopCondition(bbInside) and
       not this.bbInLoop(bbOutside) and
       bbOutside = bbInside.getASuccessor() and
-      not reachesWithoutAssignment(bbInside, v)
+      not this.reachesWithoutAssignment(bbInside, v)
     }
 
     /**
@@ -546,7 +532,7 @@ module FlowVar_internal {
     private predicate bbInLoop(BasicBlock bb) {
       bbDominates(this.(Loop).getStmt(), bb)
       or
-      bbInLoopCondition(bb)
+      this.bbInLoopCondition(bb)
     }
 
     /** Holds if `sbb` is inside this loop. */
@@ -563,7 +549,7 @@ module FlowVar_internal {
         bb = this.(Loop).getStmt() and
         v = this.getARelevantVariable()
         or
-        reachesWithoutAssignment(bb.getAPredecessor(), v) and
+        this.reachesWithoutAssignment(bb.getAPredecessor(), v) and
         this.bbInLoop(bb)
       ) and
       not assignsToVar(bb, v)

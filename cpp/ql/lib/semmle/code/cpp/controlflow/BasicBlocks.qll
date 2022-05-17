@@ -194,14 +194,14 @@ class BasicBlock extends ControlFlowNodeBase {
    * The location spans column `startcolumn` of line `startline` to
    * column `endcolumn` of line `endline` in file `filepath`.
    * For more information, see
-   * [Locations](https://help.semmle.com/QL/learn-ql/ql/locations.html).
+   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
    *
    * Yields no result if this basic block spans multiple source files.
    */
   predicate hasLocationInfo(
     string filepath, int startline, int startcolumn, int endline, int endcolumn
   ) {
-    hasLocationInfoInternal(filepath, startline, startcolumn, filepath, endline, endcolumn)
+    this.hasLocationInfoInternal(filepath, startline, startcolumn, filepath, endline, endcolumn)
   }
 
   pragma[noinline]
@@ -222,20 +222,6 @@ class BasicBlock extends ControlFlowNodeBase {
    * necessary back edges are unreachable.
    */
   predicate inLoop() { this.getASuccessor+() = this }
-
-  /**
-   * DEPRECATED since version 1.11: this predicate does not match the standard
-   * definition of _loop header_.
-   *
-   * Holds if this basic block is in a loop of the control-flow graph and
-   * additionally has an incoming edge that is not part of any loop containing
-   * this basic block. A typical example would be the basic block that computes
-   * `x > 0` in an outermost loop `while (x > 0) { ... }`.
-   */
-  deprecated predicate isLoopHeader() {
-    this.inLoop() and
-    exists(BasicBlock pred | pred = this.getAPredecessor() and not pred = this.getASuccessor+())
-  }
 
   /**
    * Holds if control flow may reach this basic block from a function entry
@@ -276,7 +262,7 @@ class EntryBasicBlock extends BasicBlock {
  */
 class ExitBasicBlock extends BasicBlock {
   ExitBasicBlock() {
-    getEnd() instanceof Function or
-    aborting(getEnd())
+    this.getEnd() instanceof Function or
+    aborting(this.getEnd())
   }
 }

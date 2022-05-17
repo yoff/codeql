@@ -6,7 +6,7 @@ import java
 
 class SSLClass extends RefType {
   SSLClass() {
-    exists(Class c | this.getASupertype*() = c |
+    exists(Class c | this.getAnAncestor() = c |
       c.hasQualifiedName("javax.net.ssl", _) or
       c.hasQualifiedName("javax.rmi.ssl", _)
     )
@@ -17,25 +17,44 @@ class X509TrustManager extends RefType {
   X509TrustManager() { this.hasQualifiedName("javax.net.ssl", "X509TrustManager") }
 }
 
-class HttpsURLConnection extends RefType {
-  HttpsURLConnection() { hasQualifiedName("javax.net.ssl", "HttpsURLConnection") }
+/** The `javax.net.ssl.HttpsURLConnection` class. */
+class HttpsUrlConnection extends RefType {
+  HttpsUrlConnection() { this.hasQualifiedName("javax.net.ssl", "HttpsURLConnection") }
 }
+
+/** DEPRECATED: Alias for HttpsUrlConnection */
+deprecated class HttpsURLConnection = HttpsUrlConnection;
 
 class SSLSocketFactory extends RefType {
   SSLSocketFactory() { this.hasQualifiedName("javax.net.ssl", "SSLSocketFactory") }
 }
 
 class SSLContext extends RefType {
-  SSLContext() { hasQualifiedName("javax.net.ssl", "SSLContext") }
+  SSLContext() { this.hasQualifiedName("javax.net.ssl", "SSLContext") }
 }
 
 /** The `javax.net.ssl.SSLSession` class. */
 class SSLSession extends RefType {
-  SSLSession() { hasQualifiedName("javax.net.ssl", "SSLSession") }
+  SSLSession() { this.hasQualifiedName("javax.net.ssl", "SSLSession") }
+}
+
+/** The `javax.net.ssl.SSLEngine` class. */
+class SSLEngine extends RefType {
+  SSLEngine() { this.hasQualifiedName("javax.net.ssl", "SSLEngine") }
+}
+
+/** The `javax.net.ssl.SSLSocket` class. */
+class SSLSocket extends RefType {
+  SSLSocket() { this.hasQualifiedName("javax.net.ssl", "SSLSocket") }
+}
+
+/** The `javax.net.ssl.SSLParameters` class. */
+class SSLParameters extends RefType {
+  SSLParameters() { this.hasQualifiedName("javax.net.ssl", "SSLParameters") }
 }
 
 class HostnameVerifier extends RefType {
-  HostnameVerifier() { hasQualifiedName("javax.net.ssl", "HostnameVerifier") }
+  HostnameVerifier() { this.hasQualifiedName("javax.net.ssl", "HostnameVerifier") }
 }
 
 /** The Java class `javax.crypto.KeyGenerator`. */
@@ -51,53 +70,93 @@ class KeyPairGenerator extends RefType {
 /** The `verify` method of the class `javax.net.ssl.HostnameVerifier`. */
 class HostnameVerifierVerify extends Method {
   HostnameVerifierVerify() {
-    hasName("verify") and
-    getDeclaringType().getASupertype*() instanceof HostnameVerifier and
-    getParameterType(0) instanceof TypeString and
-    getParameterType(1) instanceof SSLSession
+    this.hasName("verify") and
+    this.getDeclaringType().getAnAncestor() instanceof HostnameVerifier and
+    this.getParameterType(0) instanceof TypeString and
+    this.getParameterType(1) instanceof SSLSession
   }
 }
 
 class TrustManagerCheckMethod extends Method {
   TrustManagerCheckMethod() {
     (this.hasName("checkClientTrusted") or this.hasName("checkServerTrusted")) and
-    this.getDeclaringType().getASupertype*() instanceof X509TrustManager
+    this.getDeclaringType().getAnAncestor() instanceof X509TrustManager
   }
 }
 
 class CreateSocket extends Method {
   CreateSocket() {
-    hasName("createSocket") and
-    getDeclaringType() instanceof SSLSocketFactory
+    this.hasName("createSocket") and
+    this.getDeclaringType() instanceof SSLSocketFactory
   }
 }
 
 class GetSocketFactory extends Method {
   GetSocketFactory() {
-    hasName("getSocketFactory") and
-    getDeclaringType() instanceof SSLContext
+    this.hasName("getSocketFactory") and
+    this.getDeclaringType() instanceof SSLContext
+  }
+}
+
+/** The `createSSLEngine` method of the class `javax.net.ssl.SSLContext`. */
+class CreateSslEngineMethod extends Method {
+  CreateSslEngineMethod() {
+    this.hasName("createSSLEngine") and
+    this.getDeclaringType() instanceof SSLContext
   }
 }
 
 class SetConnectionFactoryMethod extends Method {
   SetConnectionFactoryMethod() {
-    hasName("setSSLSocketFactory") and
-    getDeclaringType().getASupertype*() instanceof HttpsURLConnection
+    this.hasName("setSSLSocketFactory") and
+    this.getDeclaringType().getAnAncestor() instanceof HttpsUrlConnection
   }
 }
 
 class SetHostnameVerifierMethod extends Method {
   SetHostnameVerifierMethod() {
-    hasName("setHostnameVerifier") and
-    getDeclaringType().getASupertype*() instanceof HttpsURLConnection
+    this.hasName("setHostnameVerifier") and
+    this.getDeclaringType().getAnAncestor() instanceof HttpsUrlConnection
   }
 }
 
 /** The `setDefaultHostnameVerifier` method of the class `javax.net.ssl.HttpsURLConnection`. */
 class SetDefaultHostnameVerifierMethod extends Method {
   SetDefaultHostnameVerifierMethod() {
-    hasName("setDefaultHostnameVerifier") and
-    getDeclaringType().getASupertype*() instanceof HttpsURLConnection
+    this.hasName("setDefaultHostnameVerifier") and
+    this.getDeclaringType().getAnAncestor() instanceof HttpsUrlConnection
+  }
+}
+
+/** The `beginHandshake` method of the class `javax.net.ssl.SSLEngine`. */
+class BeginHandshakeMethod extends Method {
+  BeginHandshakeMethod() {
+    this.hasName("beginHandshake") and
+    this.getDeclaringType().getAnAncestor() instanceof SSLEngine
+  }
+}
+
+/** The `wrap` method of the class `javax.net.ssl.SSLEngine`. */
+class SslWrapMethod extends Method {
+  SslWrapMethod() {
+    this.hasName("wrap") and
+    this.getDeclaringType().getAnAncestor() instanceof SSLEngine
+  }
+}
+
+/** The `unwrap` method of the class `javax.net.ssl.SSLEngine`. */
+class SslUnwrapMethod extends Method {
+  SslUnwrapMethod() {
+    this.hasName("unwrap") and
+    this.getDeclaringType().getAnAncestor() instanceof SSLEngine
+  }
+}
+
+/** The `getSession` method of the class `javax.net.ssl.SSLSession`. */
+class GetSslSessionMethod extends Method {
+  GetSslSessionMethod() {
+    this.hasName("getSession") and
+    this.getDeclaringType().getAnAncestor() instanceof SSLSession
   }
 }
 
@@ -168,7 +227,7 @@ string getInsecureAlgorithmRegex() {
 string getASecureAlgorithmName() {
   result =
     [
-      "RSA", "SHA256", "SHA512", "CCM", "GCM", "AES([^a-zA-Z](?!ECB|CBC/PKCS[57]Padding)).*",
+      "RSA", "SHA256", "SHA512", "CCM", "GCM", "AES(?![^a-zA-Z](ECB|CBC/PKCS[57]Padding))",
       "Blowfish", "ECIES"
     ]
 }
@@ -188,34 +247,6 @@ private string secureAlgorithmString(int i) {
 string getSecureAlgorithmRegex() {
   result = algorithmRegex(secureAlgorithmString(max(int i | exists(rankedSecureAlgorithm(i)))))
 }
-
-/**
- * DEPRECATED: Terminology has been updated. Use `getAnInsecureAlgorithmName()`
- * instead.
- */
-deprecated string algorithmBlacklist() { result = getAnInsecureAlgorithmName() }
-
-/**
- * DEPRECATED: Terminology has been updated. Use
- * `getAnInsecureHashAlgorithmName()` instead.
- */
-deprecated string hashAlgorithmBlacklist() { result = getAnInsecureHashAlgorithmName() }
-
-/**
- * DEPRECATED: Terminology has been updated. Use `getInsecureAlgorithmRegex()` instead.
- */
-deprecated string algorithmBlacklistRegex() { result = getInsecureAlgorithmRegex() }
-
-/**
- * DEPRECATED: Terminology has been updated. Use `getASecureAlgorithmName()`
- * instead.
- */
-deprecated string algorithmWhitelist() { result = getASecureAlgorithmName() }
-
-/**
- * DEPRECATED: Terminology has been updated. Use `getSecureAlgorithmRegex()` instead.
- */
-deprecated string algorithmWhitelistRegex() { result = getSecureAlgorithmRegex() }
 
 /**
  * Any use of a cryptographic element that specifies an encryption

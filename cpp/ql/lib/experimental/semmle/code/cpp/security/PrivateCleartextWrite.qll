@@ -4,7 +4,7 @@
 
 import cpp
 import semmle.code.cpp.dataflow.TaintTracking
-import experimental.semmle.code.cpp.security.PrivateData
+import semmle.code.cpp.security.PrivateData
 import semmle.code.cpp.security.FileWrite
 import semmle.code.cpp.security.BufferWrite
 
@@ -52,11 +52,8 @@ module PrivateCleartextWrite {
 
   class WriteSink extends Sink {
     WriteSink() {
-      exists(FileWrite f, BufferWrite b |
-        this.asExpr() = f.getASource()
-        or
-        this.asExpr() = b.getAChild()
-      )
+      this.asExpr() = any(FileWrite f).getASource() or
+      this.asExpr() = any(BufferWrite b).getAChild()
     }
   }
 }

@@ -3,8 +3,6 @@
  */
 
 import java
-import semmle.code.java.Type
-import semmle.code.java.Member
 
 /*--- Types ---*/
 /** The class `org.springframework.ldap.core.LdapTemplate`. */
@@ -77,8 +75,8 @@ class TypeLdapOperations extends Interface {
  */
 class MethodSpringLdapTemplateAuthenticate extends Method {
   MethodSpringLdapTemplateAuthenticate() {
-    getDeclaringType() instanceof TypeSpringLdapTemplate and
-    hasName("authenticate")
+    this.getDeclaringType() instanceof TypeSpringLdapTemplate and
+    this.hasName("authenticate")
   }
 }
 
@@ -88,8 +86,8 @@ class MethodSpringLdapTemplateAuthenticate extends Method {
  */
 class MethodSpringLdapTemplateFind extends Method {
   MethodSpringLdapTemplateFind() {
-    getDeclaringType() instanceof TypeSpringLdapTemplate and
-    hasName("find")
+    this.getDeclaringType() instanceof TypeSpringLdapTemplate and
+    this.hasName("find")
   }
 }
 
@@ -99,8 +97,8 @@ class MethodSpringLdapTemplateFind extends Method {
  */
 class MethodSpringLdapTemplateFindOne extends Method {
   MethodSpringLdapTemplateFindOne() {
-    getDeclaringType() instanceof TypeSpringLdapTemplate and
-    hasName("findOne")
+    this.getDeclaringType() instanceof TypeSpringLdapTemplate and
+    this.hasName("findOne")
   }
 }
 
@@ -110,8 +108,8 @@ class MethodSpringLdapTemplateFindOne extends Method {
  */
 class MethodSpringLdapTemplateSearch extends Method {
   MethodSpringLdapTemplateSearch() {
-    getDeclaringType() instanceof TypeSpringLdapTemplate and
-    hasName("search")
+    this.getDeclaringType() instanceof TypeSpringLdapTemplate and
+    this.hasName("search")
   }
 }
 
@@ -121,8 +119,8 @@ class MethodSpringLdapTemplateSearch extends Method {
  */
 class MethodSpringLdapTemplateSearchForContext extends Method {
   MethodSpringLdapTemplateSearchForContext() {
-    getDeclaringType() instanceof TypeSpringLdapTemplate and
-    hasName("searchForContext")
+    this.getDeclaringType() instanceof TypeSpringLdapTemplate and
+    this.hasName("searchForContext")
   }
 }
 
@@ -132,8 +130,8 @@ class MethodSpringLdapTemplateSearchForContext extends Method {
  */
 class MethodSpringLdapTemplateSearchForObject extends Method {
   MethodSpringLdapTemplateSearchForObject() {
-    getDeclaringType() instanceof TypeSpringLdapTemplate and
-    hasName("searchForObject")
+    this.getDeclaringType() instanceof TypeSpringLdapTemplate and
+    this.hasName("searchForObject")
   }
 }
 
@@ -143,8 +141,8 @@ class MethodSpringLdapTemplateSearchForObject extends Method {
  */
 class MethodSpringLdapQueryBuilderFilter extends Method {
   MethodSpringLdapQueryBuilderFilter() {
-    getDeclaringType() instanceof TypeSpringLdapQueryBuilder and
-    hasName("filter")
+    this.getDeclaringType() instanceof TypeSpringLdapQueryBuilder and
+    this.hasName("filter")
   }
 }
 
@@ -154,8 +152,8 @@ class MethodSpringLdapQueryBuilderFilter extends Method {
  */
 class MethodSpringLdapQueryBuilderBase extends Method {
   MethodSpringLdapQueryBuilderBase() {
-    getDeclaringType() instanceof TypeSpringLdapQueryBuilder and
-    hasName("base")
+    this.getDeclaringType() instanceof TypeSpringLdapQueryBuilder and
+    this.hasName("base")
   }
 }
 
@@ -165,8 +163,8 @@ class MethodSpringLdapQueryBuilderBase extends Method {
  */
 class MethodSpringLdapNameBuilderNewInstance extends Method {
   MethodSpringLdapNameBuilderNewInstance() {
-    getDeclaringType() instanceof TypeSpringLdapNameBuilder and
-    hasName("newInstance")
+    this.getDeclaringType() instanceof TypeSpringLdapNameBuilder and
+    this.hasName("newInstance")
   }
 }
 
@@ -176,8 +174,8 @@ class MethodSpringLdapNameBuilderNewInstance extends Method {
  */
 class MethodSpringLdapNameBuilderAdd extends Method {
   MethodSpringLdapNameBuilderAdd() {
-    getDeclaringType() instanceof TypeSpringLdapNameBuilder and
-    hasName("add")
+    this.getDeclaringType() instanceof TypeSpringLdapNameBuilder and
+    this.hasName("add")
   }
 }
 
@@ -187,8 +185,8 @@ class MethodSpringLdapNameBuilderAdd extends Method {
  */
 class MethodSpringLdapNameBuilderBuild extends Method {
   MethodSpringLdapNameBuilderBuild() {
-    getDeclaringType() instanceof TypeSpringLdapNameBuilder and
-    hasName("build")
+    this.getDeclaringType() instanceof TypeSpringLdapNameBuilder and
+    this.hasName("build")
   }
 }
 
@@ -198,7 +196,7 @@ class MethodSpringLdapNameBuilderBuild extends Method {
  */
 class MethodSpringLdapUtilsNewLdapName extends Method {
   MethodSpringLdapUtilsNewLdapName() {
-    getDeclaringType() instanceof TypeSpringLdapUtils and
-    hasName("newLdapName")
+    this.getDeclaringType() instanceof TypeSpringLdapUtils and
+    this.hasName("newLdapName")
   }
 }

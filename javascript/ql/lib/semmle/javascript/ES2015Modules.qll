@@ -68,7 +68,7 @@ private predicate hasDefaultExport(ES2015Module mod) {
  * Holds if `mod` contains both named and `default` exports.
  *
  * This is used to determine whether a default-import of the module should be reinterpreted
- * as a namespace-import, to accomodate the non-standard behavior implemented by some compilers.
+ * as a namespace-import, to accommodate the non-standard behavior implemented by some compilers.
  */
 private predicate hasBothNamedAndDefaultExports(ES2015Module mod) {
   hasNamedExports(mod) and
@@ -172,6 +172,9 @@ class ImportSpecifier extends Expr, @import_specifier {
   VarDecl getLocal() { result = getChildExpr(1) }
 
   override string getAPrimaryQlClass() { result = "ImportSpecifier" }
+
+  /** Holds if this is declared with the `type` keyword, so only types are imported. */
+  predicate isTypeOnly() { has_type_keyword(this) }
 }
 
 /**
@@ -612,7 +615,7 @@ class ReExportDefaultSpecifier extends ExportDefaultSpecifier {
 }
 
 /**
- * A namespace export specifier, that is `*` or `* as x` occuring in an export declaration.
+ * A namespace export specifier, that is `*` or `* as x` occurring in an export declaration.
  *
  * Examples:
  *
@@ -644,13 +647,6 @@ abstract class ReExportDeclaration extends ExportDeclaration {
   /** Gets the path of the module from which this declaration re-exports. */
   abstract ConstantString getImportedPath();
 
-  /**
-   * DEPRECATED. Use `getReExportedES2015Module()` instead.
-   *
-   * Gets the module from which this declaration re-exports.
-   */
-  deprecated ES2015Module getImportedModule() { result = getReExportedModule() }
-
   /** Gets the module from which this declaration re-exports, if it is an ES2015 module. */
   ES2015Module getReExportedES2015Module() { result = getReExportedModule() }
 
@@ -658,7 +654,7 @@ abstract class ReExportDeclaration extends ExportDeclaration {
   cached
   Module getReExportedModule() {
     Stages::Imports::ref() and
-    result.getFile() = getEnclosingModule().resolve(getImportedPath().(PathExpr))
+    result.getFile() = getEnclosingModule().resolve(getImportedPath())
     or
     result = resolveFromTypeRoot()
   }

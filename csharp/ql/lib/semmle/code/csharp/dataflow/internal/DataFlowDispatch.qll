@@ -5,14 +5,15 @@ private import DataFlowImplCommon as DataFlowImplCommon
 private import DataFlowPublic
 private import DataFlowPrivate
 private import FlowSummaryImpl as FlowSummaryImpl
-private import semmle.code.csharp.dataflow.FlowSummary
+private import semmle.code.csharp.dataflow.FlowSummary as FlowSummary
 private import semmle.code.csharp.dataflow.ExternalFlow
 private import semmle.code.csharp.dispatch.Dispatch
+private import semmle.code.csharp.dispatch.RuntimeCallable
 private import semmle.code.csharp.frameworks.system.Collections
 private import semmle.code.csharp.frameworks.system.collections.Generic
 
 private predicate summarizedCallable(DataFlowCallable c) {
-  c instanceof SummarizedCallable
+  c instanceof FlowSummary::SummarizedCallable
   or
   FlowSummaryImpl::Private::summaryReturnNode(_, TJumpReturnKind(c, _))
   or
@@ -107,13 +108,31 @@ private module Cached {
       // No need to include calls that are compiled from source
       not call.getImplementation().getMethod().compiledFromSource()
     } or
-    TSummaryCall(SummarizedCallable c, Node receiver) {
+    TSummaryCall(FlowSummary::SummarizedCallable c, Node receiver) {
       FlowSummaryImpl::Private::summaryCallbackRange(c, receiver)
     }
 
   /** Gets a viable run-time target for the call `call`. */
   cached
   DataFlowCallable viableCallable(DataFlowCall call) { result = call.getARuntimeTarget() }
+
+  private predicate capturedWithFlowIn(LocalScopeVariable v) {
+    exists(Ssa::ExplicitDefinition def | def.isCapturedVariableDefinitionFlowIn(_, _, _) |
+      v = def.getSourceVariable().getAssignable()
+    )
+  }
+
+  cached
+  newtype TParameterPosition =
+    TPositionalParameterPosition(int i) { i = any(Parameter p).getPosition() } or
+    TThisParameterPosition() or
+    TImplicitCapturedParameterPosition(LocalScopeVariable v) { capturedWithFlowIn(v) }
+
+  cached
+  newtype TArgumentPosition =
+    TPositionalArgumentPosition(int i) { i = any(Parameter p).getPosition() } or
+    TQualifierArgumentPosition() or
+    TImplicitCapturedArgumentPosition(LocalScopeVariable v) { capturedWithFlowIn(v) }
 }
 
 import Cached
@@ -253,14 +272,27 @@ abstract class DataFlowCall extends TDataFlowCall {
   /** Gets the underlying expression, if any. */
   final DotNet::Expr getExpr() { result = this.getNode().asExpr() }
 
-  /** Gets the `i`th argument of this call. */
-  final ArgumentNode getArgument(int i) { result.argumentOf(this, i) }
+  /** Gets the argument at position `pos` of this call. */
+  final ArgumentNode getArgument(ArgumentPosition pos) { result.argumentOf(this, pos) }
 
   /** Gets a textual representation of this call. */
   abstract string toString();
 
   /** Gets the location of this call. */
   abstract Location getLocation();
+
+  /**
+   * Holds if this element is at the specified location.
+   * The location spans column `startcolumn` of line `startline` to
+   * column `endcolumn` of line `endline` in file `filepath`.
+   * For more information, see
+   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
+   */
+  final predicate hasLocationInfo(
+    string filepath, int startline, int startcolumn, int endline, int endcolumn
+  ) {
+    this.getLocation().hasLocationInfo(filepath, startline, startcolumn, endline, endcolumn)
+  }
 }
 
 /** A non-delegate C# call relevant for data flow. */
@@ -275,6 +307,10 @@ class NonDelegateDataFlowCall extends DataFlowCall, TNonDelegateCall {
 
   override DataFlowCallable getARuntimeTarget() {
     result = getCallableForDataFlow(dc.getADynamicTarget())
+    or
+    result = dc.getAStaticTarget().getUnboundDeclaration() and
+    summarizedCallable(result) and
+    not result instanceof RuntimeCallable
   }
 
   override ControlFlow::Nodes::ElementNode getControlFlowNode() { result = cfn }
@@ -370,7 +406,7 @@ class CilDataFlowCall extends DataFlowCall, TCilCall {
  * the method `Select`.
  */
 class SummaryCall extends DelegateDataFlowCall, TSummaryCall {
-  private SummarizedCallable c;
+  private FlowSummary::SummarizedCallable c;
   private Node receiver;
 
   SummaryCall() { this = TSummaryCall(c, receiver) }
@@ -391,4 +427,66 @@ class SummaryCall extends DelegateDataFlowCall, TSummaryCall {
   override string toString() { result = "[summary] call to " + receiver + " in " + c }
 
   override Location getLocation() { result = c.getLocation() }
+}
+
+/** A parameter position. */
+class ParameterPosition extends TParameterPosition {
+  /** Gets the underlying integer position, if any. */
+  int getPosition() { this = TPositionalParameterPosition(result) }
+
+  /** Holds if this position represents a `this` parameter. */
+  predicate isThisParameter() { this = TThisParameterPosition() }
+
+  /** Holds if this position is used to model flow through captured variables. */
+  predicate isImplicitCapturedParameterPosition(LocalScopeVariable v) {
+    this = TImplicitCapturedParameterPosition(v)
+  }
+
+  /** Gets a textual representation of this position. */
+  string toString() {
+    result = "position " + this.getPosition()
+    or
+    this.isThisParameter() and result = "this"
+    or
+    exists(LocalScopeVariable v |
+      this.isImplicitCapturedParameterPosition(v) and result = "captured " + v
+    )
+  }
+}
+
+/** An argument position. */
+class ArgumentPosition extends TArgumentPosition {
+  /** Gets the underlying integer position, if any. */
+  int getPosition() { this = TPositionalArgumentPosition(result) }
+
+  /** Holds if this position represents a qualifier. */
+  predicate isQualifier() { this = TQualifierArgumentPosition() }
+
+  /** Holds if this position is used to model flow through captured variables. */
+  predicate isImplicitCapturedArgumentPosition(LocalScopeVariable v) {
+    this = TImplicitCapturedArgumentPosition(v)
+  }
+
+  /** Gets a textual representation of this position. */
+  string toString() {
+    result = "position " + this.getPosition()
+    or
+    this.isQualifier() and result = "qualifier"
+    or
+    exists(LocalScopeVariable v |
+      this.isImplicitCapturedArgumentPosition(v) and result = "captured " + v
+    )
+  }
+}
+
+/** Holds if arguments at position `apos` match parameters at position `ppos`. */
+predicate parameterMatch(ParameterPosition ppos, ArgumentPosition apos) {
+  ppos.getPosition() = apos.getPosition()
+  or
+  ppos.isThisParameter() and apos.isQualifier()
+  or
+  exists(LocalScopeVariable v |
+    ppos.isImplicitCapturedParameterPosition(v) and
+    apos.isImplicitCapturedArgumentPosition(v)
+  )
 }

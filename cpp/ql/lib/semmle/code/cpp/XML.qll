@@ -4,27 +4,20 @@
 
 import semmle.files.FileSystem
 
-private class TXMLLocatable =
+private class TXmlLocatable =
   @xmldtd or @xmlelement or @xmlattribute or @xmlnamespace or @xmlcomment or @xmlcharacters;
 
 /** An XML element that has a location. */
-class XMLLocatable extends @xmllocatable, TXMLLocatable {
+class XMLLocatable extends @xmllocatable, TXmlLocatable {
   /** Gets the source location for this element. */
   Location getLocation() { xmllocations(this, result) }
-
-  /**
-   * DEPRECATED: Use `getLocation()` instead.
-   *
-   * Gets the source location for this element.
-   */
-  deprecated Location getALocation() { result = this.getLocation() }
 
   /**
    * Holds if this element is at the specified location.
    * The location spans column `startcolumn` of line `startline` to
    * column `endcolumn` of line `endline` in file `filepath`.
    * For more information, see
-   * [Locations](https://help.semmle.com/QL/learn-ql/ql/locations.html).
+   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
    */
   predicate hasLocationInfo(
     string filepath, int startline, int startcolumn, int endline, int endcolumn
@@ -84,21 +77,6 @@ class XMLParent extends @xmlparent {
   int getNumberOfCharacterSets() { result = count(int pos | xmlChars(_, _, this, pos, _, _)) }
 
   /**
-   * DEPRECATED: Internal.
-   *
-   * Append the character sequences of this XML parent from left to right, separated by a space,
-   * up to a specified (zero-based) index.
-   */
-  deprecated string charsSetUpTo(int n) {
-    n = 0 and xmlChars(_, result, this, 0, _, _)
-    or
-    n > 0 and
-    exists(string chars | xmlChars(_, chars, this, n, _, _) |
-      result = this.charsSetUpTo(n - 1) + " " + chars
-    )
-  }
-
-  /**
    * Gets the result of appending all the character sequences of this XML parent from
    * left to right, separated by a space.
    */
@@ -108,7 +86,7 @@ class XMLParent extends @xmlparent {
   }
 
   /** Gets the text value contained in this XML parent. */
-  string getTextValue() { result = allCharactersString() }
+  string getTextValue() { result = this.allCharactersString() }
 
   /** Gets a printable representation of this XML parent. */
   string toString() { result = this.getName() }
@@ -119,7 +97,7 @@ class XMLFile extends XMLParent, File {
   XMLFile() { xmlEncoding(this, _) }
 
   /** Gets a printable representation of this XML file. */
-  override string toString() { result = getName() }
+  override string toString() { result = this.getName() }
 
   /** Gets the name of this XML file. */
   override string getName() { result = File.super.getAbsolutePath() }
@@ -129,14 +107,14 @@ class XMLFile extends XMLParent, File {
    *
    * Gets the path of this XML file.
    */
-  deprecated string getPath() { result = getAbsolutePath() }
+  deprecated string getPath() { result = this.getAbsolutePath() }
 
   /**
    * DEPRECATED: Use `getParentContainer().getAbsolutePath()` instead.
    *
    * Gets the path of the folder that contains this XML file.
    */
-  deprecated string getFolder() { result = getParentContainer().getAbsolutePath() }
+  deprecated string getFolder() { result = this.getParentContainer().getAbsolutePath() }
 
   /** Gets the encoding of this XML file. */
   string getEncoding() { xmlEncoding(this, result) }
@@ -200,7 +178,7 @@ class XMLDTD extends XMLLocatable, @xmldtd {
  */
 class XMLElement extends @xmlelement, XMLParent, XMLLocatable {
   /** Holds if this XML element has the given `name`. */
-  predicate hasName(string name) { name = getName() }
+  predicate hasName(string name) { name = this.getName() }
 
   /** Gets the name of this XML element. */
   override string getName() { xmlElements(this, result, _, _, _) }
@@ -233,13 +211,13 @@ class XMLElement extends @xmlelement, XMLParent, XMLLocatable {
   XMLAttribute getAttribute(string name) { result.getElement() = this and result.getName() = name }
 
   /** Holds if this XML element has an attribute with the specified `name`. */
-  predicate hasAttribute(string name) { exists(XMLAttribute a | a = this.getAttribute(name)) }
+  predicate hasAttribute(string name) { exists(this.getAttribute(name)) }
 
   /** Gets the value of the attribute with the specified `name`, if any. */
   string getAttributeValue(string name) { result = this.getAttribute(name).getValue() }
 
   /** Gets a printable representation of this XML element. */
-  override string toString() { result = getName() }
+  override string toString() { result = this.getName() }
 }
 
 /**

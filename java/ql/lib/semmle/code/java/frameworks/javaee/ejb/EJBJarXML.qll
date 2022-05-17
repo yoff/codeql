@@ -8,8 +8,8 @@ import java
 /**
  * An EJB deployment descriptor XML file named `ejb-jar.xml`.
  */
-class EjbJarXMLFile extends XMLFile {
-  EjbJarXMLFile() { this.getStem() = "ejb-jar" }
+class EjbJarXmlFile extends XMLFile {
+  EjbJarXmlFile() { this.getStem() = "ejb-jar" }
 
   /** Gets the root `ejb-jar` XML element of this `ejb-jar.xml` file. */
   EjbJarRootElement getRoot() { result = this.getAChild() }
@@ -35,10 +35,13 @@ class EjbJarXMLFile extends XMLFile {
   }
 }
 
+/** DEPRECATED: Alias for EjbJarXmlFile */
+deprecated class EjbJarXMLFile = EjbJarXmlFile;
+
 /** The root `ejb-jar` XML element in an `ejb-jar.xml` file. */
 class EjbJarRootElement extends XMLElement {
   EjbJarRootElement() {
-    this.getParent() instanceof EjbJarXMLFile and
+    this.getParent() instanceof EjbJarXmlFile and
     this.getName() = "ejb-jar"
   }
 
@@ -114,8 +117,8 @@ class EjbJarSessionElement extends EjbJarBeanTypeElement {
    * This is either a `business-local` or `business-remote` element.
    */
   XMLElement getABusinessElement() {
-    result = getABusinessLocalElement() or
-    result = getABusinessRemoteElement()
+    result = this.getABusinessLocalElement() or
+    result = this.getABusinessRemoteElement()
   }
 
   /** Gets a `remote` child XML element of this `session` XML element. */
@@ -153,7 +156,7 @@ class EjbJarSessionElement extends EjbJarBeanTypeElement {
    * XML element nested within this `session` XML element.
    */
   XMLElement getACreateMethodNameElement() {
-    result = getAnInitMethodElement().getACreateMethodElement().getAMethodNameElement()
+    result = this.getAnInitMethodElement().getACreateMethodElement().getAMethodNameElement()
   }
 
   /**
@@ -161,7 +164,7 @@ class EjbJarSessionElement extends EjbJarBeanTypeElement {
    * XML element nested within this `session` XML element.
    */
   XMLElement getABeanMethodNameElement() {
-    result = getAnInitMethodElement().getABeanMethodElement().getAMethodNameElement()
+    result = this.getAnInitMethodElement().getABeanMethodElement().getAMethodNameElement()
   }
 }
 

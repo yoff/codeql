@@ -72,19 +72,23 @@ abstract class StackVariableReachability extends string {
      */
 
     exists(BasicBlock bb, int i |
-      isSource(source, v) and
+      this.isSource(source, v) and
       bb.getNode(i) = source and
       not bb.isUnreachable()
     |
       exists(int j |
         j > i and
         sink = bb.getNode(j) and
-        isSink(sink, v) and
-        not exists(int k | isBarrier(bb.getNode(k), v) | k in [i + 1 .. j - 1])
+        this.isSink(sink, v) and
+        not exists(int k, ControlFlowNode node |
+          node = bb.getNode(k) and this.isBarrier(pragma[only_bind_into](node), v)
+        |
+          k in [i + 1 .. j - 1]
+        )
       )
       or
-      not exists(int k | isBarrier(bb.getNode(k), v) | k > i) and
-      bbSuccessorEntryReaches(bb, v, sink, _)
+      not exists(int k | this.isBarrier(bb.getNode(k), v) | k > i) and
+      this.bbSuccessorEntryReaches(bb, v, sink, _)
     )
   }
 
@@ -96,11 +100,11 @@ abstract class StackVariableReachability extends string {
       bbSuccessorEntryReachesLoopInvariant(bb, succ, skipsFirstLoopAlwaysTrueUponEntry,
         succSkipsFirstLoopAlwaysTrueUponEntry)
     |
-      bbEntryReachesLocally(succ, v, node) and
+      this.bbEntryReachesLocally(succ, v, node) and
       succSkipsFirstLoopAlwaysTrueUponEntry = false
       or
-      not isBarrier(succ.getNode(_), v) and
-      bbSuccessorEntryReaches(succ, v, node, succSkipsFirstLoopAlwaysTrueUponEntry)
+      not this.isBarrier(succ.getNode(_), v) and
+      this.bbSuccessorEntryReaches(succ, v, node, succSkipsFirstLoopAlwaysTrueUponEntry)
     )
   }
 
@@ -109,7 +113,7 @@ abstract class StackVariableReachability extends string {
   ) {
     exists(int n |
       node = bb.getNode(n) and
-      isSink(node, v)
+      this.isSink(node, v)
     |
       not exists(this.firstBarrierIndexIn(bb, v))
       or
@@ -118,7 +122,7 @@ abstract class StackVariableReachability extends string {
   }
 
   private int firstBarrierIndexIn(BasicBlock bb, SemanticStackVariable v) {
-    result = min(int m | isBarrier(bb.getNode(m), v))
+    result = min(int m | this.isBarrier(bb.getNode(m), v))
   }
 }
 
@@ -268,7 +272,7 @@ abstract class StackVariableReachabilityWithReassignment extends StackVariableRe
    * accounts for loops where the condition is provably true upon entry.
    */
   override predicate reaches(ControlFlowNode source, SemanticStackVariable v, ControlFlowNode sink) {
-    reachesTo(source, v, sink, _)
+    this.reachesTo(source, v, sink, _)
   }
 
   /**
@@ -278,21 +282,21 @@ abstract class StackVariableReachabilityWithReassignment extends StackVariableRe
     ControlFlowNode source, SemanticStackVariable v, ControlFlowNode sink, SemanticStackVariable v0
   ) {
     exists(ControlFlowNode def |
-      actualSourceReaches(source, v, def, v0) and
+      this.actualSourceReaches(source, v, def, v0) and
       StackVariableReachability.super.reaches(def, v0, sink) and
-      isSinkActual(sink, v0)
+      this.isSinkActual(sink, v0)
     )
   }
 
   private predicate actualSourceReaches(
     ControlFlowNode source, SemanticStackVariable v, ControlFlowNode def, SemanticStackVariable v0
   ) {
-    isSourceActual(source, v) and def = source and v0 = v
+    this.isSourceActual(source, v) and def = source and v0 = v
     or
     exists(ControlFlowNode source1, SemanticStackVariable v1 |
-      actualSourceReaches(source, v, source1, v1)
+      this.actualSourceReaches(source, v, source1, v1)
     |
-      reassignment(source1, v1, def, v0)
+      this.reassignment(source1, v1, def, v0)
     )
   }
 
@@ -304,14 +308,14 @@ abstract class StackVariableReachabilityWithReassignment extends StackVariableRe
   }
 
   final override predicate isSource(ControlFlowNode node, StackVariable v) {
-    isSourceActual(node, v)
+    this.isSourceActual(node, v)
     or
     // Reassignment generates a new (non-actual) source
-    reassignment(_, _, node, v)
+    this.reassignment(_, _, node, v)
   }
 
   final override predicate isSink(ControlFlowNode node, StackVariable v) {
-    isSinkActual(node, v)
+    this.isSinkActual(node, v)
     or
     // Reassignment generates a new (non-actual) sink
     exprDefinition(_, node, v.getAnAccess())
@@ -342,21 +346,21 @@ abstract class StackVariableReachabilityExt extends string {
   /** See `StackVariableReachability.reaches`. */
   predicate reaches(ControlFlowNode source, SemanticStackVariable v, ControlFlowNode sink) {
     exists(BasicBlock bb, int i |
-      isSource(source, v) and
+      this.isSource(source, v) and
       bb.getNode(i) = source and
       not bb.isUnreachable()
     |
       exists(int j |
         j > i and
         sink = bb.getNode(j) and
-        isSink(sink, v) and
-        not exists(int k | isBarrier(source, bb.getNode(k), bb.getNode(k + 1), v) |
+        this.isSink(sink, v) and
+        not exists(int k | this.isBarrier(source, bb.getNode(k), bb.getNode(k + 1), v) |
           k in [i .. j - 1]
         )
       )
       or
-      not exists(int k | isBarrier(source, bb.getNode(k), bb.getNode(k + 1), v) | k >= i) and
-      bbSuccessorEntryReaches(source, bb, v, sink, _)
+      not exists(int k | this.isBarrier(source, bb.getNode(k), bb.getNode(k + 1), v) | k >= i) and
+      this.bbSuccessorEntryReaches(source, bb, v, sink, _)
     )
   }
 
@@ -367,22 +371,22 @@ abstract class StackVariableReachabilityExt extends string {
     exists(BasicBlock succ, boolean succSkipsFirstLoopAlwaysTrueUponEntry |
       bbSuccessorEntryReachesLoopInvariant(bb, succ, skipsFirstLoopAlwaysTrueUponEntry,
         succSkipsFirstLoopAlwaysTrueUponEntry) and
-      not isBarrier(source, bb.getEnd(), succ.getStart(), v)
+      not this.isBarrier(source, bb.getEnd(), succ.getStart(), v)
     |
-      bbEntryReachesLocally(source, succ, v, node) and
+      this.bbEntryReachesLocally(source, succ, v, node) and
       succSkipsFirstLoopAlwaysTrueUponEntry = false
       or
-      not exists(int k | isBarrier(source, succ.getNode(k), succ.getNode(k + 1), v)) and
-      bbSuccessorEntryReaches(source, succ, v, node, succSkipsFirstLoopAlwaysTrueUponEntry)
+      not exists(int k | this.isBarrier(source, succ.getNode(k), succ.getNode(k + 1), v)) and
+      this.bbSuccessorEntryReaches(source, succ, v, node, succSkipsFirstLoopAlwaysTrueUponEntry)
     )
   }
 
   private predicate bbEntryReachesLocally(
     ControlFlowNode source, BasicBlock bb, SemanticStackVariable v, ControlFlowNode node
   ) {
-    isSource(source, v) and
-    exists(int n | node = bb.getNode(n) and isSink(node, v) |
-      not exists(int m | m < n | isBarrier(source, bb.getNode(m), bb.getNode(m + 1), v))
+    this.isSource(source, v) and
+    exists(int n | node = bb.getNode(n) and this.isSink(node, v) |
+      not exists(int m | m < n | this.isBarrier(source, bb.getNode(m), bb.getNode(m + 1), v))
     )
   }
 }

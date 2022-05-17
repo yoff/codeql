@@ -112,24 +112,6 @@ class Class extends UserType {
   }
 
   /**
-   * DEPRECATED: Use `getCanonicalMember(int)` or `getAMember(int)` instead.
-   * Gets the `index`th member of this class.
-   */
-  deprecated Declaration getMember(int index) {
-    member(underlyingElement(this), index, unresolveElement(result))
-  }
-
-  /**
-   * DEPRECATED: As this includes a somewhat arbitrary number of
-   *             template instantiations, it is unlikely to do what
-   *             you need.
-   * Gets the number of members that this class has. This includes both
-   * templates that are in this class, and instantiations of those
-   * templates.
-   */
-  deprecated int getNumMember() { result = count(this.getAMember()) }
-
-  /**
    * Gets a private member declared in this class, struct or union.
    * For template members, this may be either the template or an
    * instantiation of that template. For just the template, use
@@ -206,26 +188,7 @@ class Class extends UserType {
    * it is callable by a particular caller. For C++11, there's also a question
    * of whether to include members that are defaulted or deleted.
    */
-  deprecated predicate hasCopyConstructor() {
-    exists(CopyConstructor cc | cc = this.getAMemberFunction())
-  }
-
-  /**
-   * Holds if this class has a copy assignment operator that is either
-   * explicitly declared (though possibly `= delete`) or is auto-generated,
-   * non-trivial and called from somewhere.
-   *
-   * DEPRECATED: There is more than one reasonable definition of what it means
-   * to have a copy assignment operator, and we do not want to promote one
-   * particular definition by naming it with this predicate. Having a copy
-   * assignment operator could mean that such a member is declared or defined
-   * in the source or that it is callable by a particular caller. For C++11,
-   * there's also a question of whether to include members that are defaulted
-   * or deleted.
-   */
-  deprecated predicate hasCopyAssignmentOperator() {
-    exists(CopyAssignmentOperator coa | coa = this.getAMemberFunction())
-  }
+  deprecated predicate hasCopyConstructor() { this.getAMemberFunction() instanceof CopyConstructor }
 
   /**
    * Like accessOfBaseMember but returns multiple results if there are multiple
@@ -237,7 +200,7 @@ class Class extends UserType {
     exists(ClassDerivation cd | cd.getBaseClass() = base |
       result =
         this.accessOfBaseMemberMulti(cd.getDerivedClass(),
-          fieldInBase.accessInDirectDerived(cd.getASpecifier().(AccessSpecifier)))
+          fieldInBase.accessInDirectDerived(cd.getASpecifier()))
     )
   }
 
@@ -261,21 +224,20 @@ class Class extends UserType {
    * includes the case of `base` = `this`.
    */
   AccessSpecifier accessOfBaseMember(Declaration member) {
-    result =
-      this.accessOfBaseMember(member.getDeclaringType(), member.getASpecifier().(AccessSpecifier))
+    result = this.accessOfBaseMember(member.getDeclaringType(), member.getASpecifier())
   }
 
   /**
    * DEPRECATED: name changed to `hasImplicitCopyConstructor` to reflect that
    * `= default` members are no longer included.
    */
-  deprecated predicate hasGeneratedCopyConstructor() { hasImplicitCopyConstructor() }
+  deprecated predicate hasGeneratedCopyConstructor() { this.hasImplicitCopyConstructor() }
 
   /**
    * DEPRECATED: name changed to `hasImplicitCopyAssignmentOperator` to
    * reflect that `= default` members are no longer included.
    */
-  deprecated predicate hasGeneratedCopyAssignmentOperator() { hasImplicitCopyConstructor() }
+  deprecated predicate hasGeneratedCopyAssignmentOperator() { this.hasImplicitCopyConstructor() }
 
   /**
    * Holds if this class, struct or union has an implicitly-declared copy
@@ -289,6 +251,16 @@ class Class extends UserType {
     not this.implicitCopyConstructorDeleted() and
     forall(CopyConstructor cc | cc = this.getAMemberFunction() |
       cc.isCompilerGenerated() and not cc.isDeleted()
+    ) and
+    (
+      not this instanceof ClassTemplateInstantiation
+      or
+      this.(ClassTemplateInstantiation).getTemplate().hasImplicitCopyConstructor()
+    ) and
+    (
+      not this instanceof PartialClassTemplateSpecialization
+      or
+      this.(PartialClassTemplateSpecialization).getPrimaryTemplate().hasImplicitCopyConstructor()
     )
   }
 
@@ -304,6 +276,18 @@ class Class extends UserType {
     not this.implicitCopyAssignmentOperatorDeleted() and
     forall(CopyAssignmentOperator ca | ca = this.getAMemberFunction() |
       ca.isCompilerGenerated() and not ca.isDeleted()
+    ) and
+    (
+      not this instanceof ClassTemplateInstantiation
+      or
+      this.(ClassTemplateInstantiation).getTemplate().hasImplicitCopyAssignmentOperator()
+    ) and
+    (
+      not this instanceof PartialClassTemplateSpecialization
+      or
+      this.(PartialClassTemplateSpecialization)
+          .getPrimaryTemplate()
+          .hasImplicitCopyAssignmentOperator()
     )
   }
 
@@ -319,7 +303,7 @@ class Class extends UserType {
     exists(Type t | t = this.getAFieldSubobjectType().getUnspecifiedType() |
       // Note: Overload resolution is not implemented -- all copy
       // constructors are considered equal.
-      this.cannotAccessCopyConstructorOnAny(t.(Class))
+      this.cannotAccessCopyConstructorOnAny(t)
     )
     or
     // - T has direct or virtual base class that cannot be copied (has deleted,
@@ -392,7 +376,7 @@ class Class extends UserType {
     exists(Type t | t = this.getAFieldSubobjectType().getUnspecifiedType() |
       // Note: Overload resolution is not implemented -- all copy assignment
       // operators are considered equal.
-      this.cannotAccessCopyAssignmentOperatorOnAny(t.(Class))
+      this.cannotAccessCopyAssignmentOperatorOnAny(t)
     )
     or
     exists(Class c | c = this.getADirectOrVirtualBase() |
@@ -487,7 +471,7 @@ class Class extends UserType {
     exists(ClassDerivation cd |
       // Add the offset of the direct base class and the offset of `baseClass`
       // within that direct base class.
-      cd = getADerivation() and
+      cd = this.getADerivation() and
       result = cd.getBaseClass().getANonVirtualBaseClassByteOffset(baseClass) + cd.getByteOffset()
     )
   }
@@ -502,12 +486,12 @@ class Class extends UserType {
    */
   int getABaseClassByteOffset(Class baseClass) {
     // Handle the non-virtual case.
-    result = getANonVirtualBaseClassByteOffset(baseClass)
+    result = this.getANonVirtualBaseClassByteOffset(baseClass)
     or
     exists(Class virtualBaseClass, int virtualBaseOffset, int offsetFromVirtualBase |
       // Look for the base class as a non-virtual base of a direct or indirect
       // virtual base, adding the two offsets.
-      getVirtualBaseClassByteOffset(virtualBaseClass) = virtualBaseOffset and
+      this.getVirtualBaseClassByteOffset(virtualBaseClass) = virtualBaseOffset and
       offsetFromVirtualBase = virtualBaseClass.getANonVirtualBaseClassByteOffset(baseClass) and
       result = virtualBaseOffset + offsetFromVirtualBase
     )
@@ -623,11 +607,11 @@ class Class extends UserType {
    * inherits one).
    */
   predicate isPolymorphic() {
-    exists(MemberFunction f | f.getDeclaringType() = getABaseClass*() and f.isVirtual())
+    exists(MemberFunction f | f.getDeclaringType() = this.getABaseClass*() and f.isVirtual())
   }
 
   override predicate involvesTemplateParameter() {
-    getATemplateArgument().(Type).involvesTemplateParameter()
+    this.getATemplateArgument().(Type).involvesTemplateParameter()
   }
 
   /** Holds if this class, struct or union was declared 'final'. */
@@ -765,7 +749,7 @@ class ClassDerivation extends Locatable, @derivation {
    * };
    * ```
    */
-  Class getBaseClass() { result = getBaseType().getUnderlyingType() }
+  Class getBaseClass() { result = this.getBaseType().getUnderlyingType() }
 
   override string getAPrimaryQlClass() { result = "ClassDerivation" }
 
@@ -818,7 +802,7 @@ class ClassDerivation extends Locatable, @derivation {
   predicate hasSpecifier(string s) { this.getASpecifier().hasName(s) }
 
   /** Holds if the derivation is for a virtual base class. */
-  predicate isVirtual() { hasSpecifier("virtual") }
+  predicate isVirtual() { this.hasSpecifier("virtual") }
 
   /** Gets the location of the derivation. */
   override Location getLocation() { derivations(underlyingElement(this), _, _, _, result) }
@@ -846,7 +830,7 @@ class ClassDerivation extends Locatable, @derivation {
  * ```
  */
 class LocalClass extends Class {
-  LocalClass() { isLocal() }
+  LocalClass() { this.isLocal() }
 
   override string getAPrimaryQlClass() { not this instanceof LocalStruct and result = "LocalClass" }
 
@@ -888,7 +872,7 @@ class NestedClass extends Class {
  * pure virtual function.
  */
 class AbstractClass extends Class {
-  AbstractClass() { exists(PureVirtualFunction f | this.getAMemberFunction() = f) }
+  AbstractClass() { this.getAMemberFunction() instanceof PureVirtualFunction }
 
   override string getAPrimaryQlClass() { result = "AbstractClass" }
 }
@@ -989,9 +973,9 @@ class ClassTemplateSpecialization extends Class {
   TemplateClass getPrimaryTemplate() {
     // Ignoring template arguments, the primary template has the same name
     // as each of its specializations.
-    result.getSimpleName() = getSimpleName() and
+    result.getSimpleName() = this.getSimpleName() and
     // It is in the same namespace as its specializations.
-    result.getNamespace() = getNamespace() and
+    result.getNamespace() = this.getNamespace() and
     // It is distinguished by the fact that each of its template arguments
     // is a distinct template parameter.
     count(TemplateParameter tp | tp = result.getATemplateArgument()) =
@@ -1074,31 +1058,6 @@ class PartialClassTemplateSpecialization extends ClassTemplateSpecialization {
 }
 
 /**
- * An "interface" is a class that only contains pure virtual functions (and contains
- * at least one such function).  For example:
- * ```
- * class MyInterfaceClass {
- * public:
- *   virtual void myMethod1() = 0;
- *   virtual void myMethod2() = 0;
- * };
- * ```
- *
- * DEPRECATED: This class is considered to be too specific for general usage.
- */
-deprecated class Interface extends Class {
-  Interface() {
-    forex(Declaration m |
-      m.getDeclaringType() = this.getABaseClass*() and not compgenerated(unresolveElement(m))
-    |
-      m instanceof PureVirtualFunction
-    )
-  }
-
-  override string getAPrimaryQlClass() { result = "Interface" }
-}
-
-/**
  * A class/struct derivation that is virtual.  For example the derivation in
  * the following code is a `VirtualClassDerivation`:
  * ```
@@ -1108,7 +1067,7 @@ deprecated class Interface extends Class {
  * ```
  */
 class VirtualClassDerivation extends ClassDerivation {
-  VirtualClassDerivation() { hasSpecifier("virtual") }
+  VirtualClassDerivation() { this.hasSpecifier("virtual") }
 
   override string getAPrimaryQlClass() { result = "VirtualClassDerivation" }
 }
@@ -1136,7 +1095,7 @@ class VirtualBaseClass extends Class {
   VirtualClassDerivation getAVirtualDerivation() { result.getBaseClass() = this }
 
   /** A class/struct that is derived from this one using virtual inheritance. */
-  Class getAVirtuallyDerivedClass() { result = getAVirtualDerivation().getDerivedClass() }
+  Class getAVirtuallyDerivedClass() { result = this.getAVirtualDerivation().getDerivedClass() }
 }
 
 /**
@@ -1155,7 +1114,7 @@ class ProxyClass extends UserType {
   override string getAPrimaryQlClass() { result = "ProxyClass" }
 
   /** Gets the location of the proxy class. */
-  override Location getLocation() { result = getTemplateParameter().getDefinitionLocation() }
+  override Location getLocation() { result = this.getTemplateParameter().getDefinitionLocation() }
 
   /** Gets the template parameter for which this is the proxy class. */
   TemplateParameter getTemplateParameter() {

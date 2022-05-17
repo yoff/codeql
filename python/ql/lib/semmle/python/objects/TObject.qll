@@ -5,6 +5,7 @@ private import semmle.python.types.Builtins
 private import semmle.python.objects.ObjectInternal
 private import semmle.python.pointsto.PointsTo
 private import semmle.python.pointsto.PointsToContext
+private import semmle.python.internal.CachedStages
 
 /**
  * Internal type backing `ObjectInternal` and `Value`
@@ -150,8 +151,10 @@ newtype TObject =
   TBuiltinTuple(Builtin bltn) { bltn.getClass() = Builtin::special("tuple") } or
   /** Represents a tuple in the Python source */
   TPythonTuple(TupleNode origin, PointsToContext context) {
-    origin.isLoad() and
-    context.appliesTo(origin)
+    exists(Scope s |
+      context.appliesToScope(s) and
+      scope_loads_tuplenode(s, origin)
+    )
   } or
   /** Varargs tuple */
   TVarargsTuple(CallNode call, PointsToContext context, int offset, int length) {
@@ -175,7 +178,7 @@ newtype TObject =
     not count(instantiation.getAnArg()) = 1 and
     Types::getMro(metacls).contains(TType())
   } or
-  /** Represents `sys.version_info`. Acts like a tuple with a range of values depending on the version being analysed. */
+  /** Represents `sys.version_info`. Acts like a tuple with a range of values depending on the version being analyzed. */
   TSysVersionInfo() or
   /** Represents a module that is inferred to perhaps exist, but is not present in the database. */
   TAbsentModule(string name) { missing_imported_module(_, _, name) } or
@@ -200,6 +203,13 @@ newtype TObject =
     index.isNotSubscriptedType() and
     Expressions::subscriptPartsPointsTo(_, _, generic, index)
   }
+
+/** Join-order helper for TPythonTuple */
+pragma[nomagic]
+private predicate scope_loads_tuplenode(Scope s, TupleNode origin) {
+  origin.isLoad() and
+  origin.getScope() = s
+}
 
 /** Holds if the object `t` is a type. */
 predicate isType(ObjectInternal t) {
@@ -233,7 +243,7 @@ predicate class_method(
  * Holds if the literal corresponding to the control flow node `n` has class `cls`.
  *
  * Helper predicate for `literal_instantiation`. Prevents a bad join with
- * `PointsToContext::appliesTo` from occuring.
+ * `PointsToContext::appliesTo` from occurring.
  */
 pragma[nomagic]
 private predicate literal_node_class(ControlFlowNode n, ClassObjectInternal cls) {
@@ -387,7 +397,7 @@ private predicate concrete_class(PythonClassObjectInternal cls) {
       not exists(Raise r, Name ex |
         r.getScope() = f and
         (r.getException() = ex or r.getException().(Call).getFunc() = ex) and
-        (ex.getId() = "NotImplementedError" or ex.getId() = "NotImplemented")
+        ex.getId() = ["NotImplementedError", "NotImplemented"]
       )
     )
   )
@@ -437,18 +447,14 @@ predicate missing_imported_module(ControlFlowNode imp, Context ctx, string name)
  * Helper for missing modules to determine if name `x.y` is a module `x.y` or
  * an attribute `y` of module `x`. This list should be added to as required.
  */
-predicate common_module_name(string name) {
-  name = "zope.interface"
-  or
-  name = "six.moves"
-}
+predicate common_module_name(string name) { name = ["zope.interface", "six.moves"] }
 
 /**
  * A declaration of a class, either a built-in class or a source definition
  * This acts as a helper for ClassObjectInternal allowing some lookup without
  * recursion.
  */
-library class ClassDecl extends @py_object {
+class ClassDecl extends @py_object {
   ClassDecl() {
     this.(Builtin).isClass() and not this = Builtin::unknownType()
     or
@@ -482,16 +488,11 @@ library class ClassDecl extends @py_object {
    */
   predicate isSpecial() {
     exists(string name | this = Builtin::special(name) |
-      name = "type" or
-      name = "super" or
-      name = "bool" or
-      name = "NoneType" or
-      name = "tuple" or
-      name = "property" or
-      name = "ClassMethod" or
-      name = "StaticMethod" or
-      name = "MethodType" or
-      name = "ModuleType"
+      name =
+        [
+          "type", "super", "bool", "NoneType", "tuple", "property", "ClassMethod", "StaticMethod",
+          "MethodType", "ModuleType"
+        ]
     )
   }
 
@@ -514,11 +515,7 @@ library class ClassDecl extends @py_object {
 
   /** Holds if this class is the abstract base class */
   predicate isAbstractBaseClass(string name) {
-    exists(Module m |
-      m.getName() = "_abcoll"
-      or
-      m.getName() = "_collections_abc"
-    |
+    exists(Module m | m.getName() = ["_abcoll", "_collections_abc"] |
       this.getClass().getScope() = m and
       this.getName() = name
     )

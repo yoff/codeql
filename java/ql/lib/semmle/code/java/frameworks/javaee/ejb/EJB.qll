@@ -8,7 +8,7 @@ import EJBJarXML
  */
 abstract class EJB extends Class {
   /** Gets a `Callable` that is directly or indirectly called from within the EJB. */
-  Callable getAUsedCallable() { getACallable().polyCalls*(result) }
+  Callable getAUsedCallable() { this.getACallable().polyCalls*(result) }
 }
 
 /**
@@ -22,7 +22,7 @@ class SessionEJB extends EJB {
     this.getAnAnnotation().getType().hasName("Stateless") or
     this.getAnAnnotation().getType().hasName("Stateful") or
     // XML deployment descriptor.
-    exists(EjbJarXMLFile f |
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getASessionElement().getAnEjbClassElement().getACharactersSet().getCharacters()
     )
@@ -33,16 +33,16 @@ class SessionEJB extends EJB {
     // Either the EJB does not declare any business interfaces explicitly
     // and implements a single interface candidate,
     // which is then considered to be the business interface...
-    count(getAnExplicitBusinessInterface()) = 0 and
-    count(getAnImplementedBusinessInterfaceCandidate()) = 1 and
-    result = getAnImplementedBusinessInterfaceCandidate()
+    count(this.getAnExplicitBusinessInterface()) = 0 and
+    count(this.getAnImplementedBusinessInterfaceCandidate()) = 1 and
+    result = this.getAnImplementedBusinessInterfaceCandidate()
     or
     // ...or each business interface needs to be declared explicitly.
     (
-      count(getAnImplementedBusinessInterfaceCandidate()) != 1 or
-      count(getAnExplicitBusinessInterface()) != 0
+      count(this.getAnImplementedBusinessInterfaceCandidate()) != 1 or
+      count(this.getAnExplicitBusinessInterface()) != 0
     ) and
-    result = getAnExplicitBusinessInterface()
+    result = this.getAnExplicitBusinessInterface()
   }
 
   /**
@@ -121,7 +121,7 @@ class StatefulSessionEJB extends SessionEJB {
     this.getAnAnnotation().getType().hasName("Stateful")
     or
     // XML deployment descriptor.
-    exists(EjbJarXMLFile f, EjbJarSessionElement se |
+    exists(EjbJarXmlFile f, EjbJarSessionElement se |
       se = f.getASessionElement() and
       this.getQualifiedName() = se.getAnEjbClassElement().getACharactersSet().getCharacters() and
       se.getASessionTypeElement().isStateful()
@@ -138,7 +138,7 @@ class StatelessSessionEJB extends SessionEJB {
     this.getAnAnnotation().getType().hasName("Stateless")
     or
     // XML deployment descriptor.
-    exists(EjbJarXMLFile f, EjbJarSessionElement se |
+    exists(EjbJarXmlFile f, EjbJarSessionElement se |
       se = f.getASessionElement() and
       this.getQualifiedName() = se.getAnEjbClassElement().getACharactersSet().getCharacters() and
       se.getASessionTypeElement().isStateless()
@@ -158,7 +158,7 @@ class MessageDrivenBean extends EJB {
     this.getAnAnnotation().getType().hasName("MessageDriven")
     or
     // XML deployment descriptor.
-    exists(EjbJarXMLFile f |
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getAMessageDrivenElement().getAnEjbClassElement().getACharactersSet().getCharacters()
     )
@@ -174,7 +174,7 @@ class EntityEJB extends EJB {
     this instanceof EntityBean
     or
     // XML deployment descriptor.
-    exists(EjbJarXMLFile f |
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getAnEntityElement().getAnEjbClassElement().getACharactersSet().getCharacters()
     )
@@ -198,7 +198,7 @@ abstract class EjbInterfaceAnnotation extends Annotation {
     // Returns the type `Foo` of any type literal `Foo.class` occurring
     // within the "value" element of this annotation.
     // Uses `getAChildExpr*()` since the "value" element can have type `Class` or `Class[]`.
-    exists(TypeLiteral tl | tl = getValue("value").getAChildExpr*() |
+    exists(TypeLiteral tl | tl = this.getValue("value").getAChildExpr*() |
       result = tl.getReferencedType()
     )
   }
@@ -234,10 +234,10 @@ abstract class BusinessInterface extends Interface {
   abstract SessionEJB getAnEJB();
 
   /** Holds if this business interface is declared local. */
-  abstract predicate isLocal();
+  abstract predicate isDeclaredLocal();
 
   /** Holds if this business interface is declared remote. */
-  abstract predicate isRemote();
+  abstract predicate isDeclaredRemote();
 }
 
 /**
@@ -245,29 +245,29 @@ abstract class BusinessInterface extends Interface {
  */
 class XmlSpecifiedBusinessInterface extends BusinessInterface {
   XmlSpecifiedBusinessInterface() {
-    exists(EjbJarXMLFile f |
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getASessionElement().getABusinessElement().getACharactersSet().getCharacters()
     )
   }
 
   override SessionEJB getAnEJB() {
-    exists(EjbJarXMLFile f, EjbJarSessionElement se |
+    exists(EjbJarXmlFile f, EjbJarSessionElement se |
       se = f.getASessionElement() and
       this.getQualifiedName() = se.getABusinessElement().getACharactersSet().getCharacters() and
       result.getQualifiedName() = se.getAnEjbClassElement().getACharactersSet().getCharacters()
     )
   }
 
-  override predicate isLocal() {
-    exists(EjbJarXMLFile f |
+  override predicate isDeclaredLocal() {
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getASessionElement().getABusinessLocalElement().getACharactersSet().getCharacters()
     )
   }
 
-  override predicate isRemote() {
-    exists(EjbJarXMLFile f |
+  override predicate isDeclaredRemote() {
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getASessionElement().getABusinessRemoteElement().getACharactersSet().getCharacters()
     )
@@ -295,9 +295,9 @@ class AnnotatedBusinessInterface extends BusinessInterface {
     result.getAnAnnotation().(BusinessInterfaceAnnotation).getANamedType() = this
   }
 
-  override predicate isLocal() { this instanceof LocalAnnotatedBusinessInterface }
+  override predicate isDeclaredLocal() { this instanceof LocalAnnotatedBusinessInterface }
 
-  override predicate isRemote() { this instanceof RemoteAnnotatedBusinessInterface }
+  override predicate isDeclaredRemote() { this instanceof RemoteAnnotatedBusinessInterface }
 }
 
 /**
@@ -411,7 +411,7 @@ class ExtendedRemoteInterface extends LegacyEjbRemoteInterface, RemoteEJBInterfa
 /** A legacy remote interface specified within an XML deployment descriptor. */
 class XmlSpecifiedRemoteInterface extends LegacyEjbRemoteInterface {
   XmlSpecifiedRemoteInterface() {
-    exists(EjbJarXMLFile f |
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getASessionElement().getARemoteElement().getACharactersSet().getCharacters()
     )
@@ -422,7 +422,7 @@ class XmlSpecifiedRemoteInterface extends LegacyEjbRemoteInterface {
    * for this legacy EJB remote interface.
    */
   SessionEJB getAnEJB() {
-    exists(EjbJarXMLFile f, EjbJarSessionElement se |
+    exists(EjbJarXmlFile f, EjbJarSessionElement se |
       se = f.getASessionElement() and
       this.getQualifiedName() = se.getARemoteElement().getACharactersSet().getCharacters() and
       result.getQualifiedName() = se.getAnEjbClassElement().getACharactersSet().getCharacters()
@@ -447,13 +447,13 @@ class AnnotatedRemoteHomeInterface extends LegacyEjbRemoteHomeInterface {
   SessionEJB getAnEJB() { result.getAnAnnotation().(RemoteHomeAnnotation).getANamedType() = this }
 
   /** Gets a remote interface associated with this legacy remote home interface. */
-  Interface getAnAssociatedRemoteInterface() { result = getACreateMethod().getReturnType() }
+  Interface getAnAssociatedRemoteInterface() { result = this.getACreateMethod().getReturnType() }
 }
 
 /** A legacy remote home interface specified within an XML deployment descriptor. */
 class XmlSpecifiedRemoteHomeInterface extends LegacyEjbRemoteHomeInterface {
   XmlSpecifiedRemoteHomeInterface() {
-    exists(EjbJarXMLFile f |
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getASessionElement().getARemoteHomeElement().getACharactersSet().getCharacters()
     )
@@ -461,7 +461,7 @@ class XmlSpecifiedRemoteHomeInterface extends LegacyEjbRemoteHomeInterface {
 
   /** Gets an EJB to which this interface belongs. */
   SessionEJB getAnEJB() {
-    exists(EjbJarXMLFile f, EjbJarSessionElement se |
+    exists(EjbJarXmlFile f, EjbJarSessionElement se |
       se = f.getASessionElement() and
       this.getQualifiedName() = se.getARemoteHomeElement().getACharactersSet().getCharacters() and
       result.getQualifiedName() = se.getAnEjbClassElement().getACharactersSet().getCharacters()
@@ -478,7 +478,7 @@ class ExtendedLocalInterface extends LegacyEjbLocalInterface, LocalEJBInterface 
 /** A legacy local interface specified within an XML deployment descriptor. */
 class XmlSpecifiedLocalInterface extends LegacyEjbLocalInterface {
   XmlSpecifiedLocalInterface() {
-    exists(EjbJarXMLFile f |
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getASessionElement().getALocalElement().getACharactersSet().getCharacters()
     )
@@ -486,7 +486,7 @@ class XmlSpecifiedLocalInterface extends LegacyEjbLocalInterface {
 
   /** Gets an EJB to which this interface belongs. */
   SessionEJB getAnEJB() {
-    exists(EjbJarXMLFile f, EjbJarSessionElement se |
+    exists(EjbJarXmlFile f, EjbJarSessionElement se |
       se = f.getASessionElement() and
       this.getQualifiedName() = se.getALocalElement().getACharactersSet().getCharacters() and
       result.getQualifiedName() = se.getAnEjbClassElement().getACharactersSet().getCharacters()
@@ -511,13 +511,13 @@ class AnnotatedLocalHomeInterface extends LegacyEjbLocalHomeInterface {
   SessionEJB getAnEJB() { result.getAnAnnotation().(LocalHomeAnnotation).getANamedType() = this }
 
   /** Gets a local interface associated with this legacy local home interface. */
-  Interface getAnAssociatedLocalInterface() { result = getACreateMethod().getReturnType() }
+  Interface getAnAssociatedLocalInterface() { result = this.getACreateMethod().getReturnType() }
 }
 
 /** A legacy local home interface specified within an XML deployment descriptor. */
 class XmlSpecifiedLocalHomeInterface extends LegacyEjbLocalHomeInterface {
   XmlSpecifiedLocalHomeInterface() {
-    exists(EjbJarXMLFile f |
+    exists(EjbJarXmlFile f |
       this.getQualifiedName() =
         f.getASessionElement().getALocalHomeElement().getACharactersSet().getCharacters()
     )
@@ -525,7 +525,7 @@ class XmlSpecifiedLocalHomeInterface extends LegacyEjbLocalHomeInterface {
 
   /** Gets an EJB to which this interface belongs. */
   SessionEJB getAnEJB() {
-    exists(EjbJarXMLFile f, EjbJarSessionElement se |
+    exists(EjbJarXmlFile f, EjbJarSessionElement se |
       se = f.getASessionElement() and
       this.getQualifiedName() = se.getALocalHomeElement().getACharactersSet().getCharacters() and
       result.getQualifiedName() = se.getAnEjbClassElement().getACharactersSet().getCharacters()
@@ -540,7 +540,7 @@ class XmlSpecifiedLocalHomeInterface extends LegacyEjbLocalHomeInterface {
 class RemoteInterface extends Interface {
   RemoteInterface() {
     this instanceof RemoteAnnotatedBusinessInterface or
-    this.(XmlSpecifiedBusinessInterface).isRemote() or
+    this.(XmlSpecifiedBusinessInterface).isDeclaredRemote() or
     exists(SessionEJB ejb | this = ejb.getARemoteInterface())
   }
 
@@ -562,8 +562,8 @@ class RemoteInterface extends Interface {
 
   /** Gets a remote method implementation for this remote interface. */
   Method getARemoteMethodImplementation() {
-    result = getARemoteMethodImplementationChecked() or
-    result = getARemoteMethodImplementationUnchecked()
+    result = this.getARemoteMethodImplementationChecked() or
+    result = this.getARemoteMethodImplementationUnchecked()
   }
 
   /**
@@ -572,7 +572,7 @@ class RemoteInterface extends Interface {
    * abstract methods or overriding within an interface hierarchy.
    */
   Method getARemoteMethodImplementationChecked() {
-    result.overrides(getARemoteMethod()) and
+    result.overrides+(this.getARemoteMethod()) and
     exists(result.getBody())
   }
 
@@ -586,9 +586,9 @@ class RemoteInterface extends Interface {
    */
   Method getARemoteMethodImplementationUnchecked() {
     exists(SessionEJB ejb, Method rm |
-      ejb = getAnEJB() and
-      not ejb.getASupertype*() = this and
-      rm = getARemoteMethod() and
+      ejb = this.getAnEJB() and
+      not ejb.getAnAncestor() = this and
+      rm = this.getARemoteMethod() and
       result = getAnInheritedMatchingMethodIgnoreThrows(ejb, rm.getSignature()) and
       not exists(inheritsMatchingMethodExceptThrows(ejb, rm))
     ) and
@@ -603,7 +603,7 @@ class RemoteInterface extends Interface {
 /** Holds if type `t` is valid for use with RMI, i.e. whether it is serializable. */
 predicate isValidRmiType(Type t) {
   t instanceof PrimitiveType or
-  t.(RefType).getASupertype*() instanceof TypeSerializable
+  t.(RefType).getAnAncestor() instanceof TypeSerializable
 }
 
 /** Gets an argument or result type of method `m` that is not compatible for use with RMI. */
@@ -632,8 +632,8 @@ Type getAnRmiIncompatibleType(Method m) {
 
 /** Holds if exception `ex` is an unchecked exception. */
 private predicate uncheckedException(Exception ex) {
-  ex.getType().getASupertype*().hasQualifiedName("java.lang", "Error") or
-  ex.getType().getASupertype*().hasQualifiedName("java.lang", "RuntimeException")
+  ex.getType().getAnAncestor().hasQualifiedName("java.lang", "Error") or
+  ex.getType().getAnAncestor().hasQualifiedName("java.lang", "RuntimeException")
 }
 
 /**
@@ -668,7 +668,7 @@ Type inheritsMatchingMethodExceptThrows(SessionEJB ejb, Method m) {
     sig = n.getSignature() and
     sig = m.getSignature() and
     exists(Exception ex | ex = n.getAnException() and not throwsExplicitUncheckedException(n, ex) |
-      not ex.getType().(RefType).hasSupertype*(m.getAnException().getType()) and
+      not ex.getType().hasSupertype*(m.getAnException().getType()) and
       result = ex.getType()
     )
   )
@@ -717,7 +717,7 @@ Type inheritsMatchingCreateMethodExceptThrows(StatefulSessionEJB ejb, EjbInterfa
     exists(Exception ex |
       ex = cm.getAnException() and not throwsExplicitUncheckedException(cm, ex)
     |
-      not ex.getType().(RefType).hasSupertype*(icm.getAnException().getType()) and
+      not ex.getType().hasSupertype*(icm.getAnException().getType()) and
       result = ex.getType()
     )
   )
@@ -732,7 +732,7 @@ Type inheritsMatchingCreateMethodExceptThrows(StatefulSessionEJB ejb, EjbInterfa
     exists(Exception ex |
       ex = im.getAnException() and not throwsExplicitUncheckedException(im, ex)
     |
-      not ex.getType().(RefType).hasSupertype*(icm.getAnException().getType()) and
+      not ex.getType().hasSupertype*(icm.getAnException().getType()) and
       result = ex.getType()
     )
   )
@@ -997,7 +997,7 @@ TransactionAttributeAnnotation getInnermostTransactionAttributeAnnotation(Method
  */
 class SetRollbackOnlyMethod extends Method {
   SetRollbackOnlyMethod() {
-    this.getDeclaringType().getASupertype*().hasQualifiedName("javax.ejb", "EJBContext") and
+    this.getDeclaringType().getAnAncestor().hasQualifiedName("javax.ejb", "EJBContext") and
     this.getName() = "setRollbackOnly" and
     this.hasNoParameters()
   }

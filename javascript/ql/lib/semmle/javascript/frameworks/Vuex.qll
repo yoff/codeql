@@ -5,38 +5,6 @@
 private import javascript
 private import semmle.javascript.dataflow.internal.FlowSteps as FlowSteps
 
-/** A minimal adapter for the `vue` model based on API nodes. */
-private module VueAPI {
-  /** A value exported from a `.vue` file. */
-  private class VueExportEntryPoint extends API::EntryPoint {
-    VueExportEntryPoint() { this = "VueExportEntryPoint" }
-
-    override DataFlow::SourceNode getAUse() { none() }
-
-    override DataFlow::Node getARhs() {
-      exists(Module mod |
-        mod.getFile() instanceof Vue::VueFile and
-        result = mod.getAnExportedValue("default")
-      )
-    }
-  }
-
-  /**
-   * An API node representing the object passed to the Vue constructor `new Vue({...})`
-   * or equivalent.
-   */
-  class VueConfigObject extends API::Node {
-    VueConfigObject() { this.getARhs() = any(Vue::Component c).getOwnOptionsObject() }
-
-    /** Gets an API node representing `this` in the Vue component. */
-    API::Node getAnInstanceRef() {
-      result = getAMember().getReceiver()
-      or
-      result = getAMember().getAMember().getReceiver()
-    }
-  }
-}
-
 /**
  * Provides classes and predicates for working with the `vuex` library.
  */
@@ -63,7 +31,7 @@ module Vuex {
   API::Node storeRef(string namespace) {
     result = vuex().getMember("Store").getInstance() and namespace = ""
     or
-    result = any(VueAPI::VueConfigObject v).getAnInstanceRef().getMember("$store") and
+    result = any(Vue::Component v).getInstance().getMember("$store") and
     namespace = ""
     or
     result =
@@ -146,13 +114,13 @@ module Vuex {
     }
 
     /** Gets the Vue component in which the generated functions are installed. */
-    VueAPI::VueConfigObject getVueConfigObject() {
+    Vue::Component getVueComponent() {
       exists(DataFlow::ObjectLiteralNode obj |
         obj.getASpreadProperty() = getReturn().getAUse() and
-        result.getAMember().getARhs() = obj
+        result.getOwnOptions().getAMember().getARhs() = obj
       )
       or
-      result.getAMember().getARhs() = this
+      result.getOwnOptions().getAMember().getARhs() = this
     }
   }
 
@@ -167,7 +135,7 @@ module Vuex {
     exists(MapHelperCall call, string localName |
       call.getHelperName() = helperName and
       call.hasMapping(localName, storeName) and
-      result = call.getVueConfigObject().getAnInstanceRef().getMember(localName) and
+      result = call.getVueComponent().getInstance().getMember(localName) and
       localName != "*"
     )
   }
@@ -259,7 +227,7 @@ module Vuex {
     result = getAMappedAccess(getMapHelperForCommitKind(kind), name).getParameter(0).getARhs()
   }
 
-  /** Gets a node that refers the payload of a comitted mutation with the given `name.` */
+  /** Gets a node that refers the payload of a committed mutation with the given `name.` */
   private DataFlow::Node committedPayloadSucc(string kind, string name) {
     // mutations: {
     //   name: (state, payload) => { ... }
@@ -353,10 +321,10 @@ module Vuex {
   /**
    * Gets the `x` in `mapState({name: () => x})`.
    */
-  DataFlow::Node mapStateHelperPred(VueAPI::VueConfigObject vue, string name) {
+  DataFlow::Node mapStateHelperPred(Vue::Component component, string name) {
     exists(MapHelperCall call |
       call.getHelperName() = "mapState" and
-      vue = call.getVueConfigObject() and
+      component = call.getVueComponent() and
       result = call.getLastParameter().getMember(name).getReturn().getARhs()
     )
   }
@@ -366,9 +334,9 @@ module Vuex {
    * corresponding property access.
    */
   predicate mapStateHelperStep(DataFlow::Node pred, DataFlow::Node succ) {
-    exists(VueAPI::VueConfigObject vue, string name |
-      pred = mapStateHelperPred(vue, name) and
-      succ = pragma[only_bind_out](vue).getAnInstanceRef().getMember(name).getAnImmediateUse()
+    exists(Vue::Component component, string name |
+      pred = mapStateHelperPred(component, name) and
+      succ = pragma[only_bind_out](component).getInstance().getMember(name).getAnImmediateUse()
     )
   }
 
@@ -397,19 +365,19 @@ module Vuex {
    */
   private module ProgramSlicing {
     /** Gets the innermost `package.json` file in a directory containing the given file. */
-    private PackageJSON getPackageJson(Container f) {
+    private PackageJson getPackageJson(Container f) {
       f = result.getFile().getParentContainer()
       or
       not exists(f.getFile("package.json")) and
       result = getPackageJson(f.getParentContainer())
     }
 
-    private predicate packageDependsOn(PackageJSON importer, PackageJSON dependency) {
+    private predicate packageDependsOn(PackageJson importer, PackageJson dependency) {
       importer.getADependenciesObject("").getADependency(dependency.getPackageName(), _)
     }
 
-    /** A package that can be considered an entry point for a Vuex app. */
-    private PackageJSON entryPointPackage() {
+    /** Gets a package that can be considered an entry point for a Vuex app. */
+    private PackageJson entryPointPackage() {
       result = getPackageJson(storeRef().getAnImmediateUse().getFile())
       or
       // Any package that imports a store-creating package is considered a potential entry point.
@@ -417,8 +385,8 @@ module Vuex {
     }
 
     pragma[nomagic]
-    private predicate arePackagesInSameVuexApp(PackageJSON a, PackageJSON b) {
-      exists(PackageJSON entry |
+    private predicate arePackagesInSameVuexApp(PackageJson a, PackageJson b) {
+      exists(PackageJson entry |
         entry = entryPointPackage() and
         packageDependsOn*(entry, a) and
         packageDependsOn*(entry, b)
@@ -428,7 +396,7 @@ module Vuex {
     /** Holds if the two files are considered to be part of the same Vuex app. */
     pragma[inline]
     predicate areFilesInSameVuexApp(File a, File b) {
-      not exists(PackageJSON pkg)
+      not exists(PackageJson pkg)
       or
       arePackagesInSameVuexApp(getPackageJson(a), getPackageJson(b))
     }

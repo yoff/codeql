@@ -43,8 +43,8 @@ private predicate viableParam(Call call, int i, ParameterNode p) {
  * Holds if `arg` is a possible argument to `p` taking virtual dispatch into account.
  */
 private predicate viableArgParam(ArgumentNode arg, ParameterNode p) {
-  exists(int i, Call call |
-    viableParam(call, i, p) and
+  exists(int i, DataFlowCall call |
+    viableParam(call.asCall(), i, p) and
     arg.argumentOf(call, i)
   )
 }
@@ -53,7 +53,7 @@ private predicate returnStep(Node n1, Node n2) {
   exists(ReturnStmt ret, Method m |
     ret.getEnclosingCallable() = m and
     ret.getResult() = n1.asExpr() and
-    m = dispatchCand(n2.asExpr())
+    pragma[only_bind_out](m) = dispatchCand(n2.asExpr())
   )
 }
 
@@ -94,12 +94,11 @@ private predicate step(Node n1, Node n2) {
     n2.(ImplicitInstanceAccess).getInstanceAccess().(OwnInstanceAccess).getEnclosingCallable() = c
   )
   or
-  exists(Field f |
-    f.getAnAssignedValue() = n1.asExpr() and
-    n2.asExpr().(FieldRead).getField() = f
-  )
+  n2.(FieldValueNode).getField().getAnAssignedValue() = n1.asExpr()
   or
-  n2.asExpr().(CastExpr).getExpr() = n1.asExpr()
+  n2.asExpr().(FieldRead).getField() = n1.(FieldValueNode).getField()
+  or
+  n2.asExpr().(CastingExpr).getExpr() = n1.asExpr()
   or
   n2.asExpr().(ChooseExpr).getAResultExpr() = n1.asExpr()
   or
@@ -132,7 +131,7 @@ private predicate step(Node n1, Node n2) {
   or
   exists(Field v |
     containerStep(n1.asExpr(), v.getAnAccess()) and
-    n2.asExpr() = v.getAnAccess()
+    n2.(FieldValueNode).getField() = v
   )
 }
 

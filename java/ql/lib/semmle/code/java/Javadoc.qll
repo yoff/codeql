@@ -3,7 +3,6 @@
  */
 
 import semmle.code.Location
-import Element
 
 /** A Javadoc parent is an element whose child can be some Javadoc documentation. */
 class JavadocParent extends @javadocParent, Top {
@@ -14,7 +13,7 @@ class JavadocParent extends @javadocParent, Top {
   JavadocElement getChild(int index) { result = this.getAChild() and result.getIndex() = index }
 
   /** Gets the number of documentation elements attached to this parent. */
-  int getNumChild() { result = count(getAChild()) }
+  int getNumChild() { result = count(this.getAChild()) }
 
   /** Gets a documentation element with the specified Javadoc tag name. */
   JavadocTag getATag(string name) { result = this.getAChild() and result.getTagName() = name }
@@ -33,7 +32,9 @@ class Javadoc extends JavadocParent, @javadoc {
   /** Gets the value of the `@author` tag, if any. */
   string getAuthor() { result = this.getATag("@author").getChild(0).toString() }
 
-  override string toString() { result = toStringPrefix() + getChild(0) + toStringPostfix() }
+  override string toString() {
+    result = this.toStringPrefix() + this.getChild(0) + this.toStringPostfix()
+  }
 
   private string toStringPrefix() {
     if isEolComment(this)
@@ -47,7 +48,7 @@ class Javadoc extends JavadocParent, @javadoc {
     if isEolComment(this)
     then result = ""
     else (
-      if strictcount(getAChild()) = 1 then result = " */" else result = " ... */"
+      if strictcount(this.getAChild()) = 1 then result = " */" else result = " ... */"
     )
   }
 
@@ -119,10 +120,10 @@ class ThrowsTag extends JavadocTag {
 
 /** A Javadoc `@see` tag. */
 class SeeTag extends JavadocTag {
-  SeeTag() { getTagName() = "@see" }
+  SeeTag() { this.getTagName() = "@see" }
 
   /** Gets the name of the entity referred to. */
-  string getReference() { result = getChild(0).toString() }
+  string getReference() { result = this.getChild(0).toString() }
 }
 
 /** A Javadoc `@author` tag. */
@@ -145,4 +146,47 @@ class JavadocText extends JavadocElement, @javadocText {
   override string toString() { result = this.getText() }
 
   override string getAPrimaryQlClass() { result = "JavadocText" }
+}
+
+/** A Kotlin comment. */
+class KtComment extends Top, @ktcomment {
+  /** Gets the full text of this comment. */
+  string getText() { ktComments(this, _, result) }
+
+  /** Holds if this comment is an EOL comment. */
+  predicate isEolComment() { ktComments(this, 1, _) }
+
+  /** Holds if this comment is a block comment. */
+  predicate isBlockComment() { ktComments(this, 2, _) }
+
+  /** Holds if this comment is a KDoc comment. */
+  predicate isDocComment() { ktComments(this, 3, _) }
+
+  /** Gets the sections of this comment. */
+  KtCommentSection getSections() { ktCommentSections(result, this, _) }
+
+  /** Gets the owner of this comment, if any. */
+  Top getOwner() { ktCommentOwners(this, result) }
+
+  override string toString() { result = this.getText() }
+
+  override string getAPrimaryQlClass() { result = "KtComment" }
+}
+
+/** A Kotlin comment. */
+class KtCommentSection extends @ktcommentsection {
+  /** Gets the content text of this section. */
+  string getContent() { ktCommentSections(this, _, result) }
+
+  /** Gets the parent comment. */
+  KtComment getParent() { ktCommentSections(this, result, _) }
+
+  /** Gets the section name if any. */
+  string getName() { ktCommentSectionNames(this, result) }
+
+  /** Gets the section subject name if any. */
+  string getSubjectName() { ktCommentSectionSubjectNames(this, result) }
+
+  /** Gets the string representation of this section. */
+  string toString() { result = this.getContent() }
 }

@@ -27,10 +27,10 @@ class Stmt extends StmtParent, @stmt {
    */
   BlockStmt getEnclosingBlock() {
     if
-      getParentStmt() instanceof BlockStmt and
-      not getParentStmt().(BlockStmt).getLocation() instanceof UnknownLocation
-    then result = getParentStmt()
-    else result = getParentStmt().getEnclosingBlock()
+      this.getParentStmt() instanceof BlockStmt and
+      not this.getParentStmt().(BlockStmt).getLocation() instanceof UnknownLocation
+    then result = this.getParentStmt()
+    else result = this.getParentStmt().getEnclosingBlock()
   }
 
   /** Gets a child of this statement. */
@@ -60,13 +60,6 @@ class Stmt extends StmtParent, @stmt {
   }
 
   override Location getLocation() { stmts(underlyingElement(this), _, result) }
-
-  /**
-   * Gets an int indicating the type of statement that this represents.
-   *
-   * DEPRECATED: use the subclasses of `Stmt` rather than relying on this predicate.
-   */
-  deprecated int getKind() { stmts(underlyingElement(this), result, _) }
 
   override string toString() { none() }
 
@@ -221,6 +214,26 @@ class IfStmt extends ConditionalStmt, @stmt_if {
   override string getAPrimaryQlClass() { result = "IfStmt" }
 
   /**
+   * Gets the initialization statement of this 'if' statement, if any.
+   *
+   * For example, for
+   * ```
+   * if (int x = y; b) { f(); }
+   * ```
+   * the result is `int x = y;`.
+   *
+   * Does not hold if the initialization statement is missing or an empty statement, as in
+   * ```
+   * if (b) { f(); }
+   * ```
+   * or
+   * ```
+   * if (; b) { f(); }
+   * ```
+   */
+  Stmt getInitialization() { if_initialization(underlyingElement(this), unresolveElement(result)) }
+
+  /**
    * Gets the condition expression of this 'if' statement.
    *
    * For example, for
@@ -229,7 +242,7 @@ class IfStmt extends ConditionalStmt, @stmt_if {
    * ```
    * the result is `b`.
    */
-  Expr getCondition() { result = this.getChild(0) }
+  Expr getCondition() { result = this.getChild(1) }
 
   override Expr getControllingExpr() { result = this.getCondition() }
 
@@ -271,7 +284,7 @@ class IfStmt extends ConditionalStmt, @stmt_if {
    * if (b) { x = 1; }
    * ```
    */
-  predicate hasElse() { exists(Stmt s | this.getElse() = s) }
+  predicate hasElse() { exists(this.getElse()) }
 
   override string toString() { result = "if (...) ... " }
 
@@ -307,6 +320,28 @@ class ConstexprIfStmt extends ConditionalStmt, @stmt_constexpr_if {
   override string getAPrimaryQlClass() { result = "ConstexprIfStmt" }
 
   /**
+   * Gets the initialization statement of this 'constexpr if' statement, if any.
+   *
+   * For example, for
+   * ```
+   * if constexpr (int x = y; b) { f(); }
+   * ```
+   * the result is `int x = y;`.
+   *
+   * Does not hold if the initialization statement is missing or an empty statement, as in
+   * ```
+   * if constexpr (b) { f(); }
+   * ```
+   * or
+   * ```
+   * if constexpr (; b) { f(); }
+   * ```
+   */
+  Stmt getInitialization() {
+    constexpr_if_initialization(underlyingElement(this), unresolveElement(result))
+  }
+
+  /**
    * Gets the condition expression of this 'constexpr if' statement.
    *
    * For example, for
@@ -315,7 +350,7 @@ class ConstexprIfStmt extends ConditionalStmt, @stmt_constexpr_if {
    * ```
    * the result is `b`.
    */
-  Expr getCondition() { result = this.getChild(0) }
+  Expr getCondition() { result = this.getChild(1) }
 
   override Expr getControllingExpr() { result = this.getCondition() }
 
@@ -357,7 +392,7 @@ class ConstexprIfStmt extends ConditionalStmt, @stmt_constexpr_if {
    * if constexpr (b) { x = 1; }
    * ```
    */
-  predicate hasElse() { exists(Stmt s | this.getElse() = s) }
+  predicate hasElse() { exists(this.getElse()) }
 
   override string toString() { result = "if constexpr (...) ... " }
 
@@ -438,7 +473,7 @@ class WhileStmt extends Loop, @stmt_while {
    * while(1) { ...; if(b) break; ...; }
    * ```
    */
-  predicate conditionAlwaysTrue() { conditionAlwaysTrue(getCondition()) }
+  predicate conditionAlwaysTrue() { conditionAlwaysTrue(this.getCondition()) }
 
   /**
    * Holds if the loop condition is provably `false`.
@@ -448,7 +483,7 @@ class WhileStmt extends Loop, @stmt_while {
    * while(0) { ...; }
    * ```
    */
-  predicate conditionAlwaysFalse() { conditionAlwaysFalse(getCondition()) }
+  predicate conditionAlwaysFalse() { conditionAlwaysFalse(this.getCondition()) }
 
   /**
    * Holds if the loop condition is provably `true` upon entry,
@@ -857,7 +892,7 @@ class RangeBasedForStmt extends Loop, @stmt_range_based_for {
    * ```
    * the result is `int x`.
    */
-  LocalVariable getVariable() { result = getChild(4).(DeclStmt).getADeclaration() }
+  LocalVariable getVariable() { result = this.getChild(4).(DeclStmt).getADeclaration() }
 
   /**
    * Gets the expression giving the range to iterate over.
@@ -868,10 +903,10 @@ class RangeBasedForStmt extends Loop, @stmt_range_based_for {
    * ```
    * the result is `xs`.
    */
-  Expr getRange() { result = getRangeVariable().getInitializer().getExpr() }
+  Expr getRange() { result = this.getRangeVariable().getInitializer().getExpr() }
 
   /** Gets the compiler-generated `__range` variable after desugaring. */
-  LocalVariable getRangeVariable() { result = getChild(0).(DeclStmt).getADeclaration() }
+  LocalVariable getRangeVariable() { result = this.getChild(0).(DeclStmt).getADeclaration() }
 
   /**
    * Gets the compiler-generated `__begin != __end` which is the
@@ -891,10 +926,10 @@ class RangeBasedForStmt extends Loop, @stmt_range_based_for {
   DeclStmt getBeginEndDeclaration() { result = this.getChild(1) }
 
   /** Gets the compiler-generated `__begin` variable after desugaring. */
-  LocalVariable getBeginVariable() { result = getBeginEndDeclaration().getDeclaration(0) }
+  LocalVariable getBeginVariable() { result = this.getBeginEndDeclaration().getDeclaration(0) }
 
   /** Gets the compiler-generated `__end` variable after desugaring. */
-  LocalVariable getEndVariable() { result = getBeginEndDeclaration().getDeclaration(1) }
+  LocalVariable getEndVariable() { result = this.getBeginEndDeclaration().getDeclaration(1) }
 
   /**
    * Gets the compiler-generated `++__begin` which is the update
@@ -905,7 +940,7 @@ class RangeBasedForStmt extends Loop, @stmt_range_based_for {
   Expr getUpdate() { result = this.getChild(3) }
 
   /** Gets the compiler-generated `__begin` variable after desugaring. */
-  LocalVariable getAnIterationVariable() { result = getBeginVariable() }
+  LocalVariable getAnIterationVariable() { result = this.getBeginVariable() }
 }
 
 /**
@@ -933,7 +968,7 @@ class ForStmt extends Loop, @stmt_for {
    *
    * Does not hold if the initialization statement is an empty statement, as in
    * ```
-   * for (; i < 10; i++) { j++ }
+   * for (; i < 10; i++) { j++; }
    * ```
    */
   Stmt getInitialization() { for_initialization(underlyingElement(this), unresolveElement(result)) }
@@ -1067,7 +1102,7 @@ class ForStmt extends Loop, @stmt_for {
    * for(x = 0; 1; ++x) { sum += x; }
    * ```
    */
-  predicate conditionAlwaysTrue() { conditionAlwaysTrue(getCondition()) }
+  predicate conditionAlwaysTrue() { conditionAlwaysTrue(this.getCondition()) }
 
   /**
    * Holds if the loop condition is provably `false`.
@@ -1077,7 +1112,7 @@ class ForStmt extends Loop, @stmt_for {
    * for(x = 0; 0; ++x) { sum += x; }
    * ```
    */
-  predicate conditionAlwaysFalse() { conditionAlwaysFalse(getCondition()) }
+  predicate conditionAlwaysFalse() { conditionAlwaysFalse(this.getCondition()) }
 
   /**
    * Holds if the loop condition is provably `true` upon entry,
@@ -1229,38 +1264,6 @@ class SwitchCase extends Stmt, @stmt_switch_case {
    * has result 2.
    */
   int getChildNum() { switch_case(_, result, underlyingElement(this)) }
-
-  /**
-   * DEPRECATED: use `SwitchCase.getAStmt` or `ControlFlowNode.getASuccessor`
-   * rather than this predicate.
-   *
-   * Gets the `BlockStmt` statement immediately following this 'switch case'
-   * statement, if any.
-   *
-   * For example, for
-   * ```
-   * switch (i) {
-   * case 5:
-   *     x = 1;
-   *     break;
-   * case 6:
-   * case 7:
-   *     { x = 2; break; }
-   * default:
-   *     { x = 3; }
-   *     x = 4;
-   *     break;
-   * }
-   * ```
-   * the `case 7:` has result `{ x = 2; break; }`, `default:` has result
-   * `{ x = 3; }`, and the others have no result.
-   */
-  deprecated BlockStmt getLabelledStmt() {
-    exists(int i, Stmt parent |
-      this = parent.getChild(i) and
-      result = parent.getChild(i + 1)
-    )
-  }
 
   /**
    * Gets the next `SwitchCase` belonging to the same 'switch'
@@ -1510,6 +1513,28 @@ class SwitchStmt extends ConditionalStmt, @stmt_switch {
   override string getAPrimaryQlClass() { result = "SwitchStmt" }
 
   /**
+   * Gets the initialization statement of this 'switch' statement, if any.
+   *
+   * For example, for
+   * ```
+   * switch (int x = y; b) { }
+   * ```
+   * the result is `int x = y;`.
+   *
+   * Does not hold if the initialization statement is missing or an empty statement, as in
+   * ```
+   * switch (b) { }
+   * ```
+   * or
+   * ```
+   * switch (; b) { }
+   * ```
+   */
+  Stmt getInitialization() {
+    switch_initialization(underlyingElement(this), unresolveElement(result))
+  }
+
+  /**
    * Gets the expression that this 'switch' statement switches on.
    *
    * For example, for
@@ -1524,7 +1549,7 @@ class SwitchStmt extends ConditionalStmt, @stmt_switch {
    * ```
    * the result is `i`.
    */
-  Expr getExpr() { result = this.getChild(0) }
+  Expr getExpr() { result = this.getChild(1) }
 
   override Expr getControllingExpr() { result = this.getExpr() }
 
@@ -1723,10 +1748,10 @@ class Handler extends Stmt, @stmt_handler {
   /**
    * Gets the block containing the implementation of this handler.
    */
-  CatchBlock getBlock() { result = getChild(0) }
+  CatchBlock getBlock() { result = this.getChild(0) }
 
   /** Gets the 'try' statement corresponding to this 'catch block'. */
-  TryStmt getTryStmt() { result = getParent() }
+  TryStmt getTryStmt() { result = this.getParent() }
 
   /**
    * Gets the parameter introduced by this 'catch block', if any.
@@ -1734,24 +1759,7 @@ class Handler extends Stmt, @stmt_handler {
    * For example, `catch(std::exception&amp; e)` introduces a
    * parameter `e`, whereas `catch(...)` does not introduce a parameter.
    */
-  Parameter getParameter() { result = getBlock().getParameter() }
-
-  override predicate mayBeImpure() { none() }
-
-  override predicate mayBeGloballyImpure() { none() }
-}
-
-/**
- * DEPRECATED: Objective-C is no longer supported.
- * The end of a 'finally' clause.
- *
- * This has no concrete representation in the source, but makes the
- * control flow graph easier to use.
- */
-deprecated class FinallyEnd extends Stmt {
-  FinallyEnd() { none() }
-
-  override string toString() { result = "<finally end>" }
+  Parameter getParameter() { result = this.getBlock().getParameter() }
 
   override predicate mayBeImpure() { none() }
 
@@ -1921,15 +1929,15 @@ class MicrosoftTryStmt extends Stmt, @stmt_microsoft_try {
  * This is a Microsoft C/C++ extension.
  */
 class MicrosoftTryExceptStmt extends MicrosoftTryStmt {
-  MicrosoftTryExceptStmt() { getChild(1) instanceof Expr }
+  MicrosoftTryExceptStmt() { this.getChild(1) instanceof Expr }
 
   override string toString() { result = "__try { ... } __except( ... ) { ... }" }
 
   /** Gets the expression guarding the `__except` statement. */
-  Expr getCondition() { result = getChild(1) }
+  Expr getCondition() { result = this.getChild(1) }
 
   /** Gets the `__except` statement (usually a `BlockStmt`). */
-  Stmt getExcept() { result = getChild(2) }
+  Stmt getExcept() { result = this.getChild(2) }
 
   override string getAPrimaryQlClass() { result = "MicrosoftTryExceptStmt" }
 }
@@ -1948,12 +1956,12 @@ class MicrosoftTryExceptStmt extends MicrosoftTryStmt {
  * This is a Microsoft C/C++ extension.
  */
 class MicrosoftTryFinallyStmt extends MicrosoftTryStmt {
-  MicrosoftTryFinallyStmt() { not getChild(1) instanceof Expr }
+  MicrosoftTryFinallyStmt() { not this.getChild(1) instanceof Expr }
 
   override string toString() { result = "__try { ... } __finally { ... }" }
 
   /** Gets the `__finally` statement (usually a `BlockStmt`). */
-  Stmt getFinally() { result = getChild(1) }
+  Stmt getFinally() { result = this.getChild(1) }
 
   override string getAPrimaryQlClass() { result = "MicrosoftTryFinallyStmt" }
 }

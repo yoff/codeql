@@ -14,11 +14,11 @@
 import java
 
 private string suspicious() {
-  result = "%password%" or
-  result = "%passwd%" or
-  result = "%account%" or
-  result = "%accnt%" or
-  result = "%trusted%"
+  result =
+    [
+      "%password%", "%passwd%", "pwd", "%account%", "%accnt%", "%trusted%", "%refresh%token%",
+      "%secret%token"
+    ]
 }
 
 private string nonSuspicious() {
@@ -45,9 +45,7 @@ class SensitiveMethodAccess extends SensitiveExpr, MethodAccess {
     or
     // This is particularly to pick up methods with an argument like "password", which
     // may indicate a lookup.
-    exists(string s |
-      this.getAnArgument().(StringLiteral).getRepresentedString().toLowerCase() = s
-    |
+    exists(string s | this.getAnArgument().(StringLiteral).getValue().toLowerCase() = s |
       s.matches(suspicious()) and
       not s.matches(nonSuspicious())
     )
@@ -80,17 +78,12 @@ abstract class SensitiveExecutionMethod extends Method { }
 class AuthMethod extends SensitiveExecutionMethod {
   AuthMethod() {
     exists(string s | s = this.getName().toLowerCase() |
-      (
-        s.matches("%login%") or
-        s.matches("%auth%")
-      ) and
-      not (
-        s.matches("get%") or
-        s.matches("set%") or
-        s.matches("parse%") or
-        s.matches("%loginfo%")
-      )
-    )
+      s.matches(["%login%", "%auth%"]) and
+      not s.matches(["get%", "set%", "parse%", "%loginfo%", "remove%", "clean%", "%unauth%"]) and
+      // exclude "author", but not "authorize" or "authority"
+      not s.regexpMatch(".*[aA]uthors?([A-Z0-9_].*|$)")
+    ) and
+    not this.getDeclaringType().getAnAncestor() instanceof TypeException
   }
 }
 

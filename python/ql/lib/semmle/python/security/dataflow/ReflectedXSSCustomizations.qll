@@ -15,7 +15,7 @@ private import semmle.python.dataflow.new.BarrierGuards
  * "reflected server-side cross-site scripting"
  * vulnerabilities, as well as extension points for adding your own.
  */
-module ReflectedXSS {
+module ReflectedXss {
   /**
    * A data flow source for "reflected server-side cross-site scripting" vulnerabilities.
    */
@@ -59,7 +59,7 @@ module ReflectedXSS {
   class HtmlEscapingAsSanitizer extends Sanitizer {
     HtmlEscapingAsSanitizer() {
       // TODO: For now, since there is not an `isSanitizingStep` member-predicate part of a
-      // `TaintTracking::Configuration`, we use treat the output is a taint-sanitizer. This
+      // `TaintTracking::Configuration`, we treat the output as a taint-sanitizer. This
       // is slightly imprecise, which you can see in the `m_unsafe + SAFE` test-case in
       // python/ql/test/library-tests/frameworks/markupsafe/taint_test.py
       //
@@ -74,3 +74,6 @@ module ReflectedXSS {
    */
   class StringConstCompareAsSanitizerGuard extends SanitizerGuard, StringConstCompare { }
 }
+
+/** DEPRECATED: Alias for ReflectedXss */
+deprecated module ReflectedXSS = ReflectedXss;

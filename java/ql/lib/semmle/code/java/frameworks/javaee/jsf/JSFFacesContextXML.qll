@@ -8,66 +8,72 @@ import default
  * A JSF "application configuration resources file", typically called `faces-config.xml`, which
  * contains the configuration for a JSF application
  */
-class FacesConfigXMLFile extends XMLFile {
-  FacesConfigXMLFile() {
+class FacesConfigXmlFile extends XMLFile {
+  FacesConfigXmlFile() {
     // Contains a single top-level XML node named "faces-Config".
     count(XMLElement e | e = this.getAChild()) = 1 and
     this.getAChild().getName() = "faces-config"
   }
 }
 
+/** DEPRECATED: Alias for FacesConfigXmlFile */
+deprecated class FacesConfigXMLFile = FacesConfigXmlFile;
+
 /**
  * An XML element in a `FacesConfigXMLFile`.
  */
-class FacesConfigXMLElement extends XMLElement {
-  FacesConfigXMLElement() { this.getFile() instanceof FacesConfigXMLFile }
+class FacesConfigXmlElement extends XMLElement {
+  FacesConfigXmlElement() { this.getFile() instanceof FacesConfigXmlFile }
 
   /**
    * Gets the value for this element, with leading and trailing whitespace trimmed.
    */
-  string getValue() { result = allCharactersString().trim() }
+  string getValue() { result = this.allCharactersString().trim() }
 }
+
+/** DEPRECATED: Alias for FacesConfigXmlElement */
+deprecated class FacesConfigXMLElement = FacesConfigXmlElement;
 
 /**
  * An element in a JSF config file that declares a managed bean.
  */
-class FacesConfigManagedBean extends FacesConfigXMLElement {
-  FacesConfigManagedBean() { getName() = "managed-bean" }
+class FacesConfigManagedBean extends FacesConfigXmlElement {
+  FacesConfigManagedBean() { this.getName() = "managed-bean" }
 }
 
 /**
  * An element in a JSF config file that declares the Class of a managed bean.
  */
-class FacesConfigManagedBeanClass extends FacesConfigXMLElement {
+class FacesConfigManagedBeanClass extends FacesConfigXmlElement {
   FacesConfigManagedBeanClass() {
-    getName() = "managed-bean-class" and
-    getParent() instanceof FacesConfigManagedBean
+    this.getName() = "managed-bean-class" and
+    this.getParent() instanceof FacesConfigManagedBean
   }
 
   /**
    * Gets the `Class` of the managed bean.
    */
-  Class getManagedBeanClass() { result.getQualifiedName() = getValue() }
+  Class getManagedBeanClass() { result.getQualifiedName() = this.getValue() }
 }
 
 /**
  * An element in a JSF config file that declares a custom component.
  */
-class FacesConfigComponent extends FacesConfigXMLElement {
-  FacesConfigComponent() { getName() = "component" }
+class FacesConfigComponent extends FacesConfigXmlElement {
+  FacesConfigComponent() { this.getName() = "component" }
 }
 
 /**
  * An element in a JSF config file that declares the Class of a faces component.
  */
-class FacesConfigComponentClass extends FacesConfigXMLElement {
+class FacesConfigComponentClass extends FacesConfigXmlElement {
   FacesConfigComponentClass() {
-    getName() = "component-class" and
-    getParent() instanceof FacesConfigComponent
+    this.getName() = "component-class" and
+    this.getParent() instanceof FacesConfigComponent
   }
 
   /**
    * Gets the `Class` of the faces component.
    */
-  Class getFacesComponentClass() { result.getQualifiedName() = getValue() }
+  Class getFacesComponentClass() { result.getQualifiedName() = this.getValue() }
 }

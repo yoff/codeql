@@ -15,15 +15,11 @@ class Declaration extends NamedElement, @dotnet_declaration {
   /** Gets the name of this declaration, without additional decoration such as `<...>`. */
   string getUndecoratedName() { none() }
 
+  /** Holds if this element has undecorated name 'name'. */
+  final predicate hasUndecoratedName(string name) { name = this.getUndecoratedName() }
+
   /** Gets the type containing this declaration, if any. */
   Type getDeclaringType() { none() }
-
-  /**
-   * DEPRECATED: Use `getUnboundDeclaration()` instaed.
-   *
-   * Gets the unbound version of this declaration.
-   */
-  deprecated final Declaration getSourceDeclaration() { result = this.getUnboundDeclaration() }
 
   /**
    * Gets the unbound version of this declaration, that is, the declaration where

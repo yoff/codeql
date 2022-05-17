@@ -101,18 +101,18 @@ class Node extends TNode {
    * The location spans column `startcolumn` of line `startline` to
    * column `endcolumn` of line `endline` in file `filepath`.
    * For more information, see
-   * [Locations](https://help.semmle.com/QL/learn-ql/ql/locations.html).
+   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
    */
   predicate hasLocationInfo(
     string filepath, int startline, int startcolumn, int endline, int endcolumn
   ) {
-    getLocation().hasLocationInfo(filepath, startline, startcolumn, endline, endcolumn)
+    this.getLocation().hasLocationInfo(filepath, startline, startcolumn, endline, endcolumn)
   }
 
   /**
    * Gets an upper bound on the type of this node.
    */
-  Type getTypeBound() { result = getType() }
+  Type getTypeBound() { result = this.getType() }
 }
 
 /**
@@ -293,11 +293,11 @@ abstract class PostUpdateNode extends Node {
    */
   abstract Node getPreUpdateNode();
 
-  override Function getFunction() { result = getPreUpdateNode().getFunction() }
+  override Function getFunction() { result = this.getPreUpdateNode().getFunction() }
 
-  override Type getType() { result = getPreUpdateNode().getType() }
+  override Type getType() { result = this.getPreUpdateNode().getType() }
 
-  override Location getLocation() { result = getPreUpdateNode().getLocation() }
+  override Location getLocation() { result = this.getPreUpdateNode().getLocation() }
 }
 
 abstract private class PartialDefinitionNode extends PostUpdateNode, TPartialDefinitionNode {
@@ -309,7 +309,7 @@ abstract private class PartialDefinitionNode extends PostUpdateNode, TPartialDef
 
   PartialDefinition getPartialDefinition() { result = pd }
 
-  override string toString() { result = getPreUpdateNode().toString() + " [post update]" }
+  override string toString() { result = this.getPreUpdateNode().toString() + " [post update]" }
 }
 
 private class VariablePartialDefinitionNode extends PartialDefinitionNode {
@@ -380,13 +380,13 @@ private class ObjectInitializerNode extends PostUpdateNode, TExprNode {
 class PreObjectInitializerNode extends Node, TPreObjectInitializerNode {
   Expr getExpr() { this = TPreObjectInitializerNode(result) }
 
-  override Function getFunction() { result = getExpr().getEnclosingFunction() }
+  override Function getFunction() { result = this.getExpr().getEnclosingFunction() }
 
-  override Type getType() { result = getExpr().getType() }
+  override Type getType() { result = this.getExpr().getType() }
 
-  override Location getLocation() { result = getExpr().getLocation() }
+  override Location getLocation() { result = this.getExpr().getLocation() }
 
-  override string toString() { result = getExpr().toString() + " [pre init]" }
+  override string toString() { result = this.getExpr().toString() + " [pre init]" }
 }
 
 /**
@@ -401,7 +401,7 @@ private class PostConstructorInitThis extends PostUpdateNode, TPostConstructorIn
   }
 
   override string toString() {
-    result = getPreUpdateNode().getConstructorFieldInit().toString() + " [post-this]"
+    result = this.getPreUpdateNode().getConstructorFieldInit().toString() + " [post-this]"
   }
 }
 
@@ -416,15 +416,17 @@ private class PostConstructorInitThis extends PostUpdateNode, TPostConstructorIn
 class PreConstructorInitThis extends Node, TPreConstructorInitThis {
   ConstructorFieldInit getConstructorFieldInit() { this = TPreConstructorInitThis(result) }
 
-  override Constructor getFunction() { result = getConstructorFieldInit().getEnclosingFunction() }
-
-  override PointerType getType() {
-    result.getBaseType() = getConstructorFieldInit().getEnclosingFunction().getDeclaringType()
+  override Constructor getFunction() {
+    result = this.getConstructorFieldInit().getEnclosingFunction()
   }
 
-  override Location getLocation() { result = getConstructorFieldInit().getLocation() }
+  override PointerType getType() {
+    result.getBaseType() = this.getConstructorFieldInit().getEnclosingFunction().getDeclaringType()
+  }
 
-  override string toString() { result = getConstructorFieldInit().toString() + " [pre-this]" }
+  override Location getLocation() { result = this.getConstructorFieldInit().getLocation() }
+
+  override string toString() { result = this.getConstructorFieldInit().toString() + " [pre-this]" }
 }
 
 /**
@@ -590,12 +592,14 @@ predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo) {
  * Holds if data flows from `source` to `sink` in zero or more local
  * (intra-procedural) steps.
  */
+pragma[inline]
 predicate localFlow(Node source, Node sink) { localFlowStep*(source, sink) }
 
 /**
  * Holds if data can flow from `e1` to `e2` in zero or more
  * local (intra-procedural) steps.
  */
+pragma[inline]
 predicate localExprFlow(Expr e1, Expr e2) { localFlow(exprNode(e1), exprNode(e2)) }
 
 /**
@@ -815,6 +819,34 @@ private class ArrayContent extends Content, TArrayContent {
 /** A reference through the contents of some collection-like container. */
 private class CollectionContent extends Content, TCollectionContent {
   override string toString() { result = "<element>" }
+}
+
+/**
+ * An entity that represents a set of `Content`s.
+ *
+ * The set may be interpreted differently depending on whether it is
+ * stored into (`getAStoreContent`) or read from (`getAReadContent`).
+ */
+class ContentSet instanceof Content {
+  /** Gets a content that may be stored into when storing into this set. */
+  Content getAStoreContent() { result = this }
+
+  /** Gets a content that may be read from when reading from this set. */
+  Content getAReadContent() { result = this }
+
+  /** Gets a textual representation of this content set. */
+  string toString() { result = super.toString() }
+
+  /**
+   * Holds if this element is at the specified location.
+   * The location spans column `startcolumn` of line `startline` to
+   * column `endcolumn` of line `endline` in file `filepath`.
+   * For more information, see
+   * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
+   */
+  predicate hasLocationInfo(string path, int sl, int sc, int el, int ec) {
+    super.hasLocationInfo(path, sl, sc, el, ec)
+  }
 }
 
 /**

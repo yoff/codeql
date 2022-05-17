@@ -3,8 +3,6 @@
  */
 
 import java
-import semmle.code.java.Type
-import semmle.code.java.Member
 
 /*--- Types ---*/
 /** The interface `com.unboundid.ldap.sdk.ReadOnlySearchRequest`. */
@@ -25,89 +23,103 @@ class TypeUnboundIdLdapFilter extends Class {
 }
 
 /** The class `com.unboundid.ldap.sdk.LDAPConnection`. */
-class TypeUnboundIdLDAPConnection extends Class {
-  TypeUnboundIdLDAPConnection() {
+class TypeUnboundIdLdapConnection extends Class {
+  TypeUnboundIdLdapConnection() {
     this.hasQualifiedName("com.unboundid.ldap.sdk", "LDAPConnection")
   }
 }
+
+/** DEPRECATED: Alias for TypeUnboundIdLdapConnection */
+deprecated class TypeUnboundIdLDAPConnection = TypeUnboundIdLdapConnection;
 
 /*--- Methods ---*/
 /** A method with the name `setBaseDN` declared in `com.unboundid.ldap.sdk.SearchRequest`. */
 class MethodUnboundIdSearchRequestSetBaseDN extends Method {
   MethodUnboundIdSearchRequestSetBaseDN() {
-    getDeclaringType() instanceof TypeUnboundIdSearchRequest and
-    hasName("setBaseDN")
+    this.getDeclaringType() instanceof TypeUnboundIdSearchRequest and
+    this.hasName("setBaseDN")
   }
 }
 
 /** A method with the name `setFilter` declared in `com.unboundid.ldap.sdk.SearchRequest`. */
 class MethodUnboundIdSearchRequestSetFilter extends Method {
   MethodUnboundIdSearchRequestSetFilter() {
-    getDeclaringType() instanceof TypeUnboundIdSearchRequest and
-    hasName("setFilter")
+    this.getDeclaringType() instanceof TypeUnboundIdSearchRequest and
+    this.hasName("setFilter")
   }
 }
 
 /** A method with the name `create` declared in `com.unboundid.ldap.sdk.Filter`. */
 class MethodUnboundIdFilterCreate extends Method {
   MethodUnboundIdFilterCreate() {
-    getDeclaringType() instanceof TypeUnboundIdLdapFilter and
-    hasName("create")
+    this.getDeclaringType() instanceof TypeUnboundIdLdapFilter and
+    this.hasName("create")
   }
 }
 
 /** A method with the name `createANDFilter` declared in `com.unboundid.ldap.sdk.Filter`. */
 class MethodUnboundIdFilterCreateANDFilter extends Method {
   MethodUnboundIdFilterCreateANDFilter() {
-    getDeclaringType() instanceof TypeUnboundIdLdapFilter and
-    hasName("createANDFilter")
+    this.getDeclaringType() instanceof TypeUnboundIdLdapFilter and
+    this.hasName("createANDFilter")
   }
 }
 
 /** A method with the name `createORFilter` declared in `com.unboundid.ldap.sdk.Filter`. */
 class MethodUnboundIdFilterCreateORFilter extends Method {
   MethodUnboundIdFilterCreateORFilter() {
-    getDeclaringType() instanceof TypeUnboundIdLdapFilter and
-    hasName("createORFilter")
+    this.getDeclaringType() instanceof TypeUnboundIdLdapFilter and
+    this.hasName("createORFilter")
   }
 }
 
 /** A method with the name `createNOTFilter` declared in `com.unboundid.ldap.sdk.Filter`. */
 class MethodUnboundIdFilterCreateNOTFilter extends Method {
   MethodUnboundIdFilterCreateNOTFilter() {
-    getDeclaringType() instanceof TypeUnboundIdLdapFilter and
-    hasName("createNOTFilter")
+    this.getDeclaringType() instanceof TypeUnboundIdLdapFilter and
+    this.hasName("createNOTFilter")
   }
 }
 
 /** A method with the name `simplifyFilter` declared in `com.unboundid.ldap.sdk.Filter`. */
 class MethodUnboundIdFilterSimplifyFilter extends Method {
   MethodUnboundIdFilterSimplifyFilter() {
-    getDeclaringType() instanceof TypeUnboundIdLdapFilter and
-    hasName("simplifyFilter")
+    this.getDeclaringType() instanceof TypeUnboundIdLdapFilter and
+    this.hasName("simplifyFilter")
   }
 }
 
 /** A method with the name `search` declared in `com.unboundid.ldap.sdk.LDAPConnection`. */
-class MethodUnboundIdLDAPConnectionSearch extends Method {
-  MethodUnboundIdLDAPConnectionSearch() {
-    getDeclaringType() instanceof TypeUnboundIdLDAPConnection and
-    hasName("search")
+class MethodUnboundIdLdapConnectionSearch extends Method {
+  MethodUnboundIdLdapConnectionSearch() {
+    this.getDeclaringType() instanceof TypeUnboundIdLdapConnection and
+    this.hasName("search")
   }
 }
+
+/** DEPRECATED: Alias for MethodUnboundIdLdapConnectionSearch */
+deprecated class MethodUnboundIdLDAPConnectionSearch = MethodUnboundIdLdapConnectionSearch;
 
 /** A method with the name `asyncSearch` declared in `com.unboundid.ldap.sdk.LDAPConnection`. */
-class MethodUnboundIdLDAPConnectionAsyncSearch extends Method {
-  MethodUnboundIdLDAPConnectionAsyncSearch() {
-    getDeclaringType() instanceof TypeUnboundIdLDAPConnection and
-    hasName("asyncSearch")
+class MethodUnboundIdLdapConnectionAsyncSearch extends Method {
+  MethodUnboundIdLdapConnectionAsyncSearch() {
+    this.getDeclaringType() instanceof TypeUnboundIdLdapConnection and
+    this.hasName("asyncSearch")
   }
 }
 
+/** DEPRECATED: Alias for MethodUnboundIdLdapConnectionAsyncSearch */
+deprecated class MethodUnboundIdLDAPConnectionAsyncSearch =
+  MethodUnboundIdLdapConnectionAsyncSearch;
+
 /** A method with the name `searchForEntry` declared in `com.unboundid.ldap.sdk.LDAPConnection`. */
-class MethodUnboundIdLDAPConnectionSearchForEntry extends Method {
-  MethodUnboundIdLDAPConnectionSearchForEntry() {
-    getDeclaringType() instanceof TypeUnboundIdLDAPConnection and
-    hasName("searchForEntry")
+class MethodUnboundIdLdapConnectionSearchForEntry extends Method {
+  MethodUnboundIdLdapConnectionSearchForEntry() {
+    this.getDeclaringType() instanceof TypeUnboundIdLdapConnection and
+    this.hasName("searchForEntry")
   }
 }
+
+/** DEPRECATED: Alias for MethodUnboundIdLdapConnectionSearchForEntry */
+deprecated class MethodUnboundIdLDAPConnectionSearchForEntry =
+  MethodUnboundIdLdapConnectionSearchForEntry;

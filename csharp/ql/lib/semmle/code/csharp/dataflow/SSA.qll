@@ -76,9 +76,9 @@ module Ssa {
 
       override Callable getEnclosingCallable() { this = SsaImpl::TLocalVar(result, _) }
 
-      override string toString() { result = getAssignable().getName() }
+      override string toString() { result = this.getAssignable().getName() }
 
-      override Location getLocation() { result = getAssignable().getLocation() }
+      override Location getLocation() { result = this.getAssignable().getLocation() }
     }
 
     /** A fully qualified field or property. */
@@ -105,7 +105,7 @@ module Ssa {
           )
       }
 
-      override Location getLocation() { result = getFirstAccess().getLocation() }
+      override Location getLocation() { result = this.getFirstAccess().getLocation() }
     }
 
     /** A plain field or property. */
@@ -115,8 +115,8 @@ module Ssa {
 
       override string toString() {
         exists(Assignable f, string prefix |
-          f = getAssignable() and
-          result = prefix + "." + getAssignable()
+          f = this.getAssignable() and
+          result = prefix + "." + this.getAssignable()
         |
           if f.(Modifiable).isStatic()
           then prefix = f.getDeclaringType().getQualifiedName()
@@ -134,7 +134,7 @@ module Ssa {
 
       override SourceVariable getQualifier() { this = SsaImpl::TQualifiedFieldOrProp(_, result, _) }
 
-      override string toString() { result = getQualifier() + "." + getAssignable() }
+      override string toString() { result = this.getQualifier() + "." + this.getAssignable() }
     }
   }
 
@@ -170,7 +170,7 @@ module Ssa {
     /**
      * Gets the control flow node of this SSA definition, if any. Phi nodes are
      * examples of SSA definitions without a control flow node, as they are
-     * modelled at index `-1` in the relevant basic block.
+     * modeled at index `-1` in the relevant basic block.
      */
     final ControlFlow::Node getControlFlowNode() {
       exists(ControlFlow::BasicBlock bb, int i | this.definesAt(_, bb, i) | result = bb.getNode(i))
@@ -428,11 +428,6 @@ module Ssa {
     }
 
     /**
-     * DEPRECATED: Use `definesAt/3` instead.
-     */
-    deprecated predicate definesAt(ControlFlow::BasicBlock bb, int i) { this.definesAt(_, bb, i) }
-
-    /**
      * Gets the syntax element associated with this SSA definition, if any.
      * This is either an expression, for example `x = 0`, a parameter, or a
      * callable. Phi nodes have no associated syntax element.
@@ -611,20 +606,20 @@ module Ssa {
      * and which targets the same assignable as this SSA definition.
      */
     final AssignableDefinition getAPossibleDefinition() {
-      exists(Callable setter | SsaImpl::updatesNamedFieldOrProp(_, _, getCall(), _, setter) |
+      exists(Callable setter | SsaImpl::updatesNamedFieldOrProp(_, _, this.getCall(), _, setter) |
         result.getEnclosingCallable() = setter and
         result.getTarget() = this.getSourceVariable().getAssignable()
       )
       or
-      SsaImpl::updatesCapturedVariable(_, _, getCall(), _, result, _) and
+      SsaImpl::updatesCapturedVariable(_, _, this.getCall(), _, result, _) and
       result.getTarget() = this.getSourceVariable().getAssignable()
     }
 
     override string toString() {
-      result = getToStringPrefix(this) + "SSA call def(" + getSourceVariable() + ")"
+      result = getToStringPrefix(this) + "SSA call def(" + this.getSourceVariable() + ")"
     }
 
-    override Location getLocation() { result = getCall().getLocation() }
+    override Location getLocation() { result = this.getCall().getLocation() }
   }
 
   /**
@@ -649,19 +644,11 @@ module Ssa {
     final Definition getQualifierDefinition() { result = q }
 
     override string toString() {
-      result = getToStringPrefix(this) + "SSA qualifier def(" + getSourceVariable() + ")"
+      result = getToStringPrefix(this) + "SSA qualifier def(" + this.getSourceVariable() + ")"
     }
 
-    override Location getLocation() { result = getQualifierDefinition().getLocation() }
+    override Location getLocation() { result = this.getQualifierDefinition().getLocation() }
   }
-
-  /**
-   * An SSA definition that has no actual semantics, but simply serves to
-   * merge or filter data flow.
-   *
-   * Phi nodes are the canonical (and currently only) example.
-   */
-  deprecated class PseudoDefinition = PhiNode;
 
   /**
    * An SSA phi node, that is, a pseudo definition for a variable at a point
@@ -699,7 +686,7 @@ module Ssa {
     }
 
     override string toString() {
-      result = getToStringPrefix(this) + "SSA phi(" + getSourceVariable() + ")"
+      result = getToStringPrefix(this) + "SSA phi(" + this.getSourceVariable() + ")"
     }
 
     /*

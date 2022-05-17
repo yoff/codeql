@@ -139,7 +139,7 @@ private module CachedSteps {
    * Holds if `invk` may invoke `f`.
    */
   cached
-  predicate calls(DataFlow::SourceNode invk, Function f) {
+  predicate calls(DataFlow::Node invk, Function f) {
     f = invk.(DataFlow::InvokeNode).getACallee(0)
     or
     f = invk.(DataFlow::PropRef).getAnAccessorCallee().getFunction()
@@ -212,6 +212,8 @@ private module CachedSteps {
         )
         or
         parm = reflectiveParameterAccess(f, i)
+        or
+        parm = restParameterAccess(f, i)
       )
       or
       arg = invk.(DataFlow::CallNode).getReceiver() and
@@ -262,6 +264,21 @@ private module CachedSteps {
    */
   private DataFlow::SourceNode reflectiveParameterAccess(Function f, int i) {
     result.(DataFlow::PropRead).accesses(argumentsAccess(f), any(string p | i = p.toInt()))
+  }
+
+  /**
+   * Gets a data-flow node that refers to the `i`th parameter of `f` through its `...rest` argument.
+   *
+   * If there is normal arguments before `...rest`, we have to account for them.
+   * For example, a function `function f(a, ...rest) { console.log(rest[1]); }`:
+   * Here, `restParameterAccess(_, 2)` will return `rest[1]`, because there is the leading
+   * `a` parameter.
+   */
+  private DataFlow::SourceNode restParameterAccess(Function f, int i) {
+    result
+        .(DataFlow::PropRead)
+        .accesses(f.getRestParameter().flow().(DataFlow::ParameterNode).getALocalUse(),
+          any(string idx | i = idx.toInt() + f.getNumParameter() - 1))
   }
 
   /**
@@ -434,7 +451,7 @@ private module CachedSteps {
    * invocation.
    */
   cached
-  predicate callback(DataFlow::Node arg, DataFlow::SourceNode cb) {
+  predicate exploratoryCallbackStep(DataFlow::Node arg, DataFlow::SourceNode cb) {
     Stages::TypeTracking::ref() and
     exists(DataFlow::InvokeNode invk, DataFlow::ParameterNode cbParm, DataFlow::Node cbArg |
       arg = invk.getAnArgument() and
@@ -444,9 +461,21 @@ private module CachedSteps {
     )
     or
     exists(DataFlow::ParameterNode cbParm, DataFlow::Node cbArg |
-      callback(arg, cbParm) and
+      exploratoryCallbackStep(arg, cbParm) and
       callStep(cbArg, cbParm) and
       cb.flowsTo(cbArg)
+    )
+  }
+
+  /** Gets a function that flows to `parameter` via one or more parameter-passing steps. */
+  cached
+  DataFlow::FunctionNode getACallbackSource(DataFlow::ParameterNode parameter) {
+    Stages::TypeTracking::ref() and
+    callStep(result.getALocalUse(), parameter)
+    or
+    exists(DataFlow::ParameterNode mid |
+      callStep(mid.getALocalUse(), parameter) and
+      result = getACallbackSource(mid)
     )
   }
 
@@ -468,7 +497,7 @@ private module CachedSteps {
   }
 
   /**
-   * A step from `pred` to `succ` through a call to an identity function.
+   * Holds if there is a step from `pred` to `succ` through a call to an identity function.
    */
   cached
   predicate identityFunctionStep(DataFlow::Node pred, DataFlow::CallNode succ) {

@@ -185,11 +185,6 @@ class AmdModuleDefinition extends CallExpr {
   }
 }
 
-/**
- * DEPRECATED: Use `AmdModuleDefinition` instead.
- */
-deprecated class AMDModuleDefinition = AmdModuleDefinition;
-
 /** An AMD dependency, considered as a path expression. */
 private class AmdDependencyPath extends PathExprCandidate {
   AmdDependencyPath() {
@@ -313,9 +308,17 @@ class AmdModule extends Module {
       name = pwn.getPropertyName()
     )
   }
-}
 
-/**
- * DEPRECATED: Use `AmdModule` instead.
- */
-deprecated class AMDModule = AmdModule;
+  override DataFlow::Node getABulkExportedNode() {
+    // Assigned to `module.exports` via the factory's `module` parameter
+    exists(AbstractModuleObject m, DataFlow::PropWrite write |
+      m.getModule() = this and
+      write.getPropertyName() = "exports" and
+      write.getBase().analyze().getAValue() = m and
+      result = write.getRhs()
+    )
+    or
+    // Returned from factory function
+    result = getDefine().getModuleExpr().flow()
+  }
+}

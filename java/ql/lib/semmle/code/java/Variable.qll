@@ -9,6 +9,9 @@ class Variable extends @variable, Annotatable, Element, Modifiable {
   /** Gets the type of this variable. */
   /*abstract*/ Type getType() { none() }
 
+  /** Gets the Kotlin type of this variable. */
+  /*abstract*/ KotlinType getKotlinType() { none() }
+
   /** Gets an access to this variable. */
   VarAccess getAnAccess() { variableBinding(result, this) }
 
@@ -37,6 +40,9 @@ class LocalVariableDecl extends @localvar, LocalScopeVariable {
   /** Gets the type of this local variable. */
   override Type getType() { localvars(this, _, result, _) }
 
+  /** Gets the Kotlin type of this local variable. */
+  override KotlinType getKotlinType() { localvarsKotlinType(this, result) }
+
   /** Gets the expression declaring this variable. */
   LocalVariableDeclExpr getDeclExpr() { localvars(this, _, _, result) }
 
@@ -47,12 +53,12 @@ class LocalVariableDecl extends @localvar, LocalScopeVariable {
   override Callable getCallable() { result = this.getParent().getEnclosingCallable() }
 
   /** Gets the callable in which this declaration occurs. */
-  Callable getEnclosingCallable() { result = getCallable() }
+  Callable getEnclosingCallable() { result = this.getCallable() }
 
   override string toString() { result = this.getType().getName() + " " + this.getName() }
 
   /** Gets the initializer expression of this local variable declaration. */
-  override Expr getInitializer() { result = getDeclExpr().getInit() }
+  override Expr getInitializer() { result = this.getDeclExpr().getInit() }
 
   override string getAPrimaryQlClass() { result = "LocalVariableDecl" }
 }
@@ -62,8 +68,11 @@ class Parameter extends Element, @param, LocalScopeVariable {
   /** Gets the type of this formal parameter. */
   override Type getType() { params(this, result, _, _, _) }
 
+  /** Gets the Kotlin type of this formal parameter. */
+  override KotlinType getKotlinType() { paramsKotlinType(this, result) }
+
   /** Holds if the parameter is never assigned a value in the body of the callable. */
-  predicate isEffectivelyFinal() { not exists(getAnAssignedValue()) }
+  predicate isEffectivelyFinal() { not exists(this.getAnAssignedValue()) }
 
   /** Gets the (zero-based) index of this formal parameter. */
   int getPosition() { params(this, _, result, _, _) }
@@ -80,6 +89,11 @@ class Parameter extends Element, @param, LocalScopeVariable {
   /** Holds if this formal parameter is a variable arity parameter. */
   predicate isVarargs() { isVarargsParam(this) }
 
+  /** Holds if this formal parameter is a parameter representing the dispatch receiver in an extension method. */
+  predicate isExtensionParameter() {
+    this.getPosition() = 0 and this.getCallable() instanceof ExtensionMethod
+  }
+
   /**
    * Gets an argument for this parameter in any call to the callable that declares this formal
    * parameter.
@@ -87,8 +101,8 @@ class Parameter extends Element, @param, LocalScopeVariable {
    * Varargs parameters will have no results for this method.
    */
   Expr getAnArgument() {
-    not isVarargs() and
-    result = getACallArgument(getPosition())
+    not this.isVarargs() and
+    result = this.getACallArgument(this.getPosition())
   }
 
   pragma[noinline]

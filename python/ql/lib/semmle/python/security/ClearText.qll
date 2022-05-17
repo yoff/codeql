@@ -4,7 +4,7 @@ import semmle.python.security.SensitiveData
 import semmle.python.dataflow.Files
 import semmle.python.web.Http
 
-module ClearTextStorage {
+deprecated module ClearTextStorage {
   abstract class Sink extends TaintSink {
     override predicate sinks(TaintKind kind) { kind instanceof SensitiveData }
   }
@@ -26,7 +26,7 @@ module ClearTextStorage {
   }
 }
 
-module ClearTextLogging {
+deprecated module ClearTextLogging {
   abstract class Sink extends TaintSink {
     override predicate sinks(TaintKind kind) { kind instanceof SensitiveData }
   }
@@ -47,11 +47,7 @@ module ClearTextLogging {
         meth.getObject(name).(NameNode).getId().matches("logg%") and
         call.getAnArg() = this
       |
-        name = "error" or
-        name = "warn" or
-        name = "warning" or
-        name = "debug" or
-        name = "info"
+        name = ["error", "warn", "warning", "debug", "info"]
       )
     }
   }

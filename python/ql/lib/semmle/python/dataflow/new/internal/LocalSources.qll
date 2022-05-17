@@ -6,9 +6,10 @@
  * local tracking within a function.
  */
 
-import python
+private import python
 import DataFlowPublic
 private import DataFlowPrivate
+private import semmle.python.internal.CachedStages
 
 /**
  * A data flow node that is a source of local flow. This includes things like
@@ -33,6 +34,7 @@ private import DataFlowPrivate
 class LocalSourceNode extends Node {
   cached
   LocalSourceNode() {
+    Stages::DataFlow::ref() and
     this instanceof ExprNode and
     not simpleLocalFlowStep(_, this)
     or
@@ -62,12 +64,12 @@ class LocalSourceNode extends Node {
   /**
    * Gets a read of attribute `attrName` on this node.
    */
-  AttrRead getAnAttributeRead(string attrName) { result = getAnAttributeReference(attrName) }
+  AttrRead getAnAttributeRead(string attrName) { result = this.getAnAttributeReference(attrName) }
 
   /**
    * Gets a write of attribute `attrName` on this node.
    */
-  AttrWrite getAnAttributeWrite(string attrName) { result = getAnAttributeReference(attrName) }
+  AttrWrite getAnAttributeWrite(string attrName) { result = this.getAnAttributeReference(attrName) }
 
   /**
    * Gets a reference (read or write) of any attribute on this node.
@@ -81,12 +83,12 @@ class LocalSourceNode extends Node {
   /**
    * Gets a read of any attribute on this node.
    */
-  AttrRead getAnAttributeRead() { result = getAnAttributeReference() }
+  AttrRead getAnAttributeRead() { result = this.getAnAttributeReference() }
 
   /**
    * Gets a write of any attribute on this node.
    */
-  AttrWrite getAnAttributeWrite() { result = getAnAttributeReference() }
+  AttrWrite getAnAttributeWrite() { result = this.getAnAttributeReference() }
 
   /**
    * Gets a call to this node.
@@ -176,6 +178,7 @@ private module Cached {
    */
   cached
   predicate hasLocalSource(Node sink, LocalSourceNode source) {
+    Stages::DataFlow::ref() and
     source = sink
     or
     exists(Node second |
