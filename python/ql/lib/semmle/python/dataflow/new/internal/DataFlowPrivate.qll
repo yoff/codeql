@@ -142,8 +142,9 @@ module SyntheticPostUpdateNode {
     // Avoid argument 0 of method calls as those have read post-update nodes.
     exists(MethodCall c, int n | n > 0 | result = c.getArg2(n))
     or
-    result = any(SpecialCall c).getArg(_)
+    result = TCfgNode(any(SpecialMethod::Potential p).getArg(_))
     or
+    // result = any(SpecialCall c).getArg2(_)
     // Avoid argument 0 of class calls as those have non-synthetic post-update nodes.
     exists(ClassCall c, int n | n > 0 | result = c.getArg2(n))
     or
@@ -319,7 +320,7 @@ predicate simpleLocalFlowStepForTypetracking(Node nodeFrom, Node nodeTo) {
   // If there is local flow out of a node `node`, we want flow
   // both out of `node` and any post-update node of `node`.
   exists(Node node |
-    nodeFrom = update(node) and
+    nodeFrom = update2(node) and
     (
       importTimeLocalFlowStep(node, nodeTo) or
       runtimeLocalFlowStep(node, nodeTo)
@@ -402,6 +403,14 @@ private Node update(Node node) {
   result = node
   or
   result.(PostUpdateNode).getPreUpdateNode() = node
+}
+
+private Node update2(Node node) {
+  result = node
+  or
+  result.(SyntheticPreUpdateNode).getPostUpdateNode() = node
+  or
+  node = TSyntheticPostUpdateNode(result)
 }
 
 //--------

@@ -104,7 +104,7 @@ module ArgumentPassing {
    */
   predicate connects(CallNode call, CallableValue callable) {
     exists(NonLibraryDataFlowSourceCall c, NonLibraryDataFlowCallable k |
-      call = c.getNode() and
+      c = TNonSpecialCall(call) and
       callable = k.getCallableValue() and
       k = c.getCallable2()
     )
@@ -329,7 +329,10 @@ class DataFlowCallable extends TDataFlowCallable {
 }
 
 abstract class NonLibraryDataFlowCallable extends DataFlowCallable {
-  /** Gets a callable value for this callable, if one exists. */
+  /**
+   * INTERNAL: Do not use.
+   *  Gets a callable value for this callable, if one exists.
+   */
   abstract CallableValue getCallableValue();
 
   abstract CallNode getACall2();
@@ -494,7 +497,7 @@ abstract class DataFlowSourceCall extends DataFlowCall, TDataFlowSourceCall {
 }
 
 /** A call associated with a `CallNode`. */
-class NonSpecialCall extends DataFlowSourceCall, TNonSpecialCall {
+abstract class NonSpecialCall extends DataFlowSourceCall, TNonSpecialCall {
   CallNode call;
 
   NonSpecialCall() { this = TNonSpecialCall(call) }
@@ -510,14 +513,24 @@ class NonSpecialCall extends DataFlowSourceCall, TNonSpecialCall {
   override DataFlowCallable getEnclosingCallable() { result.getScope() = call.getNode().getScope() }
 }
 
-abstract class NonLibraryDataFlowSourceCall extends NonSpecialCall {
-  abstract Node getArg2(int n);
+abstract class NonLibraryDataFlowSourceCallTemp extends NonSpecialCall instanceof NonLibraryDataFlowSourceCall {
+  final override Node getArg(int n) { result = super.getArg2(n) }
 
-  final override Node getArg(int n) { result = this.getArg2(n) }
+  final override DataFlowCallable getCallable() { result = super.getCallable2() }
+}
+
+abstract class NonLibraryDataFlowSourceCall extends TNonSpecialCall {
+  CallNode call;
+
+  NonLibraryDataFlowSourceCall() { this = TNonSpecialCall(call) }
+
+  ControlFlowNode getNode() { result = call }
+
+  abstract Node getArg2(int n);
 
   abstract DataFlowCallable getCallable2();
 
-  final override DataFlowCallable getCallable() { result = this.getCallable2() }
+  string toString() { none() }
 }
 
 /**
@@ -607,6 +620,8 @@ class SpecialCall extends DataFlowSourceCall, TSpecialCall {
   override string toString() { result = special.toString() }
 
   override Node getArg(int n) { result = TCfgNode(special.(SpecialMethod::Potential).getArg(n)) }
+
+  Node getArg2(int n) { result = TCfgNode(special.(SpecialMethod::Potential).getArg(n)) }
 
   override ControlFlowNode getNode() { result = special }
 
