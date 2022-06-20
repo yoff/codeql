@@ -69,7 +69,7 @@ predicate matchSubjectFlowStep(Node nodeFrom, Node nodeTo) {
     subject = match.getSubject() and
     target = match.getCase(_).(Case).getPattern()
   |
-    nodeFrom.(CfgNode).getNode().getNode() = subject and
+    nodeFrom.(ExprNode).getNode().getNode() = subject and
     nodeTo.(CfgNode).getNode().getNode() = target
   )
 }
@@ -111,7 +111,7 @@ predicate matchOrFlowStep(Node nodeFrom, Node nodeTo) {
  */
 predicate matchLiteralFlowStep(Node nodeFrom, Node nodeTo) {
   exists(MatchLiteralPattern pattern, Expr literal | literal = pattern.getLiteral() |
-    nodeFrom.(CfgNode).getNode().getNode() = literal and
+    nodeFrom.(ExprNode).getNode().getNode() = literal and
     nodeTo.(CfgNode).getNode().getNode() = pattern
   )
 }
@@ -139,7 +139,7 @@ predicate matchCaptureFlowStep(Node nodeFrom, Node nodeTo) {
  */
 predicate matchValueFlowStep(Node nodeFrom, Node nodeTo) {
   exists(MatchValuePattern pattern, Expr value | value = pattern.getValue() |
-    nodeFrom.(CfgNode).getNode().getNode() = value and
+    nodeFrom.(ExprNode).getNode().getNode() = value and
     nodeTo.(CfgNode).getNode().getNode() = pattern
   )
 }

@@ -220,13 +220,13 @@ class CallCfgNode extends CfgNode, LocalSourceNode {
    * Gets the data-flow node for the function component of the call corresponding to this data-flow
    * node.
    */
-  Node getFunction() { result.asCfgNode() = node.getFunction() }
+  Node getFunction() { result.(CfgNode).getNode() = node.getFunction() }
 
   /** Gets the data-flow node corresponding to the i'th positional argument of the call corresponding to this data-flow node */
-  Node getArg(int i) { result.asCfgNode() = node.getArg(i) }
+  Node getArg(int i) { result.(CfgNode).getNode() = node.getArg(i) }
 
   /** Gets the data-flow node corresponding to the named argument of the call corresponding to this data-flow node */
-  Node getArgByName(string name) { result.asCfgNode() = node.getArgByName(name) }
+  Node getArgByName(string name) { result.(CfgNode).getNode() = node.getArgByName(name) }
 }
 
 /**
@@ -294,7 +294,7 @@ class ParameterNode extends Node, TParameterNode instanceof ParameterNodeImpl {
 }
 
 /** A parameter node found in the source code (not in a summary). */
-class SourceParameterNode extends ParameterNodeImpl, CfgNode {
+class SourceParameterNode extends ParameterNodeImpl, CfgNode, LocalSourceNode {
   //, LocalSourceNode {
   ParameterDefinition def;
 
@@ -408,7 +408,7 @@ class ModuleVariableNode extends Node, TModuleVariableNode {
 
   /** Gets a node that reads this variable. */
   Node getARead() {
-    result.asCfgNode() = var.getALoad().getAFlowNode() and
+    result.(CfgNode).getNode() = var.getALoad().getAFlowNode() and
     // Ignore reads that happen when the module is imported. These are only executed once.
     not result.getScope() = mod
     or
@@ -433,7 +433,7 @@ private ModuleVariableNode import_star_read(Node n) {
 
 pragma[nomagic]
 private predicate resolved_import_star_module(Module m, string name, Node n) {
-  exists(NameNode nn | nn = n.asCfgNode() |
+  exists(NameNode nn | nn = n.(CfgNode).getNode() |
     ImportStar::importStarResolvesTo(pragma[only_bind_into](nn), m) and
     nn.getId() = name
   )
@@ -613,8 +613,8 @@ deprecated class BarrierGuard extends GuardNode {
     exists(EssaDefinition def, ControlFlowNode node, boolean branch |
       AdjacentUses::useOfDef(def, node) and
       this.checks(node, branch) and
-      AdjacentUses::useOfDef(def, result.asCfgNode()) and
-      this.controlsBlock(result.asCfgNode().getBasicBlock(), branch)
+      AdjacentUses::useOfDef(def, result.(CfgNode).getNode()) and
+      this.controlsBlock(result.(CfgNode).getNode().getBasicBlock(), branch)
     )
   }
 }

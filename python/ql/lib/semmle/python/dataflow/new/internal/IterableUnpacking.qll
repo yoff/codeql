@@ -244,7 +244,7 @@ class UnpackingAssignmentSequenceTarget extends UnpackingAssignmentTarget instan
  */
 predicate iterableUnpackingAssignmentFlowStep(Node nodeFrom, Node nodeTo) {
   exists(AssignmentTarget target |
-    nodeFrom.(CfgNode).getNode().getNode() = target.getValue() and
+    nodeFrom.(ExprNode).getNode().getNode() = target.getValue() and
     nodeTo = TIterableSequenceNode(target)
   )
 }
@@ -255,7 +255,7 @@ predicate iterableUnpackingAssignmentFlowStep(Node nodeFrom, Node nodeTo) {
  */
 predicate iterableUnpackingForReadStep(CfgNode nodeFrom, Content c, Node nodeTo) {
   exists(ForTarget target |
-    nodeFrom.(CfgNode).getNode().getNode() = target.getSource() and
+    nodeFrom.(ExprNode).getNode().getNode() = target.getSource() and
     target instanceof SequenceNode and
     nodeTo = TIterableSequenceNode(target)
   ) and
@@ -354,7 +354,8 @@ predicate iterableUnpackingElementReadStep(Node nodeFrom, Content c, Node nodeTo
           nodeTo = TIterableElementNode(element)
         else
           // Step 5a
-          nodeTo.asVar().getDefinition().(MultiAssignmentDefinition).getDefiningNode() = element
+          nodeTo.(EssaNode).getVar().getDefinition().(MultiAssignmentDefinition).getDefiningNode() =
+            element
     )
   )
 }
@@ -367,7 +368,8 @@ predicate iterableUnpackingElementReadStep(Node nodeFrom, Content c, Node nodeTo
 predicate iterableUnpackingStarredElementStoreStep(Node nodeFrom, Content c, Node nodeTo) {
   exists(ControlFlowNode starred | starred.getNode() instanceof Starred |
     nodeFrom = TIterableElementNode(starred) and
-    nodeTo.asVar().getDefinition().(MultiAssignmentDefinition).getDefiningNode() = starred and
+    nodeTo.(EssaNode).getVar().getDefinition().(MultiAssignmentDefinition).getDefiningNode() =
+      starred and
     c instanceof ListElementContent
   )
 }
