@@ -113,6 +113,14 @@ newtype TNode =
 
 class TParameterNode = TCfgNode or TSummaryParameterNode;
 
+class TBasicNode =
+  TEssaNode or TCfgNode or TModuleVariableNode or TSyntheticPreUpdateNode or
+      TSyntheticPostUpdateNode;
+
+// class BasicNode extends TBasicNode instanceof Node {
+//   /** Gets a textual representation of this element. */
+//   string toString() { result = super.toString() }
+// }
 /** Helper for `Node::getEnclosingCallable`. */
 private DataFlowCallable getCallableScope(Scope s) {
   result.getScope() = s
@@ -216,6 +224,9 @@ class CfgNode extends Node, TCfgNode {
 class CallCfgNode extends CfgNode, LocalSourceNode {
   override CallNode node;
 
+  /** Gets a textual representation of this element. */
+  override string toString() { result = CfgNode.super.toString() }
+
   /**
    * Gets the data-flow node for the function component of the call corresponding to this data-flow
    * node.
@@ -295,7 +306,6 @@ class ParameterNode extends Node, TParameterNode instanceof ParameterNodeImpl {
 
 /** A parameter node found in the source code (not in a summary). */
 class SourceParameterNode extends ParameterNodeImpl, CfgNode, LocalSourceNode {
-  //, LocalSourceNode {
   ParameterDefinition def;
 
   SourceParameterNode() {
@@ -304,6 +314,9 @@ class SourceParameterNode extends ParameterNodeImpl, CfgNode, LocalSourceNode {
     // TODO: Make this unnecessary
     exists(DataFlowCallable c | node = c.getParameter(_))
   }
+
+  /** Gets a textual representation of this element. */
+  override string toString() { result = CfgNode.super.toString() }
 
   override predicate isParameterOf(DataFlowCallable c, int i) { node = c.getParameter(i) }
 

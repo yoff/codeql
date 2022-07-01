@@ -62,7 +62,7 @@ module Builtins {
    */
   DataFlow::Node likelyBuiltin(string name) {
     exists(Module m |
-      result.asCfgNode() =
+      result.(DataFlow::CfgNode).getNode() =
         any(NameNode n |
           possible_builtin_accessed_in_module(n, name, m) and
           not possible_builtin_defined_in_module(name, m)

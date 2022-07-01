@@ -11,7 +11,10 @@ private import semmle.python.types.Builtins
  * This abstract base class only knows about the base object on which the attribute is being
  * accessed, and the attribute itself, if it is statically inferrable.
  */
-abstract class AttrRef extends Node {
+abstract class AttrRef extends TBasicNode {
+  /** Gets a textual representation of this element. */
+  string toString() { result = "Attribute reference" }
+
   /**
    * Gets the data flow node corresponding to the object whose attribute is being read or written.
    */
@@ -50,6 +53,8 @@ abstract class AttrRef extends Node {
    * better results.
    */
   abstract string getAttributeName();
+
+  predicate unknownAttribute() { not exists(this.getAttributeName()) }
 }
 
 /**
@@ -224,7 +229,7 @@ private class ClassDefinitionAsAttrWrite extends AttrWrite, CfgNode {
  * - Dynamic attribute reads using `getattr`: `getattr(object, attr)`
  * - Qualified imports: `from module import attr as name`
  */
-abstract class AttrRead extends AttrRef, Node, LocalSourceNode { }
+abstract class AttrRead extends AttrRef, LocalSourceNode { }
 
 /** A simple attribute read, e.g. `object.attr` */
 private class AttributeReadAsAttrRead extends AttrRead, CfgNode {
@@ -264,8 +269,10 @@ private class GetAttrCallAsAttrRead extends AttrRead, CfgNode {
  * ```
  * is treated as if it is a read of the attribute `module.attr`, even if `module` is not imported directly.
  */
-private class ModuleAttributeImportAsAttrRead extends AttrRead, CfgNode {
-  override ImportMemberNode node;
+private class ModuleAttributeImportAsAttrRead extends AttrRead, TCfgNode {
+  ImportMemberNode node;
+
+  ModuleAttributeImportAsAttrRead() { this = TCfgNode(node) }
 
   override Node getObject() { result.asCfgNode() = node.getModule(_) }
 

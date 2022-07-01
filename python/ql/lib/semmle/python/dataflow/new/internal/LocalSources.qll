@@ -31,7 +31,7 @@ private import semmle.python.internal.CachedStages
  * `x` still points to the same object. If, however, we next do `x = x + [3]`, then the expression `x + [3]`
  * will be the new local source of what `x` now points to.
  */
-class LocalSourceNode extends Node {
+class LocalSourceNode extends TBasicNode {
   cached
   LocalSourceNode() {
     Stages::DataFlow::ref() and
@@ -50,6 +50,13 @@ class LocalSourceNode extends Node {
     // We explicitly include any read of a global variable, as some of these may have local flow going
     // into them.
     this = any(ModuleVariableNode mvn).getARead()
+  }
+
+  /** Gets a textual representation of this element. */
+  cached
+  string toString() {
+    Stages::DataFlow::ref() and
+    result = "Local source node"
   }
 
   /** Holds if this `LocalSourceNode` can flow to `nodeTo` in one or more local flow steps. */

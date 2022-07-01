@@ -316,10 +316,10 @@ predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo) {
  * Local flow can happen either at import time, when the module is initialised
  * or at runtime when callables in the module are called.
  */
-predicate simpleLocalFlowStepForTypetracking(Node nodeFrom, Node nodeTo) {
+predicate simpleLocalFlowStepForTypetracking(TBasicNode nodeFrom, TBasicNode nodeTo) {
   // If there is local flow out of a node `node`, we want flow
   // both out of `node` and any post-update node of `node`.
-  exists(Node node |
+  exists(TBasicNode node |
     nodeFrom = update2(node) and
     (
       importTimeLocalFlowStep(node, nodeTo) or
@@ -328,9 +328,10 @@ predicate simpleLocalFlowStepForTypetracking(Node nodeFrom, Node nodeTo) {
   )
 }
 
-/**
+/*
  * Holds if `node` is found at the top level of a module.
  */
+
 pragma[inline]
 predicate isTopLevel(Node node) { node.getScope() instanceof Module }
 
@@ -405,7 +406,7 @@ private Node update(Node node) {
   result.(PostUpdateNode).getPreUpdateNode() = node
 }
 
-private Node update2(Node node) {
+private TBasicNode update2(TBasicNode node) {
   result = node
   or
   result.(SyntheticPreUpdateNode).getPostUpdateNode() = node

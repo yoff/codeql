@@ -494,7 +494,7 @@ module API {
      */
     private predicate imports(DataFlow::Node imp, string name) {
       exists(PY::ImportExprNode iexpr |
-        imp.asCfgNode() = iexpr and
+        imp.(DataFlow::CfgNode).getNode() = iexpr and
         not iexpr.getNode().isRelative() and
         name = iexpr.getNode().getImportedModuleName()
       )
@@ -518,7 +518,7 @@ module API {
      */
     private TApiNode potential_import_star_base(PY::Scope s) {
       exists(DataFlow::Node n |
-        n.asCfgNode() = ImportStar::potentialImportStarBase(s) and
+        n.(DataFlow::CfgNode).getNode() = ImportStar::potentialImportStarBase(s) and
         use(result, n)
       )
     }
@@ -540,17 +540,17 @@ module API {
         or
         // TODO: I had expected `DataFlow::AttrWrite` to contain the attribute writes from a dict, that's how JS works.
         exists(PY::Dict dict, PY::KeyValuePair item |
-          dict = pred.asExpr() and
+          dict = pred.(DataFlow::ExprNode).getNode().getNode() and
           dict.getItem(_) = item and
           lbl = Label::member(item.getKey().(PY::StrConst).getS()) and
-          rhs.asExpr() = item.getValue()
+          rhs.(DataFlow::ExprNode).getNode().getNode() = item.getValue()
         )
         or
-        exists(PY::CallableExpr fn | fn = pred.asExpr() |
+        exists(PY::CallableExpr fn | fn = pred.(DataFlow::ExprNode).getNode().getNode() |
           not fn.getInnerScope().isAsync() and
           lbl = Label::return() and
           exists(PY::Return ret |
-            rhs.asExpr() = ret.getValue() and
+            rhs.(DataFlow::ExprNode).getNode().getNode() = ret.getValue() and
             ret.getScope() = fn.getInnerScope()
           )
         )
@@ -592,7 +592,8 @@ module API {
         // Subclassing a node
         lbl = Label::subclass() and
         exists(DataFlow::Node superclass | pred.flowsTo(superclass) |
-          ref.asExpr().(PY::ClassExpr).getABase() = superclass.asExpr()
+          ref.(DataFlow::ExprNode).getNode().getNode().(PY::ClassExpr).getABase() =
+            superclass.(DataFlow::ExprNode).getNode().getNode()
         )
         or
         // awaiting
@@ -604,7 +605,7 @@ module API {
       )
       or
       exists(DataFlow::Node def, PY::CallableExpr fn |
-        rhs(base, def) and fn = trackDefNode(def).asExpr()
+        rhs(base, def) and fn = trackDefNode(def).(DataFlow::ExprNode).getNode().getNode()
       |
         exists(int i, int offset |
           if exists(PY::Parameter p | p = fn.getInnerScope().getAnArg() and p.isSelf())
@@ -612,18 +613,19 @@ module API {
           else offset = 0
         |
           lbl = Label::parameter(i - offset) and
-          ref.asExpr() = fn.getInnerScope().getArg(i)
+          ref.(DataFlow::ExprNode).getNode().getNode() = fn.getInnerScope().getArg(i)
         )
         or
         exists(string name, PY::Parameter param |
           lbl = Label::keywordParameter(name) and
           param = fn.getInnerScope().getArgByName(name) and
           not param.isSelf() and
-          ref.asExpr() = param
+          ref.(DataFlow::ExprNode).getNode().getNode() = param
         )
         or
         lbl = Label::selfParameter() and
-        ref.asExpr() = any(PY::Parameter p | p = fn.getInnerScope().getAnArg() and p.isSelf())
+        ref.(DataFlow::ExprNode).getNode().getNode() =
+          any(PY::Parameter p | p = fn.getInnerScope().getAnArg() and p.isSelf())
       )
       or
       // Built-ins, treated as members of the module `builtins`
@@ -635,7 +637,7 @@ module API {
         base = potential_import_star_base(s) and
         lbl =
           Label::member(any(string name |
-              ImportStar::namePossiblyDefinedInImportStar(ref.asCfgNode(), name, s)
+              ImportStar::namePossiblyDefinedInImportStar(ref.(DataFlow::CfgNode).getNode(), name, s)
             ))
       )
     }
@@ -721,7 +723,7 @@ module API {
     DataFlow::LocalSourceNode trackUseNode(DataFlow::LocalSourceNode src) {
       Stages::TypeTracking::ref() and
       result = trackUseNode(src, DataFlow::TypeTracker::end()) and
-      not result instanceof DataFlow::ModuleVariableNode
+      result instanceof DataFlow::ExprNode
     }
 
     /**
@@ -901,7 +903,8 @@ module API {
     ApiLabel memberFromRef(DataFlow::AttrRef ref) {
       result = member(ref.getAttributeName())
       or
-      not exists(ref.getAttributeName()) and
+      // not exists(ref.getAttributeName()) and
+      ref.unknownAttribute() and
       result = unknownMember()
     }
 
