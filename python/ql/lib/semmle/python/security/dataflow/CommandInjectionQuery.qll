@@ -9,6 +9,7 @@
 private import python
 import semmle.python.dataflow.new.DataFlow
 import semmle.python.dataflow.new.TaintTracking
+import semmle.python.ApiGraphs
 import CommandInjectionCustomizations::CommandInjection
 
 /**
@@ -25,5 +26,13 @@ class Configuration extends TaintTracking::Configuration {
 
   deprecated override predicate isSanitizerGuard(DataFlow::BarrierGuard guard) {
     guard instanceof SanitizerGuard
+  }
+
+  override predicate isAdditionalTaintStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
+    exists(API::CallNode call |
+      call = API::moduleImport("paramiko").getMember("ProxyCommand").getACall() and
+      nodeFrom = [call.getArg(0), call.getArgByName("command_line")] and
+      nodeTo = call
+    )
   }
 }
