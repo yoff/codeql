@@ -49,7 +49,7 @@ SINK_F(not_via_lambda)
 via_reversed = MS_reversed([SOURCE])
 SINK(via_reversed[0])  # $ flow="SOURCE, l:-1 -> via_reversed[0]"
 
-tainted_list = MS_reversed(TAINTED_LIST)
+tainted_list = MS_reversed([TAINTED_STRING])
 ensure_tainted(
     tainted_list,  # $ tainted
     tainted_list[0],  # $ tainted
@@ -62,7 +62,7 @@ def box(x):
 via_map = MS_list_map(box, [SOURCE])
 SINK(via_map[0][0])  # $ flow="SOURCE, l:-1 -> via_map[0][0]"
 
-tainted_mapped = MS_list_map(box, TAINTED_LIST)
+tainted_mapped = MS_list_map(box, [TAINTED_STRING])
 ensure_tainted(
     tainted_mapped,  # $ tainted
     tainted_mapped[0][0],  # $ tainted
@@ -74,7 +74,7 @@ def explicit_identity(x):
 via_map_explicit = MS_list_map(explicit_identity, [SOURCE])
 SINK(via_map_explicit[0])  # $ flow="SOURCE, l:-1 -> via_map_explicit[0]"
 
-tainted_mapped_explicit = MS_list_map(explicit_identity, TAINTED_LIST)
+tainted_mapped_explicit = MS_list_map(explicit_identity, [TAINTED_STRING])
 ensure_tainted(
     tainted_mapped_explicit,  # $ tainted
     tainted_mapped_explicit[0],  # $ tainted
@@ -83,7 +83,7 @@ ensure_tainted(
 via_map_summary = MS_list_map(MS_identity, [SOURCE])
 SINK(via_map_summary[0])  # $ flow="SOURCE, l:-1 -> via_map_summary[0]"
 
-tainted_mapped_summary = MS_list_map(MS_identity, TAINTED_LIST)
+tainted_mapped_summary = MS_list_map(MS_identity, [TAINTED_STRING])
 ensure_tainted(
     tainted_mapped_summary,  # $ tainted
     tainted_mapped_summary[0],  # $ tainted
@@ -101,7 +101,7 @@ ensure_tainted(
 via_append = MS_append_to_list([SOURCE], NONSOURCE)
 SINK(via_append[0])  # $ flow="SOURCE, l:-1 -> via_append[0]"
 
-tainted_list_implicit = MS_append_to_list(TAINTED_LIST, NONSOURCE)
+tainted_list_implicit = MS_append_to_list([TAINTED_STRING], NONSOURCE)
 ensure_tainted(
     tainted_list,  # $ tainted
     tainted_list[0],  # $ tainted
