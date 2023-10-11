@@ -1573,6 +1573,17 @@ private class SummaryPostUpdateNode extends FlowSummaryNode, PostUpdateNodeImpl 
   override Node getPreUpdateNode() { result = pre }
 }
 
+private class CapturePostUpdateNode extends PostUpdateNodeImpl, CaptureNode {
+  private CaptureNode pre;
+
+  CapturePostUpdateNode() {
+    VariableCapture::Flow::capturePostUpdateNode(this.getSynthesizedCaptureNode(),
+      pre.getSynthesizedCaptureNode())
+  }
+
+  override Node getPreUpdateNode() { result = pre }
+}
+
 /** Gets a viable run-time target for the call `call`. */
 DataFlowCallable viableCallable(DataFlowCall call) {
   call instanceof ExtractedDataFlowCall and
