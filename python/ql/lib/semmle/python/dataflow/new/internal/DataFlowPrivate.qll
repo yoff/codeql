@@ -341,6 +341,15 @@ module LocalFlow {
       nodeFrom.(CfgNode).getNode() = pd.getDefiningNode() and
       nodeTo.(EssaNode).getVar() = pd.getVariable()
     )
+    or
+    // Function definition
+    //   `def foo(x):`
+    //   nodeFrom is `foo`, essa var
+    //   nodeTo is `foo`, cfgNode
+    exists(FunctionDef fd |
+      fd.defines(nodeFrom.asVar().getSourceVariable()) and
+      nodeTo.asCfgNode() = nodeFrom.asVar().(EssaNodeDefinition).getDefiningNode()
+    )
   }
 
   predicate expressionFlowStep(Node nodeFrom, Node nodeTo) {
@@ -511,7 +520,7 @@ module VariableCapture {
     or
     result.(Flow::ParameterNode).getParameter().getCfgNode() = n.(CfgNode).getNode()
     or
-    result.(Flow::ThisParameterNode).getCallable() = n.asExpr().(FunctionExpr).getInnerScope()
+    result.(Flow::ThisParameterNode).getCallable() = n.(LambdaSelfReferenceNode).getCallable()
   }
 
   predicate storeStep(Node nodeFrom, CapturedVariableContent c, Node nodeTo) {
@@ -525,9 +534,37 @@ module VariableCapture {
   predicate valueStep(Node nodeFrom, Node nodeTo) {
     Flow::localFlowStep(asClosureNode(nodeFrom), asClosureNode(nodeTo))
   }
+
   // Note: Learn from JS, https://github.com/github/codeql/pull/14412
-  // - JS: Migrate to shared dataflow library
+  // - JS: Capture flow
   // - JS: Disallow consecutive captured contents
+  private module Debug {
+    predicate flowStoreStep(
+      Node nodeFrom, Flow::ClosureNode closureNodeFrom, CapturedVariable v,
+      Flow::ClosureNode closureNodeTo, Node nodeTo
+    ) {
+      closureNodeFrom = asClosureNode(nodeFrom) and
+      closureNodeTo = asClosureNode(nodeTo) and
+      Flow::storeStep(closureNodeFrom, v, closureNodeTo)
+    }
+
+    predicate flowReadStep(
+      Node nodeFrom, Flow::ClosureNode closureNodeFrom, CapturedVariable v,
+      Flow::ClosureNode closureNodeTo, Node nodeTo
+    ) {
+      closureNodeFrom = asClosureNode(nodeFrom) and
+      closureNodeTo = asClosureNode(nodeTo) and
+      Flow::readStep(closureNodeFrom, v, closureNodeTo)
+    }
+
+    predicate flowValueStep(
+      Node nodeFrom, Flow::ClosureNode closureNodeFrom, Flow::ClosureNode closureNodeTo, Node nodeTo
+    ) {
+      closureNodeFrom = asClosureNode(nodeFrom) and
+      closureNodeTo = asClosureNode(nodeTo) and
+      Flow::localFlowStep(closureNodeFrom, closureNodeTo)
+    }
+  }
 }
 
 //--------
@@ -614,66 +651,6 @@ module StepRelationTransformations {
 import StepRelationTransformations
 
 /**
- * A module to handle separate import-time from run-time.
- *
- * Local flow can happen in two contexts:
- * - at import-time
- * - at run-time
- */
-module StepRelationTransformations {
-  signature predicate stepSig(Node nodeFrom, Node nodeTo);
-
-  module Separate<stepSig/2 rawStep> {
-    /** Holds if a step can be taken from `nodeFrom` to `nodeTo` at import time. */
-    predicate importTimeStep(Node nodeFrom, Node nodeTo) {
-      // As a proxy for whether statements can be executed at import time,
-      // we check if they appear at the top level.
-      // This will miss statements inside functions called from the top level.
-      isTopLevel(nodeFrom) and
-      isTopLevel(nodeTo) and
-      rawStep(nodeFrom, nodeTo)
-    }
-
-    /** Holds if a step can be taken from `nodeFrom` to `nodeTo` at runtime. */
-    predicate runtimeStep(Node nodeFrom, Node nodeTo) {
-      // Anything not at the top level can be executed at runtime.
-      not isTopLevel(nodeFrom) and
-      not isTopLevel(nodeTo) and
-      rawStep(nodeFrom, nodeTo)
-    }
-
-    /**
-     * Holds if a step can be taken from `nodeFrom` to `nodeTo`.
-     * This includes steps out of post-update nodes.
-     */
-    predicate step(Node nodeFrom, Node nodeTo) {
-      // If there is local flow out of a node `node`, we want flow
-      // both out of `node` and any post-update node of `node`.
-      exists(Node node |
-        nodeFrom = update(node) and
-        (
-          importTimeStep(node, nodeTo) or
-          runtimeStep(node, nodeTo)
-        )
-      )
-    }
-  }
-
-  module IncludePostUpdateFlow<stepSig/2 rawStep> {
-    predicate step(Node nodeFrom, Node nodeTo) {
-      // If a raw step can be taken out of a node `node`, a step can be taken
-      // both out of `node` and any post-update node of `node`.
-      exists(Node node |
-        nodeFrom = update(node) and
-        rawStep(nodeFrom, nodeTo)
-      )
-    }
-  }
-}
-
-import StepRelationTransformations
-
-/**
  * This is the local flow predicate that is used as a building block in global
  * data flow.
  *
@@ -684,7 +661,7 @@ predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo) {
   or
   summaryFlowSteps(nodeFrom, nodeTo)
   or
-  IncludePostUpdateFlow<Separate<VariableCapture::valueStep/2>::step/2>::step(nodeFrom, nodeTo)
+  variableCaptureFlowStep(nodeFrom, nodeTo)
 }
 
 /**
@@ -706,6 +683,11 @@ private predicate summaryLocalStep(Node nodeFrom, Node nodeTo) {
 
 predicate summaryFlowSteps(Node nodeFrom, Node nodeTo) {
   IncludePostUpdateFlow<PhaseDependentFlow<summaryLocalStep/2>::step/2>::step(nodeFrom, nodeTo)
+}
+
+predicate variableCaptureFlowStep(Node nodeFrom, Node nodeTo) {
+  IncludePostUpdateFlow<PhaseDependentFlow<VariableCapture::valueStep/2>::step/2>::step(nodeFrom,
+    nodeTo)
 }
 
 /** `ModuleVariable`s are accessed via jump steps at runtime. */
@@ -1236,6 +1218,11 @@ predicate additionalLambdaFlowStep(Node nodeFrom, Node nodeTo, boolean preserves
  */
 predicate allowParameterReturnInSelf(ParameterNode p) {
   FlowSummaryImpl::Private::summaryAllowParameterReturnInSelf(p)
+  or
+  exists(Function f |
+    VariableCapture::Flow::heuristicAllowInstanceParameterReturnInSelf(f) and
+    p = TLambdaSelfReferenceNode(f)
+  )
 }
 
 /** An approximated `Content`. */

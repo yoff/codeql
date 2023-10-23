@@ -117,7 +117,9 @@ newtype TNode =
     exists(ParameterPosition ppos | ppos.isKeyword(_) | exists(callable.getParameter(ppos)))
   } or
   /** A synthetic node representing a captured variable. */
-  TCaptureNode(VariableCapture::Flow::SynthesizedCaptureNode cn)
+  TCaptureNode(VariableCapture::Flow::SynthesizedCaptureNode cn) or
+  /** TODO: extende to also cover lambdas */
+  TLambdaSelfReferenceNode(Function f)
 
 /** Helper for `Node::getEnclosingCallable`. */
 private DataFlowCallable getCallableScope(Scope s) {
