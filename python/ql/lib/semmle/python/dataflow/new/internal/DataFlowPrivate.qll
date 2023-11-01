@@ -341,15 +341,15 @@ module LocalFlow {
       nodeFrom.(CfgNode).getNode() = pd.getDefiningNode() and
       nodeTo.(EssaNode).getVar() = pd.getVariable()
     )
-    or
-    // Function definition
-    //   `def foo(x):`
-    //   nodeFrom is `foo`, essa var
-    //   nodeTo is `foo`, cfgNode
-    exists(FunctionDef fd |
-      fd.defines(nodeFrom.asVar().getSourceVariable()) and
-      nodeTo.asCfgNode() = nodeFrom.asVar().(EssaNodeDefinition).getDefiningNode()
-    )
+  }
+
+  predicate glueStep(Node nodeFrom, Node nodeTo) {
+    // Definition
+    //   `x = f(42)`
+    //   nodeFrom is `x`, essa var
+    //   nodeTo is `x`, cfgNode
+    nodeTo.(CfgNode).getNode() =
+      nodeFrom.(EssaNode).getVar().getDefinition().(AssignmentDefinition).getDefiningNode()
   }
 
   predicate expressionFlowStep(Node nodeFrom, Node nodeTo) {
@@ -403,6 +403,8 @@ module LocalFlow {
     // `IncludePostUpdateFlow` has ben applied.
     IncludePostUpdateFlow<PhaseDependentFlow<useUseFlowStep/2>::step/2>::step(nodeFrom, nodeTo) and
     nodeFrom != nodeTo
+    or
+    IncludePostUpdateFlow<PhaseDependentFlow<glueStep/2>::step/2>::step(nodeFrom, nodeTo)
   }
 }
 

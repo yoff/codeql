@@ -41,7 +41,7 @@ def by_value1():
 def by_value2():
     a = NONSOURCE
     def inner(a_val=a):
-        SINK(a) #$ MISSING:captured
+        SINK(a) #$ captured
         SINK_F(a_val)
     a = SOURCE
     inner()
