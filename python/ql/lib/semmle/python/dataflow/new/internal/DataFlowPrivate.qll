@@ -550,6 +550,13 @@ module VariableCapture {
       Flow::storeStep(closureNodeFrom, v, closureNodeTo)
     }
 
+    predicate unmappedFlowStoreStep(
+      Flow::ClosureNode closureNodeFrom, CapturedVariable v, Flow::ClosureNode closureNodeTo
+    ) {
+      Flow::storeStep(closureNodeFrom, v, closureNodeTo) and
+      not flowStoreStep(_, closureNodeFrom, v, closureNodeTo, _)
+    }
+
     predicate flowReadStep(
       Node nodeFrom, Flow::ClosureNode closureNodeFrom, CapturedVariable v,
       Flow::ClosureNode closureNodeTo, Node nodeTo
@@ -559,6 +566,13 @@ module VariableCapture {
       Flow::readStep(closureNodeFrom, v, closureNodeTo)
     }
 
+    predicate unmappedFlowReadStep(
+      Flow::ClosureNode closureNodeFrom, CapturedVariable v, Flow::ClosureNode closureNodeTo
+    ) {
+      Flow::readStep(closureNodeFrom, v, closureNodeTo) and
+      not flowReadStep(_, closureNodeFrom, v, closureNodeTo, _)
+    }
+
     predicate flowValueStep(
       Node nodeFrom, Flow::ClosureNode closureNodeFrom, Flow::ClosureNode closureNodeTo, Node nodeTo
     ) {
@@ -566,6 +580,12 @@ module VariableCapture {
       closureNodeTo = asClosureNode(nodeTo) and
       Flow::localFlowStep(closureNodeFrom, closureNodeTo)
     }
+
+    predicate unmappedFlowValueStep(
+      Flow::ClosureNode closureNodeFrom, Flow::ClosureNode closureNodeTo
+    ) {
+      Flow::localFlowStep(closureNodeFrom, closureNodeTo) and
+      not flowValueStep(_, closureNodeFrom, closureNodeTo, _)
   }
 }
 
