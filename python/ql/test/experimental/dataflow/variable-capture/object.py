@@ -43,6 +43,20 @@ def object_in(tainted):
 def test_object_in():
     object_in(SOURCE)
 
+def object_in_explicit(tainted):
+    class Reader:
+        def __init__(self):
+            self.val = tainted
+
+        def get(self):
+            return self.val
+        
+    r = Reader()
+    SINK(r.get()) # $ MISSING: captured
+
+def test_object_in_explicit():
+    object_in_explicit(SOURCE)
+
 def object_out():
     written = { "cell": NONSOURCE }
 
