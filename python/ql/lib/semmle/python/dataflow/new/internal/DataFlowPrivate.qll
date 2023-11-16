@@ -494,7 +494,20 @@ module VariableCapture {
 
       predicate hasBody(Callable body) { body = this.getNode().(CallableExpr).getInnerScope() }
 
-      predicate hasAliasedAccess(Expr f) { closureFlowStep+(this, f) and not closureFlowStep(f, _) }
+      predicate hasAliasedAccess(Expr f) {
+        closureFlowStep+(this.getClosureExpr(), f) and not closureFlowStep(f, _)
+      }
+
+      Expr getClosureExpr() {
+        // exists(ClassDef c | c.getDefinedClass().getInitMethod().getDefinition() = this.getNode() |
+        //   result.getNode() = c.getValue()
+        // )
+        exists(ClassDef c | c.getDefinedClass().getAMethod().getDefinition() = this.getNode() |
+          result.getNode() = c.getValue()
+        )
+        or
+        result = this
+      }
     }
 
     // TODO: Some basic blocks will not have an enclosing callable
@@ -586,6 +599,7 @@ module VariableCapture {
     ) {
       Flow::localFlowStep(closureNodeFrom, closureNodeTo) and
       not flowValueStep(_, closureNodeFrom, closureNodeTo, _)
+    }
   }
 }
 
