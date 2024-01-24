@@ -1,3 +1,5 @@
 | passThrough;Argument[0];ReturnValue; |
+| readFoo;Argument[0];ReturnValue; |
 | tackOn;Argument[0];ReturnValue; |
 | tackOn;Argument[1];ReturnValue; |
+| writeFoo;Argument[1];Argument[0]; |
