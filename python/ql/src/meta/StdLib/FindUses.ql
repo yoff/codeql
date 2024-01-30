@@ -1,6 +1,14 @@
 import python
 import semmle.python.dataflow.new.DataFlow
 import semmle.python.dataflow.new.TaintTracking
+private import semmle.python.dataflow.new.internal.DataFlowPrivate as DataFlowPrivate
+private import semmle.python.dataflow.new.internal.FlowSummaryImpl as FlowSummaryImpl
+
+predicate summaryLocalStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
+  FlowSummaryImpl::Private::Steps::summaryLocalStep(nodeFrom
+        .(DataFlowPrivate::FlowSummaryNode)
+        .getSummaryNode(), nodeTo.(DataFlowPrivate::FlowSummaryNode).getSummaryNode(), false)
+}
 
 pragma[inline]
 predicate inStdLib(DataFlow::Node node) { node.getLocation().getFile().inStdlib() }
@@ -15,14 +23,7 @@ string stepsTo(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
       or
       exists(TaintTracking::AdditionalTaintStep s | s.step(nodeFrom, nodeTo))
       or
-      exists(
-        TaintTracking::AdditionalTaintStep s, DataFlow::Node entryNode, DataFlow::Node exitNode
-      |
-        s.step(entryNode, exitNode)
-      |
-        TaintTracking::localTaint(nodeFrom, entryNode) and
-        TaintTracking::localTaint(exitNode, nodeTo)
-      )
+      FlowSummaryImpl::Private::Steps::summaryThroughStepTaint(nodeFrom, nodeTo, _)
     then result = "taint"
     else result = "no"
 }
@@ -129,8 +130,7 @@ module EntryPointsForPolynomialReDoSQuery {
 from
   EntryPointsByQuery e, DataFlow::Node argument, string parameter, string functionName,
   DataFlow::Node outNode, string alreadyModelled
-where
-  e.entryPoint(argument, parameter, functionName, outNode, alreadyModelled) and
-  alreadyModelled = "no"
+where e.entryPoint(argument, parameter, functionName, outNode, alreadyModelled) //and
+//   alreadyModelled = "no"
 // select e, argument, parameter, functionName, outNode, alreadyModelled
 select e, parameter, functionName, alreadyModelled

@@ -15,5 +15,6 @@ where
   not call.getLocation().getFile().inStdlib() and
   f.getLocation().getFile().inStdlib() and
   f.getName() = name and
-  name != "__init__"
+  name != "__init__" and
+  name != "__call__"
 select name, f.getScope()
