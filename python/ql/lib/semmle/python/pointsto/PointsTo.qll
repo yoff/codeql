@@ -2518,7 +2518,6 @@ module AttributePointsTo {
   predicate variableAttributePointsTo(
     EssaVariable var, Context context, string name, ObjectInternal value, CfgOrigin origin
   ) {
-    Stages::PointsTo::ref() and
     definitionAttributePointsTo(var.getDefinition(), context, name, value, origin)
     or
     exists(EssaVariable prev |

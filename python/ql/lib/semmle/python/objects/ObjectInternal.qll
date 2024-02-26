@@ -215,10 +215,7 @@ class ObjectInternal extends TObject {
 class BuiltinOpaqueObjectInternal extends ObjectInternal, TBuiltinOpaqueObject {
   override Builtin getBuiltin() { this = TBuiltinOpaqueObject(result) }
 
-  override string toString() {
-    Stages::PointsTo::ref() and
-    result = this.getBuiltin().getClass().getName() + " object"
-  }
+  override string toString() { result = this.getBuiltin().getClass().getName() + " object" }
 
   override boolean booleanValue() {
     // TO DO ... Depends on class. `result = this.getClass().instancesBooleanValue()`

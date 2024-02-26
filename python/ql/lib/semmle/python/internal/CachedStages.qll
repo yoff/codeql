@@ -129,45 +129,6 @@ module Stages {
   }
 
   /**
-   * The points-to stage.
-   */
-  cached
-  module PointsTo {
-    /**
-     * Always holds.
-     * Ensures that a predicate is evaluated as part of the points-to stage.
-     */
-    cached
-    predicate ref() { 1 = 1 }
-
-    private import semmle.python.pointsto.Base as PointsToBase
-    private import semmle.python.types.Object as TypeObject
-    private import semmle.python.objects.TObject as TObject
-    private import semmle.python.objects.ObjectInternal as ObjectInternal
-    // have to alias since this module is also called PointsTo
-    private import semmle.python.pointsto.PointsTo as RealPointsTo
-
-    /**
-     * DONT USE!
-     * Contains references to each predicate that use the above `ref` predicate.
-     */
-    cached
-    predicate backref() {
-      1 = 1
-      or
-      PointsToBase::BaseFlow::scope_entry_value_transfer_from_earlier(_, _, _, _)
-      or
-      exists(TypeObject::Object a)
-      or
-      exists(TObject::TObject f)
-      or
-      exists(any(ObjectInternal::ObjectInternal o).toString())
-      or
-      RealPointsTo::AttributePointsTo::variableAttributePointsTo(_, _, _, _, _)
-    }
-  }
-
-  /**
    * The `dataflow` stage.
    */
   cached
