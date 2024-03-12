@@ -7,16 +7,21 @@ import semmle.python.dataflow.new.DataFlow
 import semmle.python.dataflow.new.RemoteFlowSources
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.dataflow.new.BarrierGuards
+import semmle.python.ApiGraphs
 
 module Config implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) { source instanceof RemoteFlowSource }
 
   predicate isSink(DataFlow::Node sink) {
-    exists(DataFlow::MethodCallNode execute, DataFlow::Node cursor |
-      execute.calls(cursor, "execute") and
-      cursor.asExpr().(Name).getId() = "cursor" and
-      execute.getArg(0) = sink
-    )
+    sink =
+      API::moduleImport("django")
+          .getMember("db")
+          .getMember("connection")
+          .getMember("cursor")
+          .getReturn()
+          .getMember("execute")
+          .getACall()
+          .getArg(0)
   }
 
   predicate isBarrier(DataFlow::Node node) { node instanceof StringConstCompareBarrier }

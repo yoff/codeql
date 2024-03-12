@@ -15,8 +15,8 @@ module Config implements DataFlow::ConfigSig {
   }
 }
 
-import TaintTracking::Make<Config> as SqlInjection
+module Flow = TaintTracking::Global<Config>;
 
-from SqlInjection::PathNode source, SqlInjection::PathNode sink
-where SqlInjection::hasFlowPath(source, sink)
+from Flow::PathNode source, Flow::PathNode sink
+where Flow::flowPath(source, sink)
 select source, sink

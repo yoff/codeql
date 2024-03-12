@@ -6,7 +6,6 @@ import python
 import semmle.python.dataflow.new.DataFlow
 import semmle.python.dataflow.new.RemoteFlowSources
 import semmle.python.dataflow.new.TaintTracking
-import semmle.python.Concepts
 
 module Config implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) { source instanceof RemoteFlowSource }
@@ -20,10 +19,10 @@ module Config implements DataFlow::ConfigSig {
   }
 }
 
-import TaintTracking::Make<Config> as SqlInjection
-import SqlInjection::PathGraph
+module Flow = TaintTracking::Global<Config>;
 
-from SqlInjection::PathNode source, SqlInjection::PathNode sink
-where SqlInjection::hasFlowPath(source, sink)
-select sink.getNode(), source, sink, "This sql execution may be influenced by this $@.",
-  source.getNode(), "user-controlled value"
+import Flow::PathGraph
+
+from Flow::PathNode source, Flow::PathNode sink
+where Flow::flowPath(source, sink)
+select source, sink

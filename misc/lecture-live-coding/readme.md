@@ -26,7 +26,9 @@ Build a database
 gh codeql database create -l python -j 0 -- CVE-2022-41892-vul
 ```
 
-Start VSCode from the starter repo or from `github/codeql`, and load the database. You should now be able to do explorative queries, for example via the `CodeQL: Quick Query` command.
+Start VSCode and install the CodeQL extension. Load the database we just created, and create a query. You should now be able to modify the example to explore the codebase.
+
+Later, you might want to clone `github/codeql` and start VSCode from there. Then you have all the queries available.
 
 Iterations:
 
@@ -44,3 +46,5 @@ Iterations:
 6. Same as 5, but show the paths.
 
 7. Add a sanitizer, in this case comparison with a string constant.
+
+8. Use API graphs
