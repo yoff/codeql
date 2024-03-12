@@ -25,4 +25,4 @@ import Flow::PathGraph
 
 from Flow::PathNode source, Flow::PathNode sink
 where Flow::flowPath(source, sink)
-select source, sink
+select sink.getNode(), source, sink, "User controlled sql executed"
