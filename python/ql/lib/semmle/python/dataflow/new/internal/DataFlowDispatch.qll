@@ -41,23 +41,27 @@ private import semmle.python.dataflow.new.internal.TypeTrackingImpl::CallGraphCo
 
 newtype TParameterPosition =
   /** Used for `self` in methods, and `cls` in classmethods. */
-  TSelfParameterPosition() or
+  TSelfParameterPosition(boolean instanceMethod) { instanceMethod in [true, false] } or
   /**
    * This is used for tracking flow through captured variables, and
    * we use separate parameter/argument positions in order to distinguish
    * "lambda self" from "normal self", as lambdas may also access outer `self`
    * variables (through variable capture).
    */
-  TLambdaSelfParameterPosition() or
-  TPositionalParameterPosition(int index) {
-    index = any(Parameter p).getPosition()
-    or
-    // since synthetic parameters are made for a synthetic summary callable, based on
-    // what Argument positions they have flow for, we need to make sure we have such
-    // parameter positions available.
-    FlowSummaryImpl::ParsePositions::isParsedPositionalArgumentPosition(_, index)
+  TLambdaSelfParameterPosition(boolean instanceMethod) { instanceMethod in [true, false] } or
+  TPositionalParameterPosition(int index, boolean instanceMethod) {
+    instanceMethod in [true, false] and
+    (
+      index = any(Parameter p).getPosition()
+      or
+      // since synthetic parameters are made for a synthetic summary callable, based on
+      // what Argument positions they have flow for, we need to make sure we have such
+      // parameter positions available.
+      FlowSummaryImpl::ParsePositions::isParsedPositionalArgumentPosition(_, index)
+    )
   } or
-  TPositionalParameterLowerBoundPosition(int pos) {
+  TPositionalParameterLowerBoundPosition(int pos, boolean instanceMethod) {
+    instanceMethod in [true, false] and
     FlowSummaryImpl::ParsePositions::isParsedArgumentLowerBoundPosition(_, pos)
   } or
   TKeywordParameterPosition(string name) {
@@ -66,14 +70,19 @@ newtype TParameterPosition =
     // see comment for TPositionalParameterPosition
     FlowSummaryImpl::ParsePositions::isParsedKeywordArgumentPosition(_, name)
   } or
-  TStarArgsParameterPosition(int index) {
-    // since `.getPosition` does not work for `*args`, we need *args parameter positions
-    // at index 1 larger than the largest positional parameter position (and 0 must be
-    // included as well). This is a bit of an over-approximation.
-    index = 0 or
-    index = any(Parameter p).getPosition() + 1
+  TStarArgsParameterPosition(int index, boolean instanceMethod) {
+    instanceMethod in [true, false] and
+    (
+      // since `.getPosition` does not work for `*args`, we need *args parameter positions
+      // at index 1 larger than the largest positional parameter position (and 0 must be
+      // included as well). This is a bit of an over-approximation.
+      index = 0 or
+      index = any(Parameter p).getPosition() + 1
+    )
   } or
-  TSynthStarArgsElementParameterPosition(int index) { exists(TStarArgsParameterPosition(index)) } or
+  TSynthStarArgsElementParameterPosition(int index, boolean instanceMethod) {
+    exists(TStarArgsParameterPosition(index, instanceMethod))
+  } or
   TDictSplatParameterPosition() or
   // To get flow from a **kwargs argument to a keyword parameter, we add a read-step
   // from a synthetic **kwargs parameter. We need this separate synthetic ParameterNode,
@@ -86,30 +95,38 @@ newtype TParameterPosition =
 /** A parameter position. */
 class ParameterPosition extends TParameterPosition {
   /** Holds if this position represents a `self`/`cls` parameter. */
-  predicate isSelf() { this = TSelfParameterPosition() }
+  predicate isSelf(boolean instanceMethod) { this = TSelfParameterPosition(instanceMethod) }
 
   /** Holds if this position represents a reference to a lambda itself. Only used for tracking flow through captured variables. */
-  predicate isLambdaSelf() { this = TLambdaSelfParameterPosition() }
+  predicate isLambdaSelf(boolean instanceMethod) {
+    this = TLambdaSelfParameterPosition(instanceMethod)
+  }
 
   /** Holds if this position represents a positional parameter at (0-based) `index`. */
-  predicate isPositional(int index) { this = TPositionalParameterPosition(index) }
+  predicate isPositional(int index, boolean instanceMethod) {
+    this = TPositionalParameterPosition(index, instanceMethod)
+  }
 
   /** Holds if this position represents any positional parameter starting from position `pos`. */
-  predicate isPositionalLowerBound(int pos) { this = TPositionalParameterLowerBoundPosition(pos) }
+  predicate isPositionalLowerBound(int pos, boolean instanceMethod) {
+    this = TPositionalParameterLowerBoundPosition(pos, instanceMethod)
+  }
 
   /** Holds if this position represents a keyword parameter named `name`. */
   predicate isKeyword(string name) { this = TKeywordParameterPosition(name) }
 
   /** Holds if this position represents a `*args` parameter at (0-based) `index`. */
-  predicate isStarArgs(int index) { this = TStarArgsParameterPosition(index) }
+  predicate isStarArgs(int index, boolean instanceMethod) {
+    this = TStarArgsParameterPosition(index, instanceMethod)
+  }
 
   /**
    * Holds if this position represents a synthetic parameter at or after (0-based)
    * position `index`, from which there will be made a store step to the real
    * `*args` parameter.
    */
-  predicate isSynthStarArgsElement(int index) {
-    this = TSynthStarArgsElementParameterPosition(index)
+  predicate isSynthStarArgsElement(int index, boolean instanceMethod) {
+    this = TSynthStarArgsElementParameterPosition(index, instanceMethod)
   }
 
   /** Holds if this position represents a `**kwargs` parameter. */
@@ -123,20 +140,20 @@ class ParameterPosition extends TParameterPosition {
 
   /** Gets a textual representation of this element. */
   string toString() {
-    this.isSelf() and result = "self"
+    this.isSelf(_) and result = "self"
     or
-    this.isLambdaSelf() and result = "lambda self"
+    this.isLambdaSelf(_) and result = "lambda self"
     or
-    exists(int index | this.isPositional(index) and result = "position " + index)
+    exists(int index | this.isPositional(index, _) and result = "position " + index)
     or
-    exists(int pos | this.isPositionalLowerBound(pos) and result = "position " + pos + "..")
+    exists(int pos | this.isPositionalLowerBound(pos, _) and result = "position " + pos + "..")
     or
     exists(string name | this.isKeyword(name) and result = "keyword " + name)
     or
-    exists(int index | this.isStarArgs(index) and result = "*args at " + index)
+    exists(int index | this.isStarArgs(index, _) and result = "*args at " + index)
     or
     exists(int index |
-      this.isSynthStarArgsElement(index) and
+      this.isSynthStarArgsElement(index, _) and
       result = "synthetic *args element at (or after) " + index
     )
     or
@@ -156,13 +173,16 @@ newtype TArgumentPosition =
    * variables (through variable capture).
    */
   TLambdaSelfArgumentPosition() or
-  TPositionalArgumentPosition(int index) {
-    exists(any(CallNode c).getArg(index))
-    or
-    // since synthetic calls within a summarized callable could use a unique argument
-    // position, we need to ensure we make these available (these are specified as
-    // parameters in the flow-summary spec)
-    FlowSummaryImpl::ParsePositions::isParsedPositionalParameterPosition(_, index)
+  TPositionalArgumentPosition(int index, boolean onInstance) {
+    onInstance in [true, false] and
+    (
+      exists(any(CallNode c).getArg(index))
+      or
+      // since synthetic calls within a summarized callable could use a unique argument
+      // position, we need to ensure we make these available (these are specified as
+      // parameters in the flow-summary spec)
+      FlowSummaryImpl::ParsePositions::isParsedPositionalParameterPosition(_, index)
+    )
   } or
   TKeywordArgumentPosition(string name) {
     exists(any(CallNode c).getArgByName(name))
@@ -170,7 +190,8 @@ newtype TArgumentPosition =
     // see comment for TPositionalArgumentPosition
     FlowSummaryImpl::ParsePositions::isParsedKeywordParameterPosition(_, name)
   } or
-  TStarArgsArgumentPosition(int index) {
+  TStarArgsArgumentPosition(int index, boolean onInstance) {
+    onInstance in [true, false] and
     exists(Call c | c.getPositionalArg(index) instanceof Starred)
   } or
   TDictSplatArgumentPosition()
@@ -184,13 +205,17 @@ class ArgumentPosition extends TArgumentPosition {
   predicate isLambdaSelf() { this = TLambdaSelfArgumentPosition() }
 
   /** Holds if this position represents a positional argument at (0-based) `index`. */
-  predicate isPositional(int index) { this = TPositionalArgumentPosition(index) }
+  predicate isPositional(int index, boolean onInstance) {
+    this = TPositionalArgumentPosition(index, onInstance)
+  }
 
   /** Holds if this position represents a keyword argument named `name`. */
   predicate isKeyword(string name) { this = TKeywordArgumentPosition(name) }
 
   /** Holds if this position represents a `*args` argument at (0-based) `index`. */
-  predicate isStarArgs(int index) { this = TStarArgsArgumentPosition(index) }
+  predicate isStarArgs(int index, boolean onInstance) {
+    this = TStarArgsArgumentPosition(index, onInstance)
+  }
 
   /** Holds if this position represents a `**kwargs` argument. */
   predicate isDictSplat() { this = TDictSplatArgumentPosition() }
@@ -201,34 +226,68 @@ class ArgumentPosition extends TArgumentPosition {
     or
     this.isLambdaSelf() and result = "lambda self"
     or
-    exists(int pos | this.isPositional(pos) and result = "position " + pos)
+    exists(int pos | this.isPositional(pos, _) and result = "position " + pos)
     or
     exists(string name | this.isKeyword(name) and result = "keyword " + name)
     or
-    exists(int index | this.isStarArgs(index) and result = "*args at " + index)
+    exists(int index | this.isStarArgs(index, _) and result = "*args at " + index)
     or
     this.isDictSplat() and result = "**"
   }
 }
 
+bindingset[instanceMethod, parameterIndex]
+predicate indexMatch(
+  boolean instanceMethod, int parameterIndex, boolean onInstance, int argumentIndex
+) {
+  // instance method called on instance or non-instance method called on class
+  instanceMethod = onInstance and
+  parameterIndex = argumentIndex
+  or
+  // instance method called on class
+  instanceMethod = true and
+  onInstance = false and
+  parameterIndex + 1 = argumentIndex
+}
+
 /** Holds if arguments at position `apos` match parameters at position `ppos`. */
 predicate parameterMatch(ParameterPosition ppos, ArgumentPosition apos) {
-  ppos.isSelf() and apos.isSelf()
+  ppos.isSelf(_) and apos.isSelf()
   or
-  ppos.isLambdaSelf() and apos.isLambdaSelf()
+  ppos.isSelf(true) and apos.isPositional(0, false)
   or
-  exists(int index | ppos.isPositional(index) and apos.isPositional(index))
+  ppos.isLambdaSelf(_) and apos.isLambdaSelf()
   or
-  exists(int index1, int index2 |
-    ppos.isPositionalLowerBound(index1) and apos.isPositional(index2) and index2 >= index1
+  ppos.isLambdaSelf(true) and apos.isPositional(0, false)
+  or
+  exists(boolean instanceMethod, int parameterIndex, boolean onInstance, int argumentIndex |
+    indexMatch(instanceMethod, parameterIndex, onInstance, argumentIndex) and
+    ppos.isPositional(parameterIndex, instanceMethod) and
+    apos.isPositional(argumentIndex, onInstance)
+  )
+  or
+  exists(boolean instanceMethod, int parameterIndex, boolean onInstance, int argumentIndex |
+    argumentIndex >= parameterIndex
+  |
+    indexMatch(instanceMethod, parameterIndex, onInstance, argumentIndex) and
+    ppos.isPositionalLowerBound(parameterIndex, instanceMethod) and
+    apos.isPositional(argumentIndex, onInstance)
   )
   or
   exists(string name | ppos.isKeyword(name) and apos.isKeyword(name))
   or
-  exists(int index | ppos.isStarArgs(index) and apos.isStarArgs(index))
+  exists(boolean instanceMethod, int parameterIndex, boolean onInstance, int argumentIndex |
+    indexMatch(instanceMethod, parameterIndex, onInstance, argumentIndex) and
+    ppos.isStarArgs(parameterIndex, instanceMethod) and
+    apos.isStarArgs(argumentIndex, onInstance)
+  )
   or
-  exists(int paramIndex, int argIndex | argIndex >= paramIndex |
-    ppos.isSynthStarArgsElement(paramIndex) and apos.isPositional(argIndex)
+  exists(boolean instanceMethod, int parameterIndex, boolean onInstance, int argumentIndex |
+    argumentIndex >= parameterIndex
+  |
+    indexMatch(instanceMethod, parameterIndex, onInstance, argumentIndex) and
+    ppos.isSynthStarArgsElement(parameterIndex, instanceMethod) and
+    apos.isPositional(argumentIndex, onInstance)
   )
   or
   ppos.isDictSplat() and apos.isDictSplat()
@@ -368,40 +427,53 @@ abstract class DataFlowFunction extends DataFlowCallable, TFunction {
   int positionalOffset() { result = 0 }
 
   override ParameterNode getParameter(ParameterPosition ppos) {
-    exists(int index | ppos.isPositional(index) |
-      result.getParameter() = func.getArg(index + this.positionalOffset())
-    )
-    or
-    exists(int index1, int index2 | ppos.isPositionalLowerBound(index1) and index2 >= index1 |
-      result.getParameter() = func.getArg(index2 + this.positionalOffset())
-    )
-    or
-    exists(string name | ppos.isKeyword(name) | result.getParameter() = func.getArgByName(name))
-    or
-    // `*args`
-    exists(int index |
-      (
-        ppos.isStarArgs(index) and
-        result.getParameter() = func.getVararg()
+    exists(boolean instanceMethod |
+      if func.isMethod()
+      then
+        isClassmethod(func) and instanceMethod = false
         or
-        ppos.isSynthStarArgsElement(index) and
-        result = TSynthStarArgsElementParameterNode(this)
-      )
+        isStaticmethod(func) and instanceMethod = false
+        or
+        not isStaticmethod(func) and not isClassmethod(func) and instanceMethod = true
+      else instanceMethod = false
     |
-      // a `*args` parameter comes after the last positional parameter. We need to take
-      // self parameter into account, so for
-      // `def func(foo, bar, *args)` it should be index 2 (pos-param-count == 2)
-      // `class A: def func(self, foo, bar, *args)` it should be index 2 (pos-param-count - 1 == 3 - 1)
-      index = func.getPositionalParameterCount() - this.positionalOffset()
+      exists(int index | ppos.isPositional(index, instanceMethod) |
+        result.getParameter() = func.getArg(index + this.positionalOffset())
+      )
       or
-      // no positional argument
-      not exists(func.getArg(_)) and index = 0
+      exists(int index1, int index2 |
+        ppos.isPositionalLowerBound(index1, instanceMethod) and index2 >= index1
+      |
+        result.getParameter() = func.getArg(index2 + this.positionalOffset())
+      )
+      or
+      exists(string name | ppos.isKeyword(name) | result.getParameter() = func.getArgByName(name))
+      or
+      // `*args`
+      exists(int index |
+        (
+          ppos.isStarArgs(index, instanceMethod) and
+          result.getParameter() = func.getVararg()
+          or
+          ppos.isSynthStarArgsElement(index, instanceMethod) and
+          result = TSynthStarArgsElementParameterNode(this)
+        )
+      |
+        // a `*args` parameter comes after the last positional parameter. We need to take
+        // self parameter into account, so for
+        // `def func(foo, bar, *args)` it should be index 2 (pos-param-count == 2)
+        // `class A: def func(self, foo, bar, *args)` it should be index 2 (pos-param-count - 1 == 3 - 1)
+        index = func.getPositionalParameterCount() - this.positionalOffset()
+        or
+        // no positional argument
+        not exists(func.getArg(_)) and index = 0
+      )
+      or
+      // `**kwargs`
+      ppos.isDictSplat() and result.getParameter() = func.getKwarg()
+      or
+      ppos.isSynthDictSplat() and result = TSynthDictSplatParameterNode(this)
     )
-    or
-    // `**kwargs`
-    ppos.isDictSplat() and result.getParameter() = func.getKwarg()
-    or
-    ppos.isSynthDictSplat() and result = TSynthDictSplatParameterNode(this)
   }
 }
 
@@ -422,7 +494,9 @@ class DataFlowMethod extends DataFlowFunction {
   override int positionalOffset() { result = 1 }
 
   override ParameterNode getParameter(ParameterPosition ppos) {
-    ppos.isSelf() and result.getParameter() = func.getArg(0)
+    ppos.isSelf(_) and
+    result.getParameter() = func.getArg(0) and
+    not isStaticmethod(func)
     or
     result = super.getParameter(ppos)
   }
@@ -563,7 +637,7 @@ private module TrackClassInput implements CallGraphConstruction::Simple::InputSi
   predicate filter(Node n) {
     ignoreForCallGraph(n.getLocation().getFile())
     or
-    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf()))
+    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf(_)))
   }
 }
 
@@ -590,7 +664,7 @@ private module TrackClassInstanceInput implements CallGraphConstruction::Simple:
   predicate filter(Node n) {
     ignoreForCallGraph(n.getLocation().getFile())
     or
-    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf()))
+    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf(_)))
   }
 }
 
@@ -619,7 +693,7 @@ private module TrackSelfInput implements CallGraphConstruction::Simple::InputSig
   predicate filter(Node n) {
     ignoreForCallGraph(n.getLocation().getFile())
     or
-    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf()))
+    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf(_)))
   }
 }
 
@@ -652,7 +726,7 @@ private module TrackClsArgumentInput implements CallGraphConstruction::Simple::I
   predicate filter(Node n) {
     ignoreForCallGraph(n.getLocation().getFile())
     or
-    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf()))
+    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf(_)))
   }
 }
 
@@ -682,7 +756,7 @@ private module TrackSuperCallNoArgumentInput implements CallGraphConstruction::S
   predicate filter(Node n) {
     ignoreForCallGraph(n.getLocation().getFile())
     or
-    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf()))
+    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf(_)))
   }
 }
 
@@ -713,7 +787,7 @@ private module TrackSuperCallTwoArgumentInput implements CallGraphConstruction::
   predicate filter(Node n) {
     ignoreForCallGraph(n.getLocation().getFile())
     or
-    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf()))
+    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf(_)))
   }
 }
 
@@ -885,7 +959,7 @@ private module TrackAttrReadInput implements CallGraphConstruction::Simple::Inpu
   predicate filter(Node n) {
     ignoreForCallGraph(n.getLocation().getFile())
     or
-    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf()))
+    n.(ParameterNodeImpl).isParameterOf(_, any(ParameterPosition pp | pp.isSelf(_)))
   }
 }
 
@@ -1195,7 +1269,7 @@ predicate resolveCall(CallNode call, Function target, CallType type) {
 cached
 predicate normalCallArg(CallNode call, Node arg, ArgumentPosition apos) {
   exists(int index |
-    apos.isPositional(index) and
+    apos.isPositional(index, _) and
     arg.asCfgNode() = call.getArg(index)
   )
   or
@@ -1206,7 +1280,7 @@ predicate normalCallArg(CallNode call, Node arg, ArgumentPosition apos) {
   or
   // the first `*args`
   exists(int index |
-    apos.isStarArgs(index) and
+    apos.isStarArgs(index, _) and
     arg.asCfgNode() = call.getStarArg() and
     // since `CallNode.getArg` doesn't include `*args`, we need to drop to the AST level
     // to get the index. Notice that we only use the AST for getting the index, so we
@@ -1329,13 +1403,10 @@ predicate getCallArg(CallNode call, Function target, CallType type, Node arg, Ar
     (
       apos.isSelf() and arg.asCfgNode() = call.getArg(0)
       or
-      not apos.isPositional(_) and normalCallArg(call, arg, apos)
+      not apos.isPositional(_, _) and normalCallArg(call, arg, apos)
       or
-      exists(ArgumentPosition normalPos, int index |
-        apos.isPositional(index - 1) and
-        normalPos.isPositional(index) and
-        normalCallArg(call, arg, normalPos)
-      )
+      apos.isPositional(_, false) and
+      normalCallArg(call, arg, apos)
     )
     or
     // class call
@@ -1575,7 +1646,13 @@ class SynthCapturedVariablesParameterNode extends ParameterNodeImpl,
 
   override predicate isParameterOf(DataFlowCallable c, ParameterPosition pos) {
     c = TFunction(callable) and
-    pos.isLambdaSelf()
+    exists(boolean instanceMethod |
+      if callable.isMethod() and not isStaticmethod(callable) and not isClassmethod(callable)
+      then instanceMethod = true
+      else instanceMethod = false
+    |
+      pos.isLambdaSelf(instanceMethod)
+    )
   }
 
   override Scope getScope() { result = callable }

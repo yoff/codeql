@@ -80,7 +80,7 @@ private module SummaryTypeTrackerInput implements SummaryTypeTracker::Input {
       DataFlowDispatch::parameterMatch(ppos, apos) and
       result.asCfgNode().getNode() = p and
       (
-        exists(int i | ppos.isPositional(i) |
+        exists(int i | ppos.isPositional(i, _) |
           p = callable.getALocalSource().asExpr().(CallableExpr).getInnerScope().getArg(i)
         )
         or

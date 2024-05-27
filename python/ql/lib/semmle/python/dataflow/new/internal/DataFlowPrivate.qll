@@ -134,7 +134,7 @@ predicate synthStarArgsElementParameterNodeStoreStep(
   exists(DataFlowCallable callable, ParameterPosition ppos |
     nodeFrom = TSynthStarArgsElementParameterNode(callable) and
     nodeTo = callable.getParameter(ppos) and
-    ppos.isStarArgs(_)
+    ppos.isStarArgs(_, _)
   )
 }
 

@@ -17,18 +17,18 @@ module Input implements InputSig<Location, DataFlowImplSpecific::PythonDataFlow>
   ReturnKind getStandardReturnValueKind() { any() }
 
   string encodeParameterPosition(ParameterPosition pos) {
-    pos.isSelf() and result = "self"
+    pos.isSelf(_) and result = "self"
     or
-    pos.isLambdaSelf() and
+    pos.isLambdaSelf(_) and
     result = "lambda-self"
     or
     exists(int i |
-      pos.isPositional(i) and
+      pos.isPositional(i, _) and
       result = i.toString()
     )
     or
     exists(int i |
-      pos.isPositionalLowerBound(i) and
+      pos.isPositionalLowerBound(i, _) and
       result = i + ".."
     )
     or
@@ -45,7 +45,7 @@ module Input implements InputSig<Location, DataFlowImplSpecific::PythonDataFlow>
     result = "lambda-self"
     or
     exists(int i |
-      pos.isPositional(i) and
+      pos.isPositional(i, _) and
       result = i.toString()
     )
     or
@@ -77,14 +77,14 @@ module Input implements InputSig<Location, DataFlowImplSpecific::PythonDataFlow>
   ParameterPosition decodeUnknownParameterPosition(AccessPath::AccessPathTokenBase token) {
     // needed to support `Argument[x..y]` ranges
     token.getName() = "Argument" and
-    result.isPositional(AccessPath::parseInt(token.getAnArgument()))
+    result.isPositional(AccessPath::parseInt(token.getAnArgument()), _)
   }
 
   bindingset[token]
   ArgumentPosition decodeUnknownArgumentPosition(AccessPath::AccessPathTokenBase token) {
     // needed to support `Parameter[x..y]` ranges
     token.getName() = "Parameter" and
-    result.isPositional(AccessPath::parseInt(token.getAnArgument()))
+    result.isPositional(AccessPath::parseInt(token.getAnArgument()), _)
   }
 }
 
