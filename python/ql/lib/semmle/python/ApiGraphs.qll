@@ -771,6 +771,14 @@ module API {
           lbl = Label::subscript()
         )
         or
+        // iteration
+        // from `l` to `x` in `for x in l`
+        exists(PY::ForNode forNode |
+          forNode.getSequence() = rhs.(DataFlow::ExprNode).getNode() and
+          pred.(DataFlow::ExprNode).getNode().getNode() = forNode.getNode().getTarget() and
+          lbl = Label::subscript()
+        )
+        or
         exists(PY::CallableExpr fn | fn = pred.(DataFlow::ExprNode).getNode().getNode() |
           not fn.getInnerScope().isAsync() and
           lbl = Label::return() and
@@ -842,6 +850,14 @@ module API {
         lbl = Label::subscript() and
         ref = pred.getSubscript(_) and
         ref.asCfgNode().isLoad()
+        or
+        // Subscripting via iteration
+        // from `l` to `x` in `for x in l`
+        exists(PY::ForNode forNode |
+          forNode.getSequence() = pred.(DataFlow::ExprNode).getNode() and
+          ref.(DataFlow::ExprNode).getNode().getNode() = forNode.getNode().getTarget() and
+          lbl = Label::subscript()
+        )
         or
         // Subclassing a node
         lbl = Label::subclass() and

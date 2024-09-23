@@ -3333,6 +3333,12 @@ module StdlibPrivate {
             .getReturn()
             .getMember(methodName)
             .getACall()
+      or
+      // finditer returns an iterable of match objects
+      exists(ReFunctionsSummary rf | rf in ["re.finditer", "compiled re.finditer"] |
+        result =
+          rf.getACall().(API::CallNode).getReturn().getASubscript().getMember(methodName).getACall()
+      )
     }
 
     override DataFlow::ArgumentNode getACallback() { none() }
@@ -3408,6 +3414,10 @@ module StdlibPrivate {
           (
             methodName in ["split", "findall", "finditer"] and
             output = "ReturnValue.ListElement"
+            or
+            // finditer returns an iterable of match objects
+            methodName = "finditer" and
+            output = "ReturnValue.ListElement.DictionaryElementAny"
             or
             // TODO: Since we currently model iterables as tainted when their elements
             // are, the result of findall, finditer, split needs to be tainted
@@ -4219,7 +4229,7 @@ module StdlibPrivate {
 
     override predicate propagatesFlow(string input, string output, boolean preservesValue) {
       exists(DataFlow::DictionaryElementContent dc, string key | key = dc.getKey() |
-        input = "Argument[0].DictionaryElement[" + key + "]" and
+        input = "Argument[0..].DictionaryElement[" + key + "]" and
         output = "ReturnValue.DictionaryElement[" + key + "]" and
         preservesValue = true
       )
@@ -4230,7 +4240,7 @@ module StdlibPrivate {
         preservesValue = true
       )
       or
-      input = "Argument[0]" and
+      input = "Argument[0..]" and
       output = "ReturnValue" and
       preservesValue = false
     }
