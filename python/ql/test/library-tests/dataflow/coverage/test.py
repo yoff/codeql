@@ -179,8 +179,13 @@ def test_dict_display_pop():
     SINK(x.pop("s")) #$ flow="SOURCE, l:-1 -> x.pop(..)"
 
 
-def test_dict_comprehension():
+def test_dict_comprehension_key():
     x = {y: SOURCE for y in ["s"]}
+    SINK(x["s"]) #$ MISSING:flow="SOURCE, l:-1 -> x['s']"
+
+
+def test_dict_comprehension_value():
+    x = {"s": y for y in [SOURCE]}
     SINK(x["s"]) #$ MISSING:flow="SOURCE, l:-1 -> x['s']"
 
 
