@@ -20,14 +20,39 @@ module Config implements DataFlow::ConfigSig {
 
 module Flows = TaintTracking::Global<Config>;
 
-import Flows::PathGraph
+module Full {
+  import Flows::PathGraph
 
-// int explorationLimit() { result = 5 }
-// module FlowsPartial = Flows::FlowExplorationFwd<explorationLimit/0>;
-// import FlowsPartial::PartialPathGraph
-from Flows::PathNode source, Flows::PathNode sink
-where Flows::flowPath(source, sink)
-// from FlowsPartial::PartialPathNode source, FlowsPartial::PartialPathNode sink
-// where FlowsPartial::partialFlow(source, sink, _)
-select sink.getNode(), source, sink, "This node receives taint from $@.", source.getNode(),
-  "this source"
+  query predicate problems(
+    DataFlow::Node alertLocation, Flows::PathNode source, Flows::PathNode sink, string msg1,
+    DataFlow::Node sourceLocation, string msg2
+  ) {
+    Flows::flowPath(source, sink) and
+    alertLocation = sink.getNode() and
+    sourceLocation = source.getNode() and
+    msg1 = "This node receives taint from $@." and
+    msg2 = "this source"
+  }
+}
+
+module Partial {
+  int explorationLimit() { result = 5 }
+
+  module FlowsPartial = Flows::FlowExplorationFwd<explorationLimit/0>;
+
+  import FlowsPartial::PartialPathGraph
+
+  query predicate problems(
+    DataFlow::Node alertLocation, FlowsPartial::PartialPathNode source,
+    FlowsPartial::PartialPathNode sink, string msg1, DataFlow::Node sourceLocation, string msg2
+  ) {
+    FlowsPartial::partialFlow(source, sink, _) and
+    alertLocation = sink.getNode() and
+    sourceLocation = source.getNode() and
+    msg1 = "This node receives taint from $@." and
+    msg2 = "this source"
+  }
+}
+
+import Full
+// import Partial
