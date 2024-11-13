@@ -160,6 +160,12 @@ module ControlFlow {
       result = this.asStmt().getLocation() or
       result = this.(ExitNode).getEnclosingCallable().getLocation()
     }
+
+    ExprParent getAstNode() {
+      result = this.asExpr() or
+      result = this.asStmt() or
+      this = TExitNode(result)
+    }
   }
 
   class ExitNode extends Node, TExitNode { }
@@ -754,7 +760,7 @@ private module ControlFlowGraphImpl {
     or
     result.asExpr() = n and n instanceof WhenExpr
     or
-    result.asExpr() = n and n instanceof WhenBranch
+    result.asStmt() = n and n instanceof WhenBranch
     or
     result.asExpr() = n and n instanceof StmtExpr
     or
