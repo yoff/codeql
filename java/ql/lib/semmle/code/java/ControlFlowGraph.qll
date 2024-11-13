@@ -1395,7 +1395,7 @@ private module ControlFlowGraphImpl {
         switchExpr = switch.(SwitchStmt).getExpr() or switchExpr = switch.(SwitchExpr).getExpr()
       |
         // From the entry point control is transferred first to the expression...
-        n = switch.(AstNode).getCFGNode() and
+        (n.asStmt() = switch or n.asExpr() = switch) and
         result = first(switchExpr) and
         completion = NormalCompletion()
         or
