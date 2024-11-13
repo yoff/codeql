@@ -66,3 +66,7 @@ class BasicBlock extends ControlFlowNode {
   /** Holds if this basic block post-dominates `node`. (This is reflexive.) */
   predicate bbPostDominates(BasicBlock node) { bbPostDominates(this, node) }
 }
+
+class ExitBlock extends BasicBlock {
+  ExitBlock() { this.getLastNode() instanceof ControlFlow::ExitNode }
+}

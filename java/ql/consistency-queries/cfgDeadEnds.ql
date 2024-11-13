@@ -1,6 +1,5 @@
 import java
 
-// import semmle.code.java.ControlFlowGraph
 predicate shouldBeDeadEnd(ExprParent n) {
   n instanceof BreakStmt and n.getFile().isKotlinSourceFile() // TODO
   or

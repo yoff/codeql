@@ -43,10 +43,6 @@ private predicate callAlwaysPerformsAction(Call call, ActionConfiguration conf) 
   )
 }
 
-private class ExitBlock extends BasicBlock {
-  ExitBlock() { this.getLastNode() instanceof ControlFlow::ExitNode }
-}
-
 /** Holds if an action dominates the exit of the callable. */
 private predicate actionDominatesExit(Callable callable, ActionConfiguration conf) {
   exists(ExitBlock exit |
