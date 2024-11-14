@@ -86,7 +86,7 @@ private import controlflow.internal.SwitchCases
 
 module ControlFlow {
   private predicate hasControlFlow(Expr e) {
-    not e.getEnclosingStmt() instanceof ConstCase and
+    not exists(ConstCase cc | e = cc.getValue(_)) and
     not e.getParent*() instanceof Annotation and
     not e instanceof TypeAccess and
     not e instanceof ArrayTypeAccess and
