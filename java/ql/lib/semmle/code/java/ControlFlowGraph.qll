@@ -84,6 +84,7 @@ private import Completion
 private import controlflow.internal.Preconditions
 private import controlflow.internal.SwitchCases
 
+/** Provides the definition of control flow nodes. */
 module ControlFlow {
   private predicate hasControlFlow(Expr e) {
     not exists(ConstCase cc | e = cc.getValue(_)) and
@@ -155,12 +156,19 @@ module ControlFlow {
       result = "Exit" and this instanceof ExitNode
     }
 
+    /** Gets the source location for this element. */
     Location getLocation() {
       result = this.asExpr().getLocation() or
       result = this.asStmt().getLocation() or
       result = this.(ExitNode).getEnclosingCallable().getLocation()
     }
 
+    /**
+     * Get the most appropriate AST node for this control flow node, if any.
+     *
+     * This is needed for the equivalence relation on basic blocks in range
+     * analysis.
+     */
     ExprParent getAstNode() {
       result = this.asExpr() or
       result = this.asStmt() or
@@ -168,6 +176,7 @@ module ControlFlow {
     }
   }
 
+  /** A synthetic node for the exit of a callable. */
   class ExitNode extends Node, TExitNode { }
 }
 

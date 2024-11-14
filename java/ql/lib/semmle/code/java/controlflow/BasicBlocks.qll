@@ -67,6 +67,7 @@ class BasicBlock extends ControlFlowNode {
   predicate bbPostDominates(BasicBlock node) { bbPostDominates(this, node) }
 }
 
+/** A basic block that ends in an exit node. */
 class ExitBlock extends BasicBlock {
   ExitBlock() { this.getLastNode() instanceof ControlFlow::ExitNode }
 }
