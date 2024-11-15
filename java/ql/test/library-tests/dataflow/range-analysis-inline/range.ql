@@ -10,24 +10,21 @@ private import TestUtilities.internal.InlineExpectationsTestImpl
 private import Make<Impl> as IET
 
 module RangeTest implements IET::TestSig {
-  string getARelevantTag() { result in ["interval", "value"] }
+  string getARelevantTag() { result = "bound" }
 
   predicate hasActualResult(Location location, string element, string tag, string value) {
+    tag = "bound" and
     exists(Expr e, int lower, int upper |
       constrained(e, lower, upper) and
-      e.(VarAccess).getVariable().getName() = "result" and
+      e instanceof VarRead and
       e.getCompilationUnit().fromSource()
     |
       location = e.getLocation() and
       element = e.toString() and
       if lower = upper
-      then (
-        tag = "value" and
-        value = lower.toString()
-      ) else (
-        tag = "interval" and
-        value = lower.toString() + ".." + upper.toString()
-      )
+      then value = "\"" + e.toString() + " = " + lower.toString() + "\""
+      else
+        value = "\"" + e.toString() + " in [" + lower.toString() + ".." + upper.toString() + "]\""
     )
   }
 

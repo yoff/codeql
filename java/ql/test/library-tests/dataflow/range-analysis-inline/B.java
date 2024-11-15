@@ -1,58 +1,59 @@
 public class B {
     public int forloop() {
         int result = 0;
-        for (int i = 0; i < 10; i++) {
-            result = i;
+        for (int i = 0; i < 10; i++) {// $ bound="i in [0..10]" bound="i in [0..9]"
+            result = i; // $ bound="i in [0..9]"
         }
-        return result; // $ interval=0..9
+        return result; // $ bound="result in [0..9]"
     }
 
     public int forloopexit() {
         int result = 0;
-        for (; result < 10;) { // $ interval=0..10
-            result += 1; // $ interval=0..9
+        for (; result < 10;) { // $ bound="result in [0..10]"
+            result += 1; // $ bound="result in [0..9]"
         }
-        return result; // $ value=10
+        return result; // $ bound="result = 10"
     }
 
     public int forloopexitstep() {
         int result = 0;
-        for (; result < 10;) { // $ interval=0..12
-            result += 3; // $ interval=0..9
+        for (; result < 10;) { // $ bound="result in [0..12]"
+            result += 3; // $ bound="result in [0..9]"
         }
-        return result; // $ value=12
+        return result; // $ bound="result = 12"
     }
 
     public int forloopexitupd() {
         int result = 0;
-        for (; result < 10; result++) { // $ interval=0..9 interval=0..10
+        for (; result < 10; result++) { // $ bound="result in [0..9]" bound="result in [0..10]"
         }
-        return result; // $ value=10
+        return result; // $ bound="result = 10"
     }
 
     public int forloopexitnested() {
         int result = 0;
-        for (; result < 10;) { // $ value=0
+        for (; result < 10;) { // $ "bound="result = 0"
             int i = 0;
-            for (; i < 3;) {
+            for (; i < 3;) { // $ bound="i in [0..3]"
+                i += 1; // $ bound="i in [0..2]"
             }
-            result += i; // $ value=0
+            result += i; // $ bound="result = 0" bound="i = 3"
         }
-        return result; // $ interval=10..0
+        return result; // $ bound="result in [10..0]" MISSING:bound="result = 12"
     }
 
     public int emptyforloop() {
         int result = 0;
-        for (int i = 0; i < 0; i++) {
-            result = i;
+        for (int i = 0; i < 0; i++) { // $ bound="i = 0" bound="i in [0..-1]"
+            result = i; // $ bound="i in [0..-1]"
         }
-        return result; // $ value=0
+        return result; // $ bound="result = 0"
     }
 
     public int noloop() {
         int result = 0;
-        result += 1; // $ value=0
-        return result; // $ value=1
+        result += 1; // $ bound="result = 0"
+        return result; // $ bound="result = 1"
     }
 
     public int foreachloop() {
@@ -73,17 +74,17 @@ public class B {
 
     public int whileloop() {
         int result = 100;
-        while (result > 5) { // $ interval=4..100
-            result = result - 2; // $ interval=6..100
+        while (result > 5) { // $ bound="result in [4..100]"
+            result = result - 2; // $ bound="result in [6..100]"
         }
-        return result; // $ value=4
+        return result; // $ bound="result = 4"
     }
 
     public int oddwhileloop() {
         int result = 101;
-        while (result > 5) { // $ interval=5..101
-            result = result - 2; // $ interval=7..101
+        while (result > 5) { // $ bound="result in [5..101]"
+            result = result - 2; // $ bound="result in [7..101]"
         }
-        return result; // $ value=5
+        return result; // $ bound="result = 5"
     }
 }
