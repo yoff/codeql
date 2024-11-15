@@ -100,7 +100,8 @@ module ControlFlow {
   private newtype TNode =
     TExprNode(Expr e) { hasControlFlow(e) } or
     TStmtNode(Stmt s) or
-    TExitNode(Callable c) { exists(c.getBody()) }
+    TExitNode(Callable c) { exists(c.getBody()) } or
+    TEndFor(ForStmt for)
 
   /** A node in the expression-level control-flow graph. */
   class Node extends TNode {
@@ -178,6 +179,19 @@ module ControlFlow {
 
   /** A synthetic node for the exit of a callable. */
   class ExitNode extends Node, TExitNode { }
+
+  /** A synthetic node for the exit of a for loop. */
+  class EndForNode extends Node, TEndFor {
+    ForStmt for;
+
+    EndForNode() { this = TEndFor(for) }
+
+    ForStmt getFor() { result = for }
+
+    override string toString() { result = "EndForNode" }
+
+    override Location getLocation() { result = for.getLocation() }
+  }
 }
 
 class ControlFlowNode = ControlFlow::Node;
@@ -961,6 +975,10 @@ private module ControlFlowGraphImpl {
     // A loop may terminate normally if its condition is false...
     exists(LoopStmt loop | loop = n |
       last(loop.getCondition(), last, BooleanCompletion(false, _)) and
+      not loop instanceof ForStmt and
+      completion = NormalCompletion()
+      or
+      last.(EndForNode).getFor() = loop and
       completion = NormalCompletion()
       or
       // ...or if it's an enhanced for loop running out of items to iterate over...
@@ -1298,6 +1316,11 @@ private module ControlFlowGraphImpl {
       last(for.getCondition(), n, completion) and
       completion = BooleanCompletion(true, _) and
       result = first(for.getStmt())
+      or
+      // The false-successor of the condition is the end-for node.
+      last(for.getCondition(), n, completion) and
+      completion = BooleanCompletion(false, _) and
+      result.(EndForNode).getFor() = for
       or
       // The updates execute sequentially, after which control is transferred to the condition.
       exists(int i | last(for.getUpdate(i), n, completion) and completion = NormalCompletion() |
