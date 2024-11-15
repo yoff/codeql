@@ -2,17 +2,51 @@ public class B {
     public int forloop() {
         int result = 0;
         for (int i = 0; i < 10; i++) {
-            result += 1;
+            result = i;
         }
-        return result;
+        return result; // $ interval=0..9
+    }
+
+    public int forloopexit() {
+        int result = 0;
+        for (; result < 10;) { // $ interval=0..10
+            result += 1; // $ interval=0..9
+        }
+        return result; // $ value=10
+    }
+
+    public int forloopexitstep() {
+        int result = 0;
+        for (; result < 10;) { // $ interval=0..12
+            result += 3; // $ interval=0..9
+        }
+        return result; // $ value=12
+    }
+
+    public int forloopexitupd() {
+        int result = 0;
+        for (; result < 10; result++) { // $ interval=0..9 interval=0..10
+        }
+        return result; // $ value=10
+    }
+
+    public int forloopexitnested() {
+        int result = 0;
+        for (; result < 10;) { // $ value=0
+            int i = 0;
+            for (; i < 3;) {
+            }
+            result += i; // $ value=0
+        }
+        return result; // $ interval=10..0
     }
 
     public int emptyforloop() {
         int result = 0;
         for (int i = 0; i < 0; i++) {
-            result += 1;
+            result = i;
         }
-        return result;
+        return result; // $ value=0
     }
 
     public int noloop() {
@@ -24,7 +58,7 @@ public class B {
     public int foreachloop() {
         int result = 0;
         for (int i : new int[] {1, 2, 3, 4, 5}) {
-            result += 1;
+            result = i;
         }
         return result;
     }
@@ -32,7 +66,7 @@ public class B {
     public int emptyforeachloop() {
         int result = 0;
         for (int i : new int[] {}) {
-            result += 1;
+            result = i;
         }
         return result;
     }
