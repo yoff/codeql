@@ -49,10 +49,11 @@ class ClaimedThreadSafeClass extends Class {
    * at least one of them is a write.
    */
   predicate conflicting(ExposedFieldAccess a, ExposedFieldAccess b) {
-    // We are only interested in two different operations
-    not a = b and
-    // on the same non-volatile field on this class
+    // We allow a = b, since they could be executed on different threads
+    // We are looking for two operations
+    // on the same non-volatile field
     a.getField() = b.getField() and
+    // on this class
     a.getField() = this.getAField() and
     // where at least one is a write
     // wlog we assume that is `a`
