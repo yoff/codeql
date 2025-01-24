@@ -52,6 +52,26 @@ module Monitors {
   }
 }
 
+module Modification {
+  import semmle.code.java.dataflow.FlowSummary
+
+  predicate isModifying(FieldAccess a) {
+    a.isVarWrite()
+    or
+    exists(Call c | c.(MethodCall).getQualifier() = a | isModifyingCall(c))
+    or
+    exists(ArrayAccess aa, Assignment asa | aa.getArray() = a | asa.getDest() = aa)
+  }
+
+  predicate isModifyingCall(Call c) {
+    exists(SummarizedCallable sc, string output, string prefix | sc.getACall() = c |
+      sc.propagatesFlow(_, output, _, _) and
+      prefix = "Argument[this]" and
+      output.prefix(prefix.length()) = prefix
+    )
+  }
+}
+
 Class claimedThreadSafe() { result.getAnAnnotation().getType().getName() = "ThreadSafe" }
 
 // Could be inlined
@@ -83,8 +103,8 @@ class ClaimedThreadSafeClass extends Class {
     a.getField() = this.getAField() and
     // where at least one is a write
     // wlog we assume that is `a`
-    a.isVarWrite()
-    // TODO: add modifications here, such as writes to indices, e.g. a[0] = 5
+    // We use a slightly more inclusive definition than simply `a.isVarWrite()`
+    Modification::isModifying(a)
   }
 
   predicate unsynchronised(ExposedFieldAccess a, ExposedFieldAccess b) {
@@ -106,7 +126,8 @@ class ClaimedThreadSafeClass extends Class {
       e = a
       or
       exists(MethodCall c | c.getEnclosingCallable() = m |
-        this.providesAccess(c.getCallee(), _, a) and e = c
+        this.providesAccess(c.getCallee(), _, a) and
+        e = c
       )
     )
   }
