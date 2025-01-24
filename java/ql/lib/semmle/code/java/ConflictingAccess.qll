@@ -1,13 +1,64 @@
 import java
 import Concurrency
 
+pragma[inline]
+ControlFlowNode toBeDominated(Expr e) {
+  exists(ExposedFieldAccess a | e = a |
+    exists(Assignment asgn | asgn.getDest() = a | result = asgn.getControlFlowNode())
+    or
+    not exists(Assignment asgn | asgn.getDest() = a) and
+    result = a.getControlFlowNode()
+  )
+  or
+  not e instanceof ExposedFieldAccess and
+  result = e.getControlFlowNode()
+}
+
+module Monitors {
+  newtype Monitor =
+    VariableMonitor(Variable v) { v.getType().hasName("Lock") or locallySynchronizedOn(_, _, v) } or
+    InstanceMonitor(RefType thisType) { locallySynchronizedOnThis(_, thisType) } or
+    ClassMonitor(RefType classType) { locallySynchronizedOnClass(_, classType) }
+
+  predicate locallyMonitors(Expr e, Monitor m) {
+    exists(Variable v | m = VariableMonitor(v) |
+      locallyLockedOn(e, v)
+      or
+      locallySynchronizedOn(e, _, v)
+    )
+    or
+    exists(RefType thisType | m = InstanceMonitor(thisType) |
+      locallySynchronizedOnThis(e, thisType)
+    )
+    or
+    exists(RefType classType | m = ClassMonitor(classType) |
+      locallySynchronizedOnClass(e, classType)
+    )
+  }
+
+  /** Holds if `e` is synchronized on the `Lock` `lock` by a locking call. */
+  predicate locallyLockedOn(Expr e, Variable lock) {
+    lock.getType().hasName("Lock") and
+    exists(MethodCall lockCall, MethodCall unlockCall |
+      lockCall.getQualifier() = lock.getAnAccess() and
+      not lockCall.getMethod().getName() = "unlock" and
+      unlockCall.getQualifier() = lock.getAnAccess() and
+      unlockCall.getMethod().getName() = "unlock"
+    |
+      dominates(lockCall.getControlFlowNode(), unlockCall.getControlFlowNode()) and
+      dominates(lockCall.getControlFlowNode(), toBeDominated(e))
+      // we do not require `e` to dominate `unlock` as the critical region may be exited before `e` is executed
+    )
+  }
+}
+
+Class claimedThreadSafe() { result.getAnAnnotation().getType().getName() = "ThreadSafe" }
+
 // Could be inlined
 predicate exposed(FieldAccess a) {
+  a.getField() = claimedThreadSafe().getAField() and
   not a.getField().isVolatile() and
   not a.(VarWrite).getASource() = a.getField().getInitializer() and
-  not locallySynchronizedOn(a, _, _) and
-  not locallySynchronizedOnThis(a, _) and
-  not locallySynchronizedOnClass(a, _) and
   not a.getEnclosingCallable() = a.getField().getDeclaringType().getAConstructor()
 }
 
@@ -15,33 +66,8 @@ class ExposedFieldAccess extends FieldAccess {
   ExposedFieldAccess() { exposed(this) }
 }
 
-// for debug
-predicate monitors_full(
-  ExposedFieldAccess a, Variable lock, MethodCall lockCall, MethodCall unlockCall
-) {
-  lock.getType().hasName("Lock") and
-  lockCall.getQualifier() = lock.getAnAccess() and
-  not lockCall.getMethod().getName() = "unlock" and
-  unlockCall.getQualifier() = lock.getAnAccess() and
-  unlockCall.getMethod().getName() = "unlock" and
-  dominates(lockCall.getControlFlowNode(), unlockCall.getControlFlowNode()) and
-  dominates(lockCall.getControlFlowNode(), a.getControlFlowNode())
-  // we do not require `a` to dominate `unlick` as the critical region may be exited before `a` is executed
-}
-
-// possible heuristic
-predicate premonitors(ExposedFieldAccess a, Variable lock) {
-  lock.getType().hasName("Lock") and
-  exists(MethodCall lockCall |
-    lockCall.getQualifier() = lock.getAnAccess() and
-    not lockCall.getMethod().getName() = "unlock"
-  |
-    dominates(lockCall.getControlFlowNode(), a.getControlFlowNode())
-  )
-}
-
 class ClaimedThreadSafeClass extends Class {
-  ClaimedThreadSafeClass() { this.getAnAnnotation().getType().getName() = "ThreadSafe" }
+  ClaimedThreadSafeClass() { this = claimedThreadSafe() }
 
   /**
    * Actions `a` and `b` are conflicting iff
@@ -58,18 +84,19 @@ class ClaimedThreadSafeClass extends Class {
     // where at least one is a write
     // wlog we assume that is `a`
     a.isVarWrite()
+    // TODO: add modifications here, such as writes to indices, e.g. a[0] = 5
   }
 
   predicate unsynchronised(ExposedFieldAccess a, ExposedFieldAccess b) {
     this.conflicting(a, b) and
-    not exists(Variable lock |
-      this.monitors(a, lock) and
-      this.monitors(b, lock)
+    not exists(Monitors::Monitor m |
+      this.monitors(a, m) and
+      this.monitors(b, m)
     )
   }
 
-  predicate monitors(ExposedFieldAccess a, Variable lock) {
-    forall(Expr e | this.publicAccess(e, a) | this.monitors_locally(e, lock))
+  predicate monitors(ExposedFieldAccess a, Monitors::Monitor m) {
+    forall(Expr e | this.publicAccess(e, a) | Monitors::locallyMonitors(e, m))
   }
 
   predicate providesAccess(Method m, Expr e, ExposedFieldAccess a) {
@@ -94,34 +121,4 @@ class ClaimedThreadSafeClass extends Class {
   }
 
   predicate relevantExpr(Expr e) { this.publicAccess(e, _) }
-
-  ControlFlowNode toBeDominated(Expr e) {
-    this.relevantExpr(e) and
-    (
-      exists(ExposedFieldAccess a | e = a |
-        exists(Assignment asgn | asgn.getDest() = a | result = asgn.getControlFlowNode())
-        or
-        not exists(Assignment asgn | asgn.getDest() = a) and
-        result = a.getControlFlowNode()
-      )
-      or
-      not e instanceof ExposedFieldAccess and
-      result = e.getControlFlowNode()
-    )
-  }
-
-  predicate monitors_locally(Expr e, Variable lock) {
-    this.relevantExpr(e) and
-    lock.getType().hasName("Lock") and
-    exists(MethodCall lockCall, MethodCall unlockCall |
-      lockCall.getQualifier() = lock.getAnAccess() and
-      not lockCall.getMethod().getName() = "unlock" and
-      unlockCall.getQualifier() = lock.getAnAccess() and
-      unlockCall.getMethod().getName() = "unlock"
-    |
-      dominates(lockCall.getControlFlowNode(), unlockCall.getControlFlowNode()) and
-      dominates(lockCall.getControlFlowNode(), this.toBeDominated(e))
-      // we do not require `a` to dominate `unlick` as the critical region may be exited before `a` is executed
-    )
-  }
 }
