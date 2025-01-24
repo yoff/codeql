@@ -58,7 +58,10 @@ module Modification {
   predicate isModifying(FieldAccess a) {
     a.isVarWrite()
     or
-    exists(Call c | c.(MethodCall).getQualifier() = a | isModifyingCall(c))
+    exists(Call c | c.(MethodCall).getQualifier() = a |
+      not a.getType().hasName("Lock") and
+      isModifyingCall(c)
+    )
     or
     exists(ArrayAccess aa, Assignment asa | aa.getArray() = a | asa.getDest() = aa)
   }
