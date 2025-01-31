@@ -1,19 +1,6 @@
 import java
 import Concurrency
 
-pragma[inline]
-ControlFlowNode toBeDominated(Expr e) {
-  exists(ExposedFieldAccess a | e = a |
-    exists(Assignment asgn | asgn.getDest() = a | result = asgn.getControlFlowNode())
-    or
-    not exists(Assignment asgn | asgn.getDest() = a) and
-    result = a.getControlFlowNode()
-  )
-  or
-  not e instanceof ExposedFieldAccess and
-  result = e.getControlFlowNode()
-}
-
 module Monitors {
   newtype Monitor =
     VariableMonitor(Variable v) { v.getType().hasName("Lock") or locallySynchronizedOn(_, _, v) } or
@@ -46,7 +33,7 @@ module Monitors {
       unlockCall.getMethod().getName() = "unlock"
     |
       dominates(lockCall.getControlFlowNode(), unlockCall.getControlFlowNode()) and
-      dominates(lockCall.getControlFlowNode(), toBeDominated(e))
+      dominates(lockCall.getControlFlowNode(), e.getControlFlowNode())
       // we do not require `e` to dominate `unlock` as the critical region may be exited before `e` is executed
     )
   }
@@ -75,11 +62,11 @@ module Modification {
   }
 }
 
-Class claimedThreadSafe() { result.getAnAnnotation().getType().getName() = "ThreadSafe" }
+Class annotatedAsThreadSafe() { result.getAnAnnotation().getType().getName() = "ThreadSafe" }
 
 // Could be inlined
 predicate exposed(FieldAccess a) {
-  a.getField() = claimedThreadSafe().getAField() and
+  a.getField() = annotatedAsThreadSafe().getAField() and
   not a.getField().isVolatile() and
   not a.(VarWrite).getASource() = a.getField().getInitializer() and
   not a.getEnclosingCallable() = a.getField().getDeclaringType().getAConstructor()
@@ -87,10 +74,29 @@ predicate exposed(FieldAccess a) {
 
 class ExposedFieldAccess extends FieldAccess {
   ExposedFieldAccess() { exposed(this) }
+
+  // LHS of assignments are excluded from the control flow graph,
+  // so we use the control flow node for the assignment itself instead.
+  override ControlFlowNode getControlFlowNode() {
+    // this is the LHS of an assignment, use the control flow node for the assignment
+    exists(Assignment asgn | asgn.getDest() = this | result = asgn.getControlFlowNode())
+    or
+    // this is not the LHS of an assignment, use the default control flow node
+    not exists(Assignment asgn | asgn.getDest() = this) and
+    result = super.getControlFlowNode()
+  }
 }
 
-class ClaimedThreadSafeClass extends Class {
-  ClaimedThreadSafeClass() { this = claimedThreadSafe() }
+class ClassAnnotatedAsThreadSafe extends Class {
+  ClassAnnotatedAsThreadSafe() { this = annotatedAsThreadSafe() }
+
+  predicate unsynchronised(ExposedFieldAccess a, ExposedFieldAccess b) {
+    this.conflicting(a, b) and
+    not exists(Monitors::Monitor m |
+      this.monitors(a, m) and
+      this.monitors(b, m)
+    )
+  }
 
   /**
    * Actions `a` and `b` are conflicting iff
@@ -110,16 +116,12 @@ class ClaimedThreadSafeClass extends Class {
     Modification::isModifying(a)
   }
 
-  predicate unsynchronised(ExposedFieldAccess a, ExposedFieldAccess b) {
-    this.conflicting(a, b) and
-    not exists(Monitors::Monitor m |
-      this.monitors(a, m) and
-      this.monitors(b, m)
-    )
-  }
-
   predicate monitors(ExposedFieldAccess a, Monitors::Monitor m) {
     forall(Expr e | this.publicAccess(e, a) | Monitors::locallyMonitors(e, m))
+  }
+
+  predicate publicAccess(Expr e, ExposedFieldAccess a) {
+    exists(Method m | m.isPublic() | this.providesAccess(m, e, a))
   }
 
   predicate providesAccess(Method m, Expr e, ExposedFieldAccess a) {
@@ -134,15 +136,4 @@ class ClaimedThreadSafeClass extends Class {
       )
     )
   }
-
-  Method provicesPublicAccess(Expr e, ExposedFieldAccess a) {
-    result.isPublic() and
-    this.providesAccess(result, e, a)
-  }
-
-  predicate publicAccess(Expr e, ExposedFieldAccess a) {
-    exists(Method m | m = this.provicesPublicAccess(e, a))
-  }
-
-  predicate relevantExpr(Expr e) { this.publicAccess(e, _) }
 }
