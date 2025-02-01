@@ -1,7 +1,21 @@
+/**
+ * @id java/not-threadsafe
+ * @name Not thread-safe
+ * @description This class is not thread-safe. It is annotated as `@ThreadSafe`, but it has a
+ *              conflicting access to a field that is not synchronized with the same monitor.
+ * @kind problem
+ */
+
 import java
 import semmle.code.java.ConflictingAccess
 
-from ClassAnnotatedAsThreadSafe c, FieldAccess a, FieldAccess b
-where c.unsynchronised(a, b)
-// select c, a, b
-select c, a.getField()
+from
+  ClassAnnotatedAsThreadSafe cls, FieldAccess modifyingAccess, Expr witness_modifyingAccess,
+  FieldAccess conflictingAccess, Expr witness_conflictingAccess
+where
+  cls.witness(modifyingAccess, witness_modifyingAccess, conflictingAccess, witness_conflictingAccess)
+select modifyingAccess,
+  "This modifying field access (publicly accessible via $@) is conflicting with $@ (publicly accessible via $@) because they are not synchronized with the same monitor.",
+  witness_modifyingAccess, "this expression", conflictingAccess, "this field access",
+  witness_conflictingAccess, "this expression"
+// select c, a.getField()

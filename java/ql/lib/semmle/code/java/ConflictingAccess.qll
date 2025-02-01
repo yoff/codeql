@@ -28,13 +28,16 @@ module Monitors {
     lock.getType().hasName("Lock") and
     exists(MethodCall lockCall, MethodCall unlockCall |
       lockCall.getQualifier() = lock.getAnAccess() and
-      not lockCall.getMethod().getName() = "unlock" and
+      lockCall.getMethod().getName() in ["lock", "lockInterruptibly", "tryLock"] and
       unlockCall.getQualifier() = lock.getAnAccess() and
       unlockCall.getMethod().getName() = "unlock"
     |
       dominates(lockCall.getControlFlowNode(), unlockCall.getControlFlowNode()) and
-      dominates(lockCall.getControlFlowNode(), e.getControlFlowNode())
-      // we do not require `e` to dominate `unlock` as the critical region may be exited before `e` is executed
+      dominates(lockCall.getControlFlowNode(), e.getControlFlowNode()) // and
+      // we do not require `e` to dominate `unlock` as the critical region may be exited
+      // by an exception before 'e' is executed.
+      // But we do want `unlock` to be a successor of `e`.
+      //e.getControlFlowNode().getANormalSuccessor*() = unlockCall.getControlFlowNode()
     )
   }
 }
@@ -87,6 +90,13 @@ class ExposedFieldAccess extends FieldAccess {
   }
 }
 
+predicate orderedLocations(Location a, Location b) {
+  a.getStartLine() < b.getStartLine()
+  or
+  a.getStartLine() = b.getStartLine() and
+  a.getStartColumn() < b.getStartColumn()
+}
+
 class ClassAnnotatedAsThreadSafe extends Class {
   ClassAnnotatedAsThreadSafe() { this = annotatedAsThreadSafe() }
 
@@ -96,6 +106,28 @@ class ClassAnnotatedAsThreadSafe extends Class {
       this.monitors(a, m) and
       this.monitors(b, m)
     )
+  }
+
+  predicate witness(ExposedFieldAccess a, Expr witness_a, ExposedFieldAccess b, Expr witness_b) {
+    this.unsynchronised(a, b) and
+    this.publicAccess(witness_a, a) and
+    this.publicAccess(witness_b, b) and
+    // avoid doulbe reporting
+    this.ordered(a, b) and
+    not exists(Expr better_witness_a | this.publicAccess(better_witness_a, a) |
+      better_witness_a != witness_a and
+      orderedLocations(better_witness_a.getLocation(), witness_a.getLocation())
+    ) and
+    not exists(Expr better_witness_b | this.publicAccess(better_witness_b, b) |
+      better_witness_b != witness_b and
+      orderedLocations(better_witness_b.getLocation(), witness_b.getLocation())
+    )
+  }
+
+  predicate ordered(ExposedFieldAccess a, ExposedFieldAccess b) {
+    a = b
+    or
+    (Modification::isModifying(b) implies orderedLocations(a.getLocation(), b.getLocation()))
   }
 
   /**
