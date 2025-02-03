@@ -4,6 +4,7 @@
  * @description This class is not thread-safe. It is annotated as `@ThreadSafe`, but it has a
  *              conflicting access to a field that is not synchronized with the same monitor.
  * @kind problem
+ * @problem.severity warning
  */
 
 import java

@@ -2,25 +2,63 @@ import java
 import Concurrency
 
 module Monitors {
-  newtype Monitor =
-    VariableMonitor(Variable v) { v.getType().hasName("Lock") or locallySynchronizedOn(_, _, v) } or
-    InstanceMonitor(RefType thisType) { locallySynchronizedOnThis(_, thisType) } or
-    ClassMonitor(RefType classType) { locallySynchronizedOnClass(_, classType) }
+  newtype TMonitor =
+    TVariableMonitor(Variable v) { v.getType().hasName("Lock") or locallySynchronizedOn(_, _, v) } or
+    TInstanceMonitor(RefType thisType) { locallySynchronizedOnThis(_, thisType) } or
+    TClassMonitor(RefType classType) { locallySynchronizedOnClass(_, classType) }
+
+  class Monitor extends TMonitor {
+    abstract Location getLocation();
+
+    string toString() { result = "Monitor" }
+  }
+
+  class VariableMonitor extends Monitor, TVariableMonitor {
+    Variable v;
+
+    VariableMonitor() { this = TVariableMonitor(v) }
+
+    override Location getLocation() { result = v.getLocation() }
+
+    override string toString() { result = "VariableMonitor(" + v.toString() + ")" }
+
+    Variable getVariable() { result = v }
+  }
+
+  class InstanceMonitor extends Monitor, TInstanceMonitor {
+    RefType thisType;
+
+    InstanceMonitor() { this = TInstanceMonitor(thisType) }
+
+    override Location getLocation() { result = thisType.getLocation() }
+
+    override string toString() { result = "InstanceMonitor(" + thisType.toString() + ")" }
+
+    RefType getThisType() { result = thisType }
+  }
+
+  class ClassMonitor extends Monitor, TClassMonitor {
+    RefType classType;
+
+    ClassMonitor() { this = TClassMonitor(classType) }
+
+    override Location getLocation() { result = classType.getLocation() }
+
+    override string toString() { result = "ClassMonitor(" + classType.toString() + ")" }
+
+    RefType getClassType() { result = classType }
+  }
 
   predicate locallyMonitors(Expr e, Monitor m) {
-    exists(Variable v | m = VariableMonitor(v) |
+    exists(Variable v | v = m.(VariableMonitor).getVariable() |
       locallyLockedOn(e, v)
       or
       locallySynchronizedOn(e, _, v)
     )
     or
-    exists(RefType thisType | m = InstanceMonitor(thisType) |
-      locallySynchronizedOnThis(e, thisType)
-    )
+    locallySynchronizedOnThis(e, m.(InstanceMonitor).getThisType())
     or
-    exists(RefType classType | m = ClassMonitor(classType) |
-      locallySynchronizedOnClass(e, classType)
-    )
+    locallySynchronizedOnClass(e, m.(ClassMonitor).getClassType())
   }
 
   /** Holds if `e` is synchronized on the `Lock` `lock` by a locking call. */
@@ -98,6 +136,8 @@ class ClassAnnotatedAsThreadSafe extends Class {
 
   predicate unsynchronised(ExposedFieldAccess a, ExposedFieldAccess b) {
     this.conflicting(a, b) and
+    this.publicAccess(_, a) and
+    this.publicAccess(_, b) and
     not exists(Monitors::Monitor m |
       this.monitors(a, m) and
       this.monitors(b, m)
@@ -111,11 +151,9 @@ class ClassAnnotatedAsThreadSafe extends Class {
     // avoid doulbe reporting
     this.ordered(a, b) and
     not exists(Expr better_witness_a | this.publicAccess(better_witness_a, a) |
-      better_witness_a != witness_a and
       orderedLocations(better_witness_a.getLocation(), witness_a.getLocation())
     ) and
     not exists(Expr better_witness_b | this.publicAccess(better_witness_b, b) |
-      better_witness_b != witness_b and
       orderedLocations(better_witness_b.getLocation(), witness_b.getLocation())
     )
   }
@@ -142,10 +180,15 @@ class ClassAnnotatedAsThreadSafe extends Class {
     // wlog we assume that is `a`
     // We use a slightly more inclusive definition than simply `a.isVarWrite()`
     Modification::isModifying(a)
+    // TODO: consider making `a` the earliert modifying access to `a`
+    // that should eliminate double reporting
   }
 
-  predicate monitors(ExposedFieldAccess a, Monitors::Monitor m) {
-    forall(Expr e | this.publicAccess(e, a) | Monitors::locallyMonitors(e, m))
+  predicate monitors(ExposedFieldAccess a, Monitors::Monitor monitor) {
+    // forall(Expr e | this.publicAccess(e, a) | Monitors::locallyMonitors(e, m))
+    forex(Method m | this.providesAccess(m, _, a) and m.isPublic() |
+      this.monitorsVia(m, a, monitor)
+    )
   }
 
   predicate publicAccess(Expr e, ExposedFieldAccess a) {
@@ -162,6 +205,20 @@ class ClassAnnotatedAsThreadSafe extends Class {
         this.providesAccess(c.getCallee(), _, a) and
         e = c
       )
+    )
+  }
+
+  predicate monitorsVia(Method m, ExposedFieldAccess a, Monitors::Monitor monitor) {
+    m = this.getAMethod() and
+    this.providesAccess(m, _, a) and
+    (a.getEnclosingCallable() = m implies Monitors::locallyMonitors(a, monitor)) and
+    forall(MethodCall c |
+      c.getEnclosingCallable() = m and
+      this.providesAccess(c.getCallee(), _, a)
+    |
+      Monitors::locallyMonitors(c, monitor)
+      or
+      this.monitorsVia(c.getCallee(), a, monitor)
     )
   }
 }
