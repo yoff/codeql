@@ -33,11 +33,8 @@ module Monitors {
       unlockCall.getMethod().getName() = "unlock"
     |
       dominates(lockCall.getControlFlowNode(), unlockCall.getControlFlowNode()) and
-      dominates(lockCall.getControlFlowNode(), e.getControlFlowNode()) // and
-      // we do not require `e` to dominate `unlock` as the critical region may be exited
-      // by an exception before 'e' is executed.
-      // But we do want `unlock` to be a successor of `e`.
-      //e.getControlFlowNode().getANormalSuccessor*() = unlockCall.getControlFlowNode()
+      dominates(lockCall.getControlFlowNode(), e.getControlFlowNode()) and
+      postDominates(unlockCall.getControlFlowNode(), e.getControlFlowNode())
     )
   }
 }
