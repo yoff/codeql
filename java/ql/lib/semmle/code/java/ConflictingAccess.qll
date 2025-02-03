@@ -48,10 +48,7 @@ module Modification {
   predicate isModifying(FieldAccess a) {
     a.isVarWrite()
     or
-    exists(Call c | c.(MethodCall).getQualifier() = a |
-      not a.getType().hasName("Lock") and
-      isModifyingCall(c)
-    )
+    exists(Call c | c.(MethodCall).getQualifier() = a | isModifyingCall(c))
     or
     exists(ArrayAccess aa, Assignment asa | aa.getArray() = a | asa.getDest() = aa)
   }
@@ -71,6 +68,8 @@ Class annotatedAsThreadSafe() { result.getAnAnnotation().getType().getName() = "
 predicate exposed(FieldAccess a) {
   a.getField() = annotatedAsThreadSafe().getAField() and
   not a.getField().isVolatile() and
+  not a.getField().getType().getName() = "Lock" and
+  not a.getField().getType().getName().matches("Atomic%") and
   not a.(VarWrite).getASource() = a.getField().getInitializer() and
   not a.getEnclosingCallable() = a.getField().getDeclaringType().getAConstructor()
 }
