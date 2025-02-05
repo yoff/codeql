@@ -124,6 +124,7 @@ class ExposedFieldAccess extends FieldAccess {
   }
 }
 
+pragma[inline]
 predicate orderedLocations(Location a, Location b) {
   a.getStartLine() < b.getStartLine()
   or
