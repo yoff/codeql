@@ -105,6 +105,7 @@ predicate exposed(FieldAccess a) {
   not a.getField().isVolatile() and
   not a.getField().getType().getName() = "Lock" and
   not a.getField().getType().getName().matches("Atomic%") and
+  not a.getField().getInitializer().getType().getName().matches("Concurrent%") and
   not a.(VarWrite).getASource() = a.getField().getInitializer() and
   not a.getEnclosingCallable() = a.getField().getDeclaringType().getAConstructor()
 }
