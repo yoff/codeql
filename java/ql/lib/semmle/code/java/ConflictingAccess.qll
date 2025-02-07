@@ -1,9 +1,12 @@
 import java
 import Concurrency
 
+pragma[inline]
+predicate isLockType(Type t) { t.getName().matches("%Lock%") }
+
 module Monitors {
   newtype TMonitor =
-    TVariableMonitor(Variable v) { v.getType().hasName("Lock") or locallySynchronizedOn(_, _, v) } or
+    TVariableMonitor(Variable v) { isLockType(v.getType()) or locallySynchronizedOn(_, _, v) } or
     TInstanceMonitor(RefType thisType) { locallySynchronizedOnThis(_, thisType) } or
     TClassMonitor(RefType classType) { locallySynchronizedOnClass(_, classType) }
 
@@ -63,7 +66,7 @@ module Monitors {
 
   /** Holds if `e` is synchronized on the `Lock` `lock` by a locking call. */
   predicate locallyLockedOn(Expr e, Variable lock) {
-    lock.getType().hasName("Lock") and
+    isLockType(lock.getType()) and
     exists(MethodCall lockCall, MethodCall unlockCall |
       lockCall.getQualifier() = lock.getAnAccess() and
       lockCall.getMethod().getName() in ["lock", "lockInterruptibly", "tryLock"] and
@@ -103,7 +106,7 @@ Class annotatedAsThreadSafe() { result.getAnAnnotation().getType().getName() = "
 predicate exposed(FieldAccess a) {
   a.getField() = annotatedAsThreadSafe().getAField() and
   not a.getField().isVolatile() and
-  not a.getField().getType().getName() = "Lock" and
+  not isLockType(a.getField().getType()) and
   not a.getField().getType().getName().matches("Atomic%") and
   not a.getField().getInitializer().getType().getName().matches("Concurrent%") and
   not a.(VarWrite).getASource() = a.getField().getInitializer() and
