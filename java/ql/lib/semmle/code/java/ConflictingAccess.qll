@@ -102,13 +102,26 @@ module Modification {
 
 Class annotatedAsThreadSafe() { result.getAnAnnotation().getType().getName() = "ThreadSafe" }
 
+predicate isThreadSafeType(Type t) {
+  t.getName().matches(["Atomic%", "Concurrent%"])
+  or
+  t.getName() in [
+      "CopyOnWriteArraySet", "BlockingQueue", "ThreadLocal",
+      // this is a method that returns a thread-safe version of the collection used as parameter
+      "synchronizedMap", "Executor", "ExecutorService", "CopyOnWriteArrayList",
+      "LinkedBlockingDeque", "LinkedBlockingQueue", "CompletableFuture"
+    ]
+  or
+  t = annotatedAsThreadSafe()
+}
+
 // Could be inlined
 predicate exposed(FieldAccess a) {
   a.getField() = annotatedAsThreadSafe().getAField() and
   not a.getField().isVolatile() and
   not isLockType(a.getField().getType()) and
-  not a.getField().getType().getName().matches("Atomic%") and
-  not a.getField().getInitializer().getType().getName().matches("Concurrent%") and
+  not isThreadSafeType(a.getField().getType()) and
+  not isThreadSafeType(a.getField().getInitializer().getType()) and
   not a.(VarWrite).getASource() = a.getField().getInitializer() and
   not a.getEnclosingCallable() = a.getField().getDeclaringType().getAConstructor()
 }
