@@ -15,7 +15,7 @@ public class FlawedSemaphore {
       while (state == capacity) {
         this.wait();
       }
-      state++;
+      state++; // $ Alert
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

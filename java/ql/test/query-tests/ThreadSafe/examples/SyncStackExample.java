@@ -29,7 +29,7 @@ class FaultySyncStackExample<T> {
 
   public void push(T item) {
     lock.lock();
-    stc.push(item);
+    stc.push(item); // $ Alert
     lock.unlock();
   }
 

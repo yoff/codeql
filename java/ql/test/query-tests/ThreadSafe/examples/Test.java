@@ -40,7 +40,7 @@ public class Test {
    */
   public void setYCorrect(int y) {
     lock.lock();
-    this.y = y;
+    this.y = y; // $ Alert
     lock.unlock();
   }
 

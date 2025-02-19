@@ -10,7 +10,7 @@ class FaultyTurnstileExample {
 
   public void inc() {
     lock.lock();
-    count++;
+    count++; // $ Alert
     lock.unlock();
   }
 
@@ -27,7 +27,7 @@ class FaultyTurnstileExample2 {
 
   public void inc() {
     lock1.lock();
-    count++;
+    count++; // $ Alert 
     lock1.unlock();
   }
 

@@ -11,7 +11,7 @@ public class C {
     private Lock lock2 = new ReentrantLock();
 
     public void m() {
-        this.y = 0;
+        this.y = 0; // $ Alert
         this.y += 1;
         this.y = this.y - 1;
     }

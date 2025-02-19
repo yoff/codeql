@@ -14,8 +14,8 @@ public class LockExample {
 
   public void add(int value) {
     lock1.lock();
-    length++;
-    content[length] = value;
+    length++; // $ Alert
+    content[length] = value; // $ Alert
     lock1.unlock();
   }
 
@@ -28,8 +28,8 @@ public class LockExample {
 
   public void notTheSameLockAsAdd() { // use locks, but t
     lock2.lock();
-    length--;
-    content[length] = 0;
+    length--; // $ Alert
+    content[length] = 0; // $ Alert
     lock2.unlock();
   }
 
@@ -75,7 +75,7 @@ public class LockExample {
 
   public void updateCount() {
     lock2.lock();
-    notRelatedToOther++;
+    notRelatedToOther++; // $ Alert
     lock2.unlock();
   }
 
@@ -84,7 +84,7 @@ public class LockExample {
     notRelatedToOther++;
     lock2.unlock();
     lock1.lock();
-    notRelatedToOther++;
+    notRelatedToOther++; // $ Alert
     lock1.unlock();
   }
 

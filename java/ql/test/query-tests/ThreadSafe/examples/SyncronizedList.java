@@ -38,7 +38,7 @@ class SynchronizedList<E> extends SynchronizedCollection<E> implements List<E> {
     synchronized (this) {return list.get(index);}
   }
   public E set(int index, E element) {
-    synchronized (this) {return list.set(index, element);}
+    synchronized (this) {return list.set(index, element);} // $ Alert
   }
   public void add(int index, E element) {
     synchronized (this) {list.add(index, element);}

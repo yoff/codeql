@@ -11,7 +11,7 @@ public class SynchronizedAndLock {
 
     public void add(int value) {
         lock.lock();
-        length++;
+        length++; // $ Alert
         lock.unlock();
     }
 

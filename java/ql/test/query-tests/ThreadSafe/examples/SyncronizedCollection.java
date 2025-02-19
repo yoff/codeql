@@ -77,7 +77,7 @@ class SynchronizedCollection<E> implements Collection<E>, Serializable {
 
   public boolean add(E e) {
     synchronized (this) {
-      return c.add(e);
+      return c.add(e); // $ Alert
     }
   }
 

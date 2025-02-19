@@ -162,24 +162,29 @@ class ClassAnnotatedAsThreadSafe extends Class {
     )
   }
 
-  predicate witness(ExposedFieldAccess a, Expr witness_a, ExposedFieldAccess b, Expr witness_b) {
+  predicate unsynchronised_normalized(ExposedFieldAccess a, ExposedFieldAccess b) {
     this.unsynchronised(a, b) and
+    // Eliminate double reporting by making `a` the earliest write to this field
+    // that is unsynchronized with `b`.
+    not exists(ExposedFieldAccess earlier_a |
+      earlier_a.getField() = a.getField() and
+      orderedLocations(earlier_a.getLocation(), a.getLocation())
+    |
+      this.unsynchronised(earlier_a, b)
+    )
+  }
+
+  predicate witness(ExposedFieldAccess a, Expr witness_a, ExposedFieldAccess b, Expr witness_b) {
+    this.unsynchronised_normalized(a, b) and
     this.publicAccess(witness_a, a) and
     this.publicAccess(witness_b, b) and
     // avoid doulbe reporting
-    this.ordered(a, b) and
     not exists(Expr better_witness_a | this.publicAccess(better_witness_a, a) |
       orderedLocations(better_witness_a.getLocation(), witness_a.getLocation())
     ) and
     not exists(Expr better_witness_b | this.publicAccess(better_witness_b, b) |
       orderedLocations(better_witness_b.getLocation(), witness_b.getLocation())
     )
-  }
-
-  predicate ordered(ExposedFieldAccess a, ExposedFieldAccess b) {
-    a = b
-    or
-    (Modification::isModifying(b) implies orderedLocations(a.getLocation(), b.getLocation()))
   }
 
   /**
@@ -197,9 +202,17 @@ class ClassAnnotatedAsThreadSafe extends Class {
     // where at least one is a write
     // wlog we assume that is `a`
     // We use a slightly more inclusive definition than simply `a.isVarWrite()`
-    Modification::isModifying(a)
-    // TODO: consider making `a` the earliert modifying access to `a`
-    // that should eliminate double reporting
+    Modification::isModifying(a) and
+    // Avoid reporting both `(a, b)` and `(b, a)` by choosing the tuple
+    // where `a` appears before `b` in the source code.
+    (
+      (
+        Modification::isModifying(b) and
+        a != b
+      )
+      implies
+      orderedLocations(a.getLocation(), b.getLocation())
+    )
   }
 
   predicate monitors(ExposedFieldAccess a, Monitors::Monitor monitor) {
