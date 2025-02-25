@@ -5,6 +5,8 @@ pragma[inline]
 predicate isLockType(Type t) { t.getName().matches("%Lock%") }
 
 module Monitors {
+  private import semmle.code.java.dataflow.DataFlow
+
   newtype TMonitor =
     TVariableMonitor(Variable v) { isLockType(v.getType()) or locallySynchronizedOn(_, _, v) } or
     TInstanceMonitor(RefType thisType) { locallySynchronizedOnThis(_, thisType) } or
@@ -64,13 +66,27 @@ module Monitors {
     locallySynchronizedOnClass(e, m.(ClassMonitor).getClassType())
   }
 
-  /** Holds if `e` is synchronized on the `Lock` `lock` by a locking call. */
-  predicate locallyLockedOn(Expr e, Variable lock) {
+  predicate represents(Field lock, Variable localLock) {
     isLockType(lock.getType()) and
-    exists(MethodCall lockCall, MethodCall unlockCall |
-      lockCall.getQualifier() = lock.getAnAccess() and
+    (
+      localLock = lock
+      or
+      exists(DataFlow::Node lockNode, DataFlow::Node localLockNode |
+        localLockNode.asExpr() = localLock.getInitializer() and
+        lockNode.asExpr() = lock.getAnAccess() and
+        DataFlow::localFlow(lockNode, localLockNode)
+      )
+    )
+  }
+
+  /** Holds if `e` is synchronized on the `Lock` `lock` by a locking call. */
+  predicate locallyLockedOn(Expr e, Field lock) {
+    isLockType(lock.getType()) and
+    exists(Variable localLock, MethodCall lockCall, MethodCall unlockCall |
+      represents(lock, localLock) and
+      lockCall.getQualifier() = localLock.getAnAccess() and
       lockCall.getMethod().getName() in ["lock", "lockInterruptibly", "tryLock"] and
-      unlockCall.getQualifier() = lock.getAnAccess() and
+      unlockCall.getQualifier() = localLock.getAnAccess() and
       unlockCall.getMethod().getName() = "unlock"
     |
       dominates(lockCall.getControlFlowNode(), unlockCall.getControlFlowNode()) and
