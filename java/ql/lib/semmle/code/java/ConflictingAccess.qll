@@ -202,14 +202,14 @@ class ClassAnnotatedAsThreadSafe extends Class {
    */
   predicate conflicting(ExposedFieldAccess a, ExposedFieldAccess b) {
     // We allow a = b, since they could be executed on different threads
-    // We are looking for two operations
-    // on the same non-volatile field
+    // We are looking for two operations:
+    // - on the same non-volatile field
     a.getField() = b.getField() and
-    // on this class
+    // - on this class
     a.getField() = this.getAField() and
-    // where at least one is a write
-    // wlog we assume that is `a`
-    // We use a slightly more inclusive definition than simply `a.isVarWrite()`
+    // - where at least one is a write
+    //   wlog we assume that is `a`
+    //   We use a slightly more inclusive definition than simply `a.isVarWrite()`
     Modification::isModifying(a) and
     // Avoid reporting both `(a, b)` and `(b, a)` by choosing the tuple
     // where `a` appears before `b` in the source code.
