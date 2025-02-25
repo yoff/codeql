@@ -119,11 +119,17 @@ predicate isThreadSafeType(Type t) {
 predicate exposed(FieldAccess a) {
   a.getField() = annotatedAsThreadSafe().getAField() and
   not a.getField().isVolatile() and
+  // field is not a lock
   not isLockType(a.getField().getType()) and
+  // field is not thread-safe
   not isThreadSafeType(a.getField().getType()) and
   not isThreadSafeType(a.getField().getInitializer().getType()) and
+  // access is not the initializer of the field
   not a.(VarWrite).getASource() = a.getField().getInitializer() and
-  not a.getEnclosingCallable() = a.getField().getDeclaringType().getAConstructor()
+  // access not in a constructor
+  not a.getEnclosingCallable() = a.getField().getDeclaringType().getAConstructor() and
+  // not a field on a local variable
+  not a.getQualifier+().(VarAccess).getVariable() instanceof LocalVariableDecl
 }
 
 class ExposedFieldAccess extends FieldAccess {
