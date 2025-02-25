@@ -129,7 +129,9 @@ predicate exposed(FieldAccess a) {
   // access not in a constructor
   not a.getEnclosingCallable() = a.getField().getDeclaringType().getAConstructor() and
   // not a field on a local variable
-  not a.getQualifier+().(VarAccess).getVariable() instanceof LocalVariableDecl
+  not a.getQualifier+().(VarAccess).getVariable() instanceof LocalVariableDecl and
+  // not the variable mention in a synchronized statement
+  not a = any(SynchronizedStmt sync).getExpr()
 }
 
 class ExposedFieldAccess extends FieldAccess {
