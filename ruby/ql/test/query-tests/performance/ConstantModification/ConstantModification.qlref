@@ -1,0 +1,2 @@
+query: queries/performance/ConstantModification.ql
+postprocess: utils/test/InlineExpectationsTestQuery.ql

@@ -1,0 +1,2 @@
+| constant_modification.rb:6:9:6:41 | call to some_attribute= | Bad monkey! |
+| constant_modification.rb:15:9:15:42 | call to []= | Bad monkey! |
