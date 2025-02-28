@@ -5,8 +5,6 @@ pragma[inline]
 predicate isLockType(Type t) { t.getName().matches("%Lock%") }
 
 module Monitors {
-  private import semmle.code.java.dataflow.DataFlow
-
   newtype TMonitor =
     TVariableMonitor(Variable v) { isLockType(v.getType()) or locallySynchronizedOn(_, _, v) } or
     TInstanceMonitor(RefType thisType) { locallySynchronizedOnThis(_, thisType) } or
@@ -71,11 +69,7 @@ module Monitors {
     (
       localLock = lock
       or
-      exists(DataFlow::Node lockNode, DataFlow::Node localLockNode |
-        localLockNode.asExpr() = localLock.getInitializer() and
-        lockNode.asExpr() = lock.getAnAccess() and
-        DataFlow::localFlow(lockNode, localLockNode)
-      )
+      localLock.getInitializer() = lock.getAnAccess()
     )
   }
 
