@@ -257,17 +257,83 @@ class ClassAnnotatedAsThreadSafe extends Class {
     )
   }
 
-  predicate monitorsVia(Method m, ExposedFieldAccess a, Monitors::Monitor monitor) {
+  predicate accessVia(Method m, ExposedFieldAccess a, Method callee) {
+    exists(MethodCall c | this.providesAccess(m, c, a) | callee = c.getCallee())
+  }
+
+  predicate accessReach(Method m, ExposedFieldAccess a, Method reached) {
+    m = this.getAMethod() and
+    reached = this.getAMethod() and
+    this.providesAccess(m, _, a) and
+    this.providesAccess(reached, _, a) and
+    (
+      this.accessVia(m, a, reached)
+      or
+      exists(Method mid | this.accessReach(m, a, mid) | this.accessVia(mid, a, reached))
+    )
+  }
+
+  predicate repSCC(Method rep, ExposedFieldAccess a, Method m) {
+    this.accessReach(rep, a, m) and
+    this.accessReach(m, a, rep) and
+    forall(Method alt_rep |
+      rep != alt_rep and
+      this.accessReach(alt_rep, a, m) and
+      this.accessReach(m, a, alt_rep)
+    |
+      rep.getLocation().getStartLine() < alt_rep.getLocation().getStartLine()
+    )
+  }
+
+  predicate repSCCReflexive(Method rep, ExposedFieldAccess a, Method m) {
+    this.repSCC(rep, a, m)
+    or
     m = this.getAMethod() and
     this.providesAccess(m, _, a) and
-    (a.getEnclosingCallable() = m implies Monitors::locallyMonitors(a, monitor)) and
-    forall(MethodCall c |
-      c.getEnclosingCallable() = m and
-      this.providesAccess(c.getCallee(), _, a)
+    not exists(Method r | this.repSCC(r, a, m)) and
+    rep = m
+  }
+
+  predicate callEdgeSCC(Method callerRep, ExposedFieldAccess a, MethodCall c, Method calleeRep) {
+    callerRep != calleeRep and
+    exists(Method caller, Method callee |
+      this.repSCCReflexive(callerRep, a, caller) and this.repSCCReflexive(calleeRep, a, callee)
     |
+      this.accessVia(caller, a, callee) and
+      c.getEnclosingCallable() = caller and
+      c.getCallee() = callee
+    )
+  }
+
+  predicate providesAccessSCC(Method rep, Expr e, ExposedFieldAccess a) {
+    rep = this.getAMethod() and
+    exists(Method m | this.repSCCReflexive(rep, a, m) |
+      a.getEnclosingCallable() = m and
+      e = a
+      or
+      exists(MethodCall c, Method calleeRep | this.callEdgeSCC(rep, a, c, calleeRep) | e = c)
+    )
+  }
+
+  predicate monitorsViaSCC(Method rep, ExposedFieldAccess a, Monitors::Monitor monitor) {
+    rep = this.getAMethod() and
+    this.providesAccessSCC(rep, _, a) and
+    (
+      this.repSCCReflexive(rep, a, a.getEnclosingCallable())
+      implies
+      Monitors::locallyMonitors(a, monitor)
+    ) and
+    forall(MethodCall c, Method calleeRep | this.callEdgeSCC(rep, a, c, calleeRep) |
       Monitors::locallyMonitors(c, monitor)
       or
-      this.monitorsVia(c.getCallee(), a, monitor)
+      this.monitorsViaSCC(calleeRep, a, monitor)
+    )
+  }
+
+  predicate monitorsVia(Method m, ExposedFieldAccess a, Monitors::Monitor monitor) {
+    exists(Method rep |
+      this.repSCCReflexive(rep, a, m) and
+      this.monitorsViaSCC(rep, a, monitor)
     )
   }
 }
