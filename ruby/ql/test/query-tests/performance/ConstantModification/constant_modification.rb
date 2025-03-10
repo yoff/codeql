@@ -8,7 +8,7 @@ class ConstantmodificationTest
 
     # mutable one
     def test_mutable_accessor
-        ProcessReminderJob.some_array << "value"
+        ProcessReminderJob.some_array << "value" # $ Alert
     end
 
     def test_hash_accessor

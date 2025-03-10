@@ -13,17 +13,25 @@ import codeql.ruby.ast.Expr
 import codeql.ruby.ast.Constant
 import codeql.ruby.ast.Variable
 import codeql.ruby.ast.Call
+import codeql.ruby.ast.Operation
 
-predicate relevantModification(Expr e) {
-  e instanceof ClassVariableWriteAccess
+predicate accessesFieldOfConstant(MethodCall c) {
+  c.getReceiver() instanceof ConstantAccess
   or
-  exists(e.(ConstantAssignment).getScopeExpr())
-  or
-  e.(SetterMethodCall).getReceiver() instanceof ClassVariableAccess
-  or
-  e instanceof SetterMethodCall
+  accessesFieldOfConstant(c.getReceiver())
+}
+
+predicate setsFieldOfConstant(MethodCall c) {
+  accessesFieldOfConstant(c) and
+  (
+    c instanceof SetterMethodCall or
+    c instanceof LShiftExpr
+  )
 }
 
 from Expr e
-where relevantModification(e) and exists(e.getEnclosingCallable())
+where
+  setsFieldOfConstant(e) and
+  exists(e.getEnclosingCallable()) and
+  not e.getLocation().getFile().getAbsolutePath().matches("%test%")
 select e, "Bad monkey!"
