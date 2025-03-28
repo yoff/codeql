@@ -1,0 +1,7 @@
+extensions:
+  - addsTo:
+      pack: codeql/actions-all
+      extensible: actionsPermissionsDataModel
+    data:
+      - ["actions/checkout", "repo:read"]
+      - ["actions/checkout", "repo:write"]
