@@ -630,6 +630,8 @@ newtype TContent =
     // data-flow-private)
     index in [0 .. 7]
   } or
+  /** An element of a tuple at an unknown index. */
+  TTupleElementUnknownIndexContent() or
   /** An element of a dictionary under a specific key. */
   TDictionaryElementContent(string key) {
     // {"key": ...}
@@ -720,6 +722,13 @@ class TupleElementContent extends TTupleElementContent, Content {
   override string getMaDRepresentation() { result = "TupleElement[" + index + "]" }
 }
 
+/** An element of a set. */
+class TupleElementUnknownIndexContent extends TTupleElementUnknownIndexContent, Content {
+  override string toString() { result = "Tuple element at unknown index" }
+
+  override string getMaDRepresentation() { result = "SetElement[?]" }
+}
+
 /** An element of a dictionary under a specific key. */
 class DictionaryElementContent extends TDictionaryElementContent, Content {
   string key;
@@ -769,7 +778,9 @@ class CapturedVariableContent extends Content, TCapturedVariableContent {
   override string getMaDRepresentation() { none() }
 }
 
-newtype TContentSet = TSingletonContent(Content c)
+newtype TContentSet =
+  TSingletonContent(Content c) or
+  TTupleAnyContent()
 
 /**
  * An entity that represents a set of `Content`s.
@@ -785,10 +796,20 @@ class ContentSet extends TContentSet {
   Content asSingleton() { this.isSingleton(result) }
 
   /** Gets a content that may be stored into when storing into this set. */
-  Content getAStoreContent() { this.isSingleton(result) }
+  Content getAStoreContent() {
+    this.isSingleton(result)
+    or
+    this = TTupleAnyContent() and
+    result instanceof TupleElementUnknownIndexContent
+  }
 
   /** Gets a content that may be read from when reading from this set. */
-  Content getAReadContent() { this.isSingleton(result) }
+  Content getAReadContent() {
+    this.isSingleton(result)
+    or
+    this = TTupleAnyContent() and
+    result instanceof TupleElementContent
+  }
 
   /** Gets a textual representation of this content set. */
   string toString() { result = any(Content c | this.isSingleton(c)).toString() }
