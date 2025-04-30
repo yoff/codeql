@@ -647,8 +647,6 @@ newtype TContent =
       key = call.getArg(0).getNode().(StringLiteral).getText()
     )
   } or
-  /** An element of a dictionary under any key. */
-  TDictionaryElementAnyContent() or
   /** An object attribute. */
   TAttributeContent(string attr) {
     attr = any(Attribute a).getName()
@@ -734,13 +732,6 @@ class DictionaryElementContent extends TDictionaryElementContent, Content {
   override string getMaDRepresentation() { result = "DictionaryElement[" + key + "]" }
 }
 
-/** An element of a dictionary under any key. */
-class DictionaryElementAnyContent extends TDictionaryElementAnyContent, Content {
-  override string toString() { result = "Any dictionary element" }
-
-  override string getMaDRepresentation() { result = "DictionaryElementAny" }
-}
-
 /** An object attribute. */
 class AttributeContent extends TAttributeContent, Content {
   private string attr;
@@ -769,7 +760,10 @@ class CapturedVariableContent extends Content, TCapturedVariableContent {
   override string getMaDRepresentation() { none() }
 }
 
-newtype TContentSet = TSingletonContent(Content c)
+newtype TContentSet =
+  TSingletonContent(Content c) or
+  /** An element of a dictionary under any key. */
+  TDictionaryElementAnyContent()
 
 /**
  * An entity that represents a set of `Content`s.

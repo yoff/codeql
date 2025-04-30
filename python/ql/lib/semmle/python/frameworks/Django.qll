@@ -940,63 +940,65 @@ module PrivateDjango {
           /** Additional data-flow steps for Django ORM models. */
           class DjangOrmSteps extends AdditionalOrmSteps {
             override predicate storeStep(
-              DataFlow::Node nodeFrom, DataFlow::Content c, DataFlow::Node nodeTo
+              DataFlow::Node nodeFrom, DataFlow::ContentSet cs, DataFlow::Node nodeTo
             ) {
-              // attribute value from constructor call -> object created
-              exists(DataFlow::CallCfgNode call, string fieldName |
-                // Note: Currently only supports kwargs, which should by far be the most
-                // common way to do things. We _should_ investigate how often
-                // positional-args are used.
-                call = Model::subclassRef().getACall() and
-                nodeFrom = call.getArgByName(fieldName) and
-                c.(DataFlow::AttributeContent).getAttribute() = fieldName and
-                nodeTo = call
-              )
-              or
-              // attribute store in `<Model>.objects.create`, `get_or_create`, and `update_or_create`
-              // see https://docs.djangoproject.com/en/4.0/ref/models/querysets/#create
-              // see https://docs.djangoproject.com/en/4.0/ref/models/querysets/#get-or-create
-              // see https://docs.djangoproject.com/en/4.0/ref/models/querysets/#update-or-create
-              // TODO: This does currently not handle values passed in the `defaults` dictionary
-              exists(
-                DataFlow::CallCfgNode call, API::Node modelClass, string fieldName,
-                string methodName
-              |
-                modelClass = Model::subclassRef() and
-                methodName in ["create", "get_or_create", "update_or_create"] and
-                call = modelClass.getMember("objects").getMember(methodName).getACall() and
-                nodeFrom = call.getArgByName(fieldName) and
-                c.(DataFlow::AttributeContent).getAttribute() = fieldName and
-                (
-                  // -> object created
+              exists(DataFlow::Content c | cs.isSingleton(c) |
+                // attribute value from constructor call -> object created
+                exists(DataFlow::CallCfgNode call, string fieldName |
+                  // Note: Currently only supports kwargs, which should by far be the most
+                  // common way to do things. We _should_ investigate how often
+                  // positional-args are used.
+                  call = Model::subclassRef().getACall() and
+                  nodeFrom = call.getArgByName(fieldName) and
+                  c.(DataFlow::AttributeContent).getAttribute() = fieldName and
+                  nodeTo = call
+                )
+                or
+                // attribute store in `<Model>.objects.create`, `get_or_create`, and `update_or_create`
+                // see https://docs.djangoproject.com/en/4.0/ref/models/querysets/#create
+                // see https://docs.djangoproject.com/en/4.0/ref/models/querysets/#get-or-create
+                // see https://docs.djangoproject.com/en/4.0/ref/models/querysets/#update-or-create
+                // TODO: This does currently not handle values passed in the `defaults` dictionary
+                exists(
+                  DataFlow::CallCfgNode call, API::Node modelClass, string fieldName,
+                  string methodName
+                |
+                  modelClass = Model::subclassRef() and
+                  methodName in ["create", "get_or_create", "update_or_create"] and
+                  call = modelClass.getMember("objects").getMember(methodName).getACall() and
+                  nodeFrom = call.getArgByName(fieldName) and
+                  c.(DataFlow::AttributeContent).getAttribute() = fieldName and
                   (
-                    methodName = "create" and nodeTo = call
+                    // -> object created
+                    (
+                      methodName = "create" and nodeTo = call
+                      or
+                      // TODO: for these two methods, the result is a tuple `(<Model>, bool)`,
+                      // which we need flow-summaries to model properly
+                      methodName in ["get_or_create", "update_or_create"] and none()
+                    )
                     or
-                    // TODO: for these two methods, the result is a tuple `(<Model>, bool)`,
-                    // which we need flow-summaries to model properly
-                    methodName in ["get_or_create", "update_or_create"] and none()
+                    // -> DB store on synthetic node
+                    nodeTo = nodeToStoreIn(modelClass, fieldName)
                   )
-                  or
-                  // -> DB store on synthetic node
+                )
+                or
+                // attribute store in `<Model>.objects.[<QuerySet>].update()` -> synthetic
+                // see https://docs.djangoproject.com/en/4.0/ref/models/querysets/#update
+                exists(DataFlow::CallCfgNode call, API::Node modelClass, string fieldName |
+                  call = [manager(modelClass), querySet(modelClass)].getMember("update").getACall() and
+                  nodeFrom = call.getArgByName(fieldName) and
+                  c.(DataFlow::AttributeContent).getAttribute() = fieldName and
                   nodeTo = nodeToStoreIn(modelClass, fieldName)
                 )
-              )
-              or
-              // attribute store in `<Model>.objects.[<QuerySet>].update()` -> synthetic
-              // see https://docs.djangoproject.com/en/4.0/ref/models/querysets/#update
-              exists(DataFlow::CallCfgNode call, API::Node modelClass, string fieldName |
-                call = [manager(modelClass), querySet(modelClass)].getMember("update").getACall() and
-                nodeFrom = call.getArgByName(fieldName) and
-                c.(DataFlow::AttributeContent).getAttribute() = fieldName and
-                nodeTo = nodeToStoreIn(modelClass, fieldName)
-              )
-              or
-              // synthetic -> method-call that returns collection of ORM models (all/filter/...)
-              exists(API::Node modelClass |
-                nodeFrom = nodeToLoadFrom(modelClass) and
-                nodeTo.(Model::QuerySetMethodInstanceCollection).getModelClass() = modelClass and
-                nodeTo.(Model::QuerySetMethodInstanceCollection).isDbFetch() and
-                c instanceof DataFlow::ListElementContent
+                or
+                // synthetic -> method-call that returns collection of ORM models (all/filter/...)
+                exists(API::Node modelClass |
+                  nodeFrom = nodeToLoadFrom(modelClass) and
+                  nodeTo.(Model::QuerySetMethodInstanceCollection).getModelClass() = modelClass and
+                  nodeTo.(Model::QuerySetMethodInstanceCollection).isDbFetch() and
+                  c instanceof DataFlow::ListElementContent
+                )
               )
               or
               // synthetic -> method-call that returns dictionary with ORM models as values
@@ -1004,7 +1006,7 @@ module PrivateDjango {
                 nodeFrom = nodeToLoadFrom(modelClass) and
                 nodeTo.(Model::QuerySetMethodInstanceDictValue).getModelClass() = modelClass and
                 nodeTo.(Model::QuerySetMethodInstanceDictValue).isDbFetch() and
-                c instanceof DataFlow::DictionaryElementAnyContent
+                cs instanceof DataFlow::TDictionaryElementAnyContent
               )
             }
 

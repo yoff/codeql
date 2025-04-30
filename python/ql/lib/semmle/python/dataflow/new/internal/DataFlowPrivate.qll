@@ -703,7 +703,7 @@ predicate storeStep(Node nodeFrom, ContentSet c, Node nodeTo) {
   or
   matchStoreStep(nodeFrom, c.asSingleton(), nodeTo)
   or
-  any(Orm::AdditionalOrmSteps es).storeStep(nodeFrom, c.asSingleton(), nodeTo)
+  any(Orm::AdditionalOrmSteps es).storeStep(nodeFrom, c, nodeTo)
   or
   FlowSummaryImpl::Private::Steps::summaryStoreStep(nodeFrom.(FlowSummaryNode).getSummaryNode(), c,
     nodeTo.(FlowSummaryNode).getSummaryNode())
@@ -763,7 +763,7 @@ module Orm {
      * Holds if data can flow from `nodeFrom` to `nodeTo` via an assignment to
      * content `c`.
      */
-    abstract predicate storeStep(Node nodeFrom, Content c, Node nodeTo);
+    abstract predicate storeStep(Node nodeFrom, ContentSet c, Node nodeTo);
 
     /**
      * Holds if `pred` can flow to `succ`, by jumping from one callable to
@@ -911,7 +911,7 @@ predicate attributeStoreStep(Node nodeFrom, AttributeContent c, Node nodeTo) {
  * Subset of `readStep` that should be shared with type-tracking.
  */
 predicate readStepCommon(Node nodeFrom, ContentSet c, Node nodeTo) {
-  subscriptReadStep(nodeFrom, c.asSingleton(), nodeTo)
+  subscriptReadStep(nodeFrom, c, nodeTo)
   or
   iterableUnpackingReadStep(nodeFrom, c.asSingleton(), nodeTo)
 }
@@ -937,7 +937,7 @@ predicate readStep(Node nodeFrom, ContentSet c, Node nodeTo) {
 }
 
 /** Data flows from a sequence to a subscript of the sequence. */
-predicate subscriptReadStep(CfgNode nodeFrom, Content c, CfgNode nodeTo) {
+predicate subscriptReadStep(CfgNode nodeFrom, ContentSet c, CfgNode nodeTo) {
   // Subscript
   //   `l[3]`
   //   nodeFrom is `l`, cfg node
@@ -945,16 +945,16 @@ predicate subscriptReadStep(CfgNode nodeFrom, Content c, CfgNode nodeTo) {
   //   c is compatible with 3
   nodeFrom.getNode() = nodeTo.getNode().(SubscriptNode).getObject() and
   (
-    c instanceof ListElementContent
+    c.asSingleton() instanceof ListElementContent
     or
-    c instanceof SetElementContent
+    c.asSingleton() instanceof SetElementContent
     or
-    c instanceof DictionaryElementAnyContent
+    c instanceof TDictionaryElementAnyContent
     or
-    c.(TupleElementContent).getIndex() =
+    c.asSingleton().(TupleElementContent).getIndex() =
       nodeTo.getNode().(SubscriptNode).getIndex().getNode().(IntegerLiteral).getValue()
     or
-    c.(DictionaryElementContent).getKey() =
+    c.asSingleton().(DictionaryElementContent).getKey() =
       nodeTo.getNode().(SubscriptNode).getIndex().getNode().(StringLiteral).getS()
   )
 }

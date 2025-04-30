@@ -75,10 +75,10 @@ module Input implements InputSig<Location, DataFlowImplSpecific::PythonDataFlow>
         c = TDictionaryElementContent(key) and result = "DictionaryElement" and arg = key
       )
       or
-      c = TDictionaryElementAnyContent() and result = "DictionaryElementAny" and arg = ""
-      or
       exists(string attr | c = TAttributeContent(attr) and result = "Attribute" and arg = attr)
     )
+    or
+    cs = TDictionaryElementAnyContent() and result = "DictionaryElementAny" and arg = ""
   }
 
   bindingset[token]
@@ -154,9 +154,7 @@ module Private {
     }
 
     /** Gets a summary component that represents a dictionary element at any key. */
-    SummaryComponent dictionaryElementAny() {
-      result = content(TSingletonContent(TDictionaryElementAnyContent()))
-    }
+    SummaryComponent dictionaryElementAny() { result = content(TDictionaryElementAnyContent()) }
 
     /** Gets a summary component that represents an attribute element. */
     SummaryComponent attribute(string attr) {
