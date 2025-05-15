@@ -1,0 +1,7 @@
+| SafePublication.java:5:9:5:9 | z | This field is not safely published |
+| SafePublication.java:6:9:6:9 | w | This field is not safely published |
+| SafePublication.java:7:9:7:9 | u | This field is not safely published |
+| SafePublication.java:11:10:11:10 | d | This field is not safely published |
+| SafePublication.java:12:10:12:10 | e | This field is not safely published |
+| SafePublication.java:14:11:14:13 | arr | This field is not safely published |
+| SafePublication.java:17:10:17:11 | cc | This field is not safely published |
