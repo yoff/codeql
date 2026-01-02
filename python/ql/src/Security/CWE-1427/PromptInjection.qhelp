@@ -14,11 +14,12 @@ operations that were not intended.</p>
 
 <example>
 <p>In the following examples, the cases marked GOOD show secure prompt construction; whereas in the case marked BAD they may be susceptible to prompt injection.</p>
-<sample src="examples/TODO.py" />
+<sample src="examples/example.py" />
 </example>
 
 <references>
 <li>OWASP: <a href="https://owasp.org/www-community/attacks/PromptInjection">PromptInjection</a>.</li>
+<li>OpenAI: <a href="https://openai.github.io/openai-guardrails-python">Guardrails</a>.</li>
 </references>
 
 </qhelp>
