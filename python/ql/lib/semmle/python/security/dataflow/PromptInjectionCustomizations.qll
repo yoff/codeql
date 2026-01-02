@@ -10,7 +10,13 @@ private import semmle.python.Concepts
 private import semmle.python.dataflow.new.RemoteFlowSources
 private import semmle.python.dataflow.new.BarrierGuards
 private import semmle.python.frameworks.OpenAI
+private import semmle.python.frameworks.data.ModelsAsData
 
+/**
+ * Provides default sources, sinks and sanitizers for detecting
+ * "prompt injection"
+ * vulnerabilities, as well as extension points for adding your own.
+ */
 module PromptInjection {
   /**
    * A data flow source for "prompt injection" vulnerabilities.
@@ -39,9 +45,7 @@ module PromptInjection {
     SystemPromptSink() { this = Agent::sink().asSink() or this = OpenAI::sink().asSink() }
   }
 
-  private import semmle.python.frameworks.data.ModelsAsData
-
-  private class DataAsPromptSink extends Sink {
-    DataAsPromptSink() { this = ModelOutput::getASinkNode("prompt-injection").asSink() }
+  private class SinkFromModel extends Sink {
+    SinkFromModel() { this = ModelOutput::getASinkNode("prompt-injection").asSink() }
   }
 }

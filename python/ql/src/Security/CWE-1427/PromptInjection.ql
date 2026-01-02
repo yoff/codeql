@@ -1,4 +1,5 @@
 /**
+ * @name Prompt injection
  * @kind path-problem
  * @problem.severity error
  * @security-severity 5.0
