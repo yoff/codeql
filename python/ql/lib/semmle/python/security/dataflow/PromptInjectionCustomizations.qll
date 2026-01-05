@@ -9,7 +9,6 @@ private import semmle.python.dataflow.new.DataFlow
 private import semmle.python.Concepts
 private import semmle.python.dataflow.new.RemoteFlowSources
 private import semmle.python.dataflow.new.BarrierGuards
-private import semmle.python.frameworks.OpenAI
 private import semmle.python.frameworks.data.ModelsAsData
 
 /**
@@ -39,10 +38,10 @@ module PromptInjection {
   private class ActiveThreatModelSourceAsSource extends Source, ActiveThreatModelSource { }
 
   /**
-   * Agent prompt sinks, considered as a flow sink.
+   * A prompt to an AI model, considered as a flow sink.
    */
-  class SystemPromptSink extends Sink {
-    SystemPromptSink() { this = [Agent::sink(), OpenAI::sink()].asSink() }
+  class AIPromptAsSink extends Sink {
+    AIPromptAsSink() { this = any(AIPrompt p).getAPrompt() }
   }
 
   private class SinkFromModel extends Sink {
