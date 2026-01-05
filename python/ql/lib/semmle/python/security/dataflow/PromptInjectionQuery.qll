@@ -1,5 +1,5 @@
 /**
- * Provides taint-tracking configurations for detecting "prompt injection" vulnerabilities.
+ * Provides a taint-tracking configuration for detecting "prompt injection" vulnerabilities.
  *
  * Note, for performance reasons: only import this file if
  * `PromptInjection::Configuration` is needed, otherwise
@@ -14,12 +14,9 @@ import PromptInjectionCustomizations::PromptInjection
 private module PromptInjectionConfig implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node node) { node instanceof Source }
 
-  predicate isSink(DataFlow::Node node) {
-    node instanceof Sink
-    //any()
-  }
+  predicate isSink(DataFlow::Node node) { node instanceof Sink }
 
-  predicate isBarrierIn(DataFlow::Node node) { node instanceof Sanitizer }
+  predicate isBarrier(DataFlow::Node node) { node instanceof Sanitizer }
 
   predicate observeDiffInformedIncrementalMode() { any() }
 }

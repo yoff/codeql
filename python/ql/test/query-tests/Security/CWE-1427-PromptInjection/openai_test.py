@@ -1,5 +1,5 @@
 from openai import OpenAI, AsyncOpenAI, AzureOpenAI
-from flask import Flask, request  # $ Source=flask
+from flask import Flask, request  # $ Source
 app = Flask(__name__)
 
 client = OpenAI()
@@ -14,70 +14,71 @@ def get_input_openai():
     role = request.args.get("role")
 
     response1 = client.responses.create(
-        instructions="Talks like a " + persona,  # $Alert[py/prompt-injection]
-        input=query,  # $Alert[py/prompt-injection]
+        instructions="Talks like a " + persona,  # $ Alert[py/prompt-injection]
+        input=query,  # $ Alert[py/prompt-injection]
     )
 
     response2 = client.responses.create(
-        instructions="Talks like a " + persona,  # $Alert[py/prompt-injection]
+        instructions="Talks like a " + persona,  # $ Alert[py/prompt-injection]
         input=[
             {
                 "role": "developer",
-                "content": "Talk like a " + persona # $Alert[py/prompt-injection]
+                "content": "Talk like a " + persona
             },
             {
                 "role": "user",
                 "content": [
-                    {"type": "input_text",
-                     "text": query  # $Alert[py/prompt-injection]
-                     }
+                    {
+                        "type": "input_text",
+                        "text": query
+                    }
                 ]
             }
-        ]
+        ]  # $ Alert[py/prompt-injection]
     )
 
     response3 = await async_client.responses.create(
-        instructions="Talks like a " + persona,  # $Alert[py/prompt-injection]
-        input=query,  # $Alert[py/prompt-injection]
+        instructions="Talks like a " + persona,  # $ Alert[py/prompt-injection]
+        input=query,  # $ Alert[py/prompt-injection]
     )
 
     async with client.realtime.connect(model="gpt-realtime") as connection:
         await connection.conversation.item.create(
             item={
                 "type": "message",
-                "role": role,  # $Alert[py/prompt-injection]
+                "role": role,
                 "content": [
                     {"type": "input_text",
-                     "text": query  # $Alert[py/prompt-injection]
+                     "text": query
                      }
                 ],
-            }
+            }  # $ Alert[py/prompt-injection]
         )
 
     completion1 = client.chat.completions.create(
         messages=[
             {"role": "developer",
-             "content": "Talk like a " + persona},  # $Alert[py/prompt-injection]
+             "content": "Talk like a " + persona},
             {
                 "role": "user",
-                "content": query,  # $Alert[py/prompt-injection]
+                "content": query,
             },
             {
-                "role": role,  # $Alert[py/prompt-injection]
-                "content": query,  # $Alert[py/prompt-injection]
+                "role": role,
+                "content": query,
             }
-        ]
+        ]  # $ Alert[py/prompt-injection]
     )
 
     completion2 = azure_client.chat.completions.create(
         messages=[
             {
                 "role": "developer",
-                "content": "Talk like a " + persona # $Alert[py/prompt-injection]
+                "content": "Talk like a " + persona
             },
             {
                 "role": "user",
-                "content": query,  # $Alert[py/prompt-injection]
+                "content": query,
             }
-        ]
+        ]  # $ Alert[py/prompt-injection]
     )

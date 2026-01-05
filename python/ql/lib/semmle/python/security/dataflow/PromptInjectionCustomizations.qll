@@ -42,10 +42,15 @@ module PromptInjection {
    * Agent prompt sinks, considered as a flow sink.
    */
   class SystemPromptSink extends Sink {
-    SystemPromptSink() { this = Agent::sink().asSink() or this = OpenAI::sink().asSink() }
+    SystemPromptSink() { this = [Agent::sink(), OpenAI::sink()].asSink() }
   }
 
   private class SinkFromModel extends Sink {
     SinkFromModel() { this = ModelOutput::getASinkNode("prompt-injection").asSink() }
   }
+
+  /**
+   * A comparison with a constant, considered as a sanitizer-guard.
+   */
+  class ConstCompareAsSanitizerGuard extends Sanitizer, ConstCompareBarrier { }
 }
