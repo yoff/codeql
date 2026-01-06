@@ -6,7 +6,6 @@ from guardrails import GuardrailAgent
 def get_input():
     input = request.args.get("input")
 
-    goodAgent = GuardrailAgent(  # GOOD: AGent created with guardrails automatically configured.
         config=Path("guardrails_config.json"),
         name="Assistant",
         instructions="This prompt is customized for " + input)
