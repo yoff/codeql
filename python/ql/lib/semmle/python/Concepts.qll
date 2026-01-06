@@ -345,6 +345,7 @@ module AIPrompt {
    * extend `AIPrompt` instead.
    */
   abstract class Range extends DataFlow::Node {
+    /** Gets an input that is used as AI prompt. */
     abstract DataFlow::Node getAPrompt();
   }
 }
