@@ -18,7 +18,6 @@ operations that were not intended.</p>
 </example>
 
 <references>
-<li>OWASP: <a href="https://owasp.org/www-community/attacks/PromptInjection">PromptInjection</a>.</li>
 <li>OpenAI: <a href="https://openai.github.io/openai-guardrails-python">Guardrails</a>.</li>
 </references>
 
