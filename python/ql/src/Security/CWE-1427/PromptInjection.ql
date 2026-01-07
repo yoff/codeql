@@ -1,5 +1,6 @@
 /**
  * @name Prompt injection
+ * @description User input used in developer message and or system prompt can allow for Prompt Injection attacks.
  * @kind path-problem
  * @problem.severity error
  * @security-severity 5.0
