@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest-xl
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup CodeQL
         uses: ./.github/actions/fetch-codeql
         with:
