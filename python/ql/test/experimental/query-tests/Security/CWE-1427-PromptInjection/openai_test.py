@@ -23,18 +23,18 @@ def get_input_openai():
         input=[
             {
                 "role": "developer",
-                "content": "Talk like a " + persona
+                "content": "Talk like a " + persona  # $ Alert[py/prompt-injection]
             },
             {
                 "role": "user",
                 "content": [
                     {
                         "type": "input_text",
-                        "text": query
+                        "text": query  # $ Alert[py/prompt-injection]
                     }
                 ]
             }
-        ]  # $ Alert[py/prompt-injection]
+        ]
     )
 
     response3 = await async_client.responses.create(
@@ -48,37 +48,46 @@ def get_input_openai():
                 "type": "message",
                 "role": role,
                 "content": [
-                    {"type": "input_text",
-                     "text": query
-                     }
+                    {
+                        "type": "input_text",
+                        "text": query  # $ Alert[py/prompt-injection]
+                    }
                 ],
-            }  # $ Alert[py/prompt-injection]
+            }
         )
 
     completion1 = client.chat.completions.create(
         messages=[
-            {"role": "developer",
-             "content": "Talk like a " + persona},
+            {
+                "role": "developer",
+                "content": "Talk like a " + persona # $ Alert[py/prompt-injection]
+            },
             {
                 "role": "user",
-                "content": query,
+                "content": query,  # $ Alert[py/prompt-injection]
             },
             {
                 "role": role,
-                "content": query,
+                "content": query,  # $ Alert[py/prompt-injection]
             }
-        ]  # $ Alert[py/prompt-injection]
+        ]
     )
 
     completion2 = azure_client.chat.completions.create(
         messages=[
             {
                 "role": "developer",
-                "content": "Talk like a " + persona
+                "content": "Talk like a " + persona  # $ Alert[py/prompt-injection]
             },
             {
                 "role": "user",
-                "content": query,
+                "content": query,  # $ Alert[py/prompt-injection]
             }
-        ]  # $ Alert[py/prompt-injection]
+        ]
+    )
+
+    assistant = client.beta.assistants.create(
+        name="Test Agent",
+        model="gpt-4.1",
+        instructions="Talks like a " + persona  # $ Alert[py/prompt-injection]
     )

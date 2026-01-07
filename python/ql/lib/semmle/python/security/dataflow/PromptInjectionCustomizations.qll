@@ -10,6 +10,7 @@ private import semmle.python.Concepts
 private import semmle.python.dataflow.new.RemoteFlowSources
 private import semmle.python.dataflow.new.BarrierGuards
 private import semmle.python.frameworks.data.ModelsAsData
+private import semmle.python.ApiGraphs
 
 /**
  * Provides default sources, sinks and sanitizers for detecting
@@ -46,6 +47,53 @@ module PromptInjection {
 
   private class SinkFromModel extends Sink {
     SinkFromModel() { this = ModelOutput::getASinkNode("prompt-injection").asSink() }
+  }
+
+  private class PromptContentSink extends Sink {
+    PromptContentSink() {
+      exists(API::Node openai, API::Node content |
+        openai =
+          API::moduleImport("openai")
+              .getMember(["OpenAI", "AsyncOpenAI", "AzureOpenAI"])
+              .getReturn() and
+        content =
+          [
+            openai
+                .getMember("responses")
+                .getMember("create")
+                .getKeywordParameter(["input", "instructions"]),
+            openai
+                .getMember("responses")
+                .getMember("create")
+                .getKeywordParameter(["input", "instructions"])
+                .getASubscript()
+                .getSubscript("content"),
+            openai
+                .getMember("realtime")
+                .getMember("connect")
+                .getReturn()
+                .getMember("conversation")
+                .getMember("item")
+                .getMember("create")
+                .getKeywordParameter("item")
+                .getSubscript("content"),
+            openai
+                .getMember("chat")
+                .getMember("completions")
+                .getMember("create")
+                .getKeywordParameter("messages")
+                .getASubscript()
+                .getSubscript("content")
+          ]
+      |
+        // content
+        if not exists(content.getASubscript())
+        then this = content.asSink()
+        else
+          // content.text
+          this = content.getASubscript().getSubscript("text").asSink()
+      )
+    }
   }
 
   /**
