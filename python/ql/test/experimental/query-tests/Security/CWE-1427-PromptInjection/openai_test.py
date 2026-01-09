@@ -8,7 +8,7 @@ azure_client = AzureOpenAI()
 
 
 @app.route("/openai")
-def get_input_openai():
+async def get_input_openai():
     persona = request.args.get("persona")
     query = request.args.get("query")
     role = request.args.get("role")
