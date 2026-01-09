@@ -17,6 +17,7 @@ module AgentSDK {
   /** Gets a reference to the `agents.Agent` class. */
   API::Node classRef() { result = API::moduleImport("agents").getMember("Runner") }
 
+  /** Gets a reference to the `run` members. */
   API::Node runMembers() { result = classRef().getMember(["run", "run_sync", "run_streamed"]) }
 
   /** Gets a reference to a potential property of `agents.Runner` called input which can refer to a system prompt depending on the role specified. */
