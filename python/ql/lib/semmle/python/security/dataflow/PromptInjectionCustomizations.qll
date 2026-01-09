@@ -52,6 +52,8 @@ module PromptInjection {
   private class PromptContentSink extends Sink {
     PromptContentSink() {
       this = OpenAI::getContentNode().asSink()
+      or
+      this = AgentSDK::getContentNode().asSink()
     }
   }
 
