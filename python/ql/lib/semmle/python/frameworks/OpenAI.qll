@@ -14,7 +14,7 @@ private import semmle.python.ApiGraphs
  * See https://github.com/openai/openai-agents-python.
  */
 module AgentSDK {
-  /** Gets a reference to the `agents.Agent` class. */
+  /** Gets a reference to the `agents.Runner` class. */
   API::Node classRef() { result = API::moduleImport("agents").getMember("Runner") }
 
   /** Gets a reference to the `run` members. */
