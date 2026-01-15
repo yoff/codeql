@@ -781,7 +781,7 @@ module ModelOutput {
     }
 
     /**
-     * Holds if a barrier model contributed `barrier` with the given `kind`.
+     * Holds if a barrier model contributed `barrier` with the given `kind` for the given `branch`.
      */
     cached
     API::Node getABarrierGuardNode(string kind, boolean branch, string model) {
@@ -856,6 +856,25 @@ module ModelOutput {
    */
   API::Node getABarrierGuardNode(string kind, boolean branch) {
     result = getABarrierGuardNode(kind, branch, _)
+  }
+
+  /**
+   * Holds if `node` is specified as a source with the given kind in an external model.
+   */
+  predicate sourceNode(DataFlow::Node node, string kind) { node = getASourceNode(kind).asSource() }
+
+  /**
+   * Holds if `node` is specified as a sink with the given kind in an external model.
+   */
+  predicate sinkNode(DataFlow::Node node, string kind) { node = getASinkNode(kind).asSink() }
+
+  /**
+   * Holds if `node` is specified as a barrier with the given kind in an external model.
+   */
+  predicate barrierNode(DataFlow::Node node, string kind) {
+    node = getABarrierNode(kind).asSink()
+    or
+    node = DataFlow::ExternalBarrierGuard::getAnExternalBarrierNode(kind)
   }
 
   private module KindValConfig implements SharedModelVal::KindValidationConfigSig {

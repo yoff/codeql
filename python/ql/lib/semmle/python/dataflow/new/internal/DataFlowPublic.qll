@@ -584,10 +584,6 @@ class GuardNode extends ControlFlowNode {
 
 /**
  * Holds if the guard `g` validates `node` upon evaluating to `branch`.
- *
- * The expression `e` is expected to be a syntactic part of the guard `g`.
- * For example, the guard `g` might be a call `isSafe(x)` and the expression `e`
- * the argument `x`.
  */
 signature predicate guardChecksSig(GuardNode g, ControlFlowNode node, boolean branch);
 

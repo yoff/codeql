@@ -36,6 +36,30 @@ module MakeBarrierGuard<BarrierGuardSig BaseGuard> {
   }
 }
 
+module ExternalBarrierGuard {
+  private predicate guardCheck(DataFlow::Node g, Expr e, boolean branch, string kind) {
+    exists(API::CallNode call, API::Node parameter |
+      parameter = call.getAParameter() and
+      parameter = ModelOutput::getABarrierGuardNode(kind, branch)
+    |
+      g = call and
+      e = parameter.asSink().asExpr()
+    )
+  }
+
+  class BarrierGuard extends DataFlow::Node {
+    BarrierGuard() { guardCheck(this, _, _, _) }
+
+    predicate blocksExpr(boolean outcome, Expr e, string kind) {
+      guardCheck(this, e, outcome, kind)
+    }
+  }
+
+  DataFlow::Node getAnExternalBarrierNode(string kind) {
+    result = MakeStateBarrierGuard<string, BarrierGuard>::getABarrierNode(kind)
+  }
+}
+
 deprecated private module DeprecationWrapper {
   signature class LabeledBarrierGuardSig extends DataFlow::Node {
     /**
