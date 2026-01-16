@@ -36,6 +36,9 @@ module MakeBarrierGuard<BarrierGuardSig BaseGuard> {
   }
 }
 
+/**
+ * Provides access to barrier guards defined via models-as-data.
+ */
 module ExternalBarrierGuard {
   private predicate guardCheck(DataFlow::Node g, Expr e, boolean branch, string kind) {
     exists(API::CallNode call, API::Node parameter |
@@ -47,7 +50,7 @@ module ExternalBarrierGuard {
     )
   }
 
-  class BarrierGuard extends DataFlow::Node {
+  private class BarrierGuard extends DataFlow::Node {
     BarrierGuard() { guardCheck(this, _, _, _) }
 
     predicate blocksExpr(boolean outcome, Expr e, string kind) {
@@ -55,6 +58,9 @@ module ExternalBarrierGuard {
     }
   }
 
+  /**
+   * Gets a barrier guard node of the given `kind` defined via models-as-data.
+   */
   DataFlow::Node getAnExternalBarrierNode(string kind) {
     result = MakeStateBarrierGuard<string, BarrierGuard>::getABarrierNode(kind)
   }
