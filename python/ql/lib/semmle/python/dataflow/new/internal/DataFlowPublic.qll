@@ -600,7 +600,8 @@ module BarrierGuard<guardChecksSig/3 guardChecks> {
   }
 
   private predicate extendedGuardChecks(GuardNode g, ControlFlowNode node, boolean branch, Unit u) {
-    guardChecks(g, node, branch)
+    guardChecks(g, node, branch) and
+    u = u
   }
 }
 
