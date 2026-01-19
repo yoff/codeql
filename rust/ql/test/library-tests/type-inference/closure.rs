@@ -63,7 +63,7 @@ mod fn_once_trait {
         };
         let _r = apply(f, true); // $ target=apply type=_r:i64
 
-        let f = |x| x + 1; // $ MISSING: type=x:i64 target=add
+        let f = |x| x + 1; // $ type=x:i64 $ MISSING: target=add
         let _r2 = apply_two(f); // $ target=apply_two certainType=_r2:i64
     }
 }
@@ -100,7 +100,7 @@ mod fn_mut_trait {
         };
         let _r = apply(f, true); // $ target=apply type=_r:i64
 
-        let f = |x| x + 1; // $ MISSING: type=x:i64 target=add
+        let f = |x| x + 1; // $ type=x:i64 $ MISSING: target=add
         let _r2 = apply_two(f); // $ target=apply_two certainType=_r2:i64
     }
 }
@@ -137,7 +137,7 @@ mod fn_trait {
         };
         let _r = apply(f, true); // $ target=apply type=_r:i64
 
-        let f = |x| x + 1; // $ MISSING: type=x:i64 target=add
+        let f = |x| x + 1; // $ type=x:i64 $ MISSING: target=add
         let _r2 = apply_two(f); // $ target=apply_two certainType=_r2:i64
     }
 }
@@ -183,25 +183,25 @@ mod closure_infer_param {
     }
 
     fn test() {
-        let f = |x| x; // $ MISSING: type=x:i64
+        let f = |x| x; // $ type=x:i64
         let _r = apply1(f, 1i64); // $ target=apply1
 
-        let f = |x| x; // $ MISSING: type=x:i64
+        let f = |x| x; // $ type=x:i64
         let _r = apply2(f, 2i64); // $ target=apply2
 
-        let f = |x| x; // $ MISSING: type=x:i64
+        let f = |x| x; // $ type=x:i64
         let _r = apply3(&f, 3i64); // $ target=apply3
 
-        let f = |x| x; // $ MISSING: type=x:i64
+        let f = |x| x; // $ type=x:i64
         let _r = apply4(f, 4i64); // $ target=apply4
 
         let mut f = |x| x; // $ MISSING: type=x:i64
         let _r = apply5(&mut f, 5i64); // $ target=apply5
 
-        let f = |x| x; // $ MISSING: type=x:i64
+        let f = |x| x; // $ type=x:i64
         let _r = apply6(f, 6i64); // $ target=apply6
 
-        let f = |x| x; // $ MISSING: type=x:i64
+        let f = |x| x; // $ type=x:i64
         let _r = apply7(f, 7i64); // $ target=apply7
     }
 }
@@ -221,15 +221,15 @@ mod implicit_deref {
 
     pub fn test() {
         let x = 0i64;
-        let v = Default::default(); // $ MISSING: type=v:i64 target=default
+        let v = Default::default(); // $ type=v:i64 target=default
         let s = S(v);
-        let _ret = s(x); // $ MISSING: type=_ret:bool
+        let _ret = s(x); // $ type=_ret:bool
 
         let x = 0i32;
-        let v = Default::default(); // $ MISSING: type=v:i32 target=default
+        let v = Default::default(); // $ type=v:i32 target=default
         let s = S(v);
         let s_ref = &s;
-        let _ret = s_ref(x); // $ MISSING: type=_ret:bool
+        let _ret = s_ref(x); // $ type=_ret:bool
 
         // The call below is not an implicit deref, instead it will target
         // `impl<A, F> FnOnce<A> for &F` from

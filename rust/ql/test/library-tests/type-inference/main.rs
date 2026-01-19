@@ -2259,7 +2259,7 @@ mod loops {
         // for loops with arrays
 
         for i in [1, 2, 3] {} // $ type=i:i32
-        for i in [1, 2, 3].map(|x| x + 1) {} // $ target=map MISSING: type=i:i32
+        for i in [1, 2, 3].map(|x| x + 1) {} // $ target=map target=add type=i:i32
         for i in [1, 2, 3].into_iter() {} // $ target=into_iter type=i:i32
 
         let vals1 = [1u8, 2, 3]; // $ type=vals1:TArray.u8
@@ -2777,7 +2777,7 @@ mod arg_trait_bounds {
     }
 
     fn test() {
-        let v = Default::default(); // $ MISSING: type=v:i64 target=default
+        let v = Default::default(); // $ type=v:i64 target=default
         let g = Gen(v);
         let _ = my_get(&g); // $ target=my_get
     }
