@@ -393,6 +393,61 @@ This can be achieved with the following data extension:
 - **Member[data]** selects accesses to the **data** property of the **req** object.
 - Finally, the kind **remote** indicates that this is considered a source of remote flow.
 
+Example: Taint barrier using the 'encodeURIComponent' function
+--------------------------------------------------------------
+
+In this example, we'll show how to add the return value of **encodeURIComponent** as a barrier for XSS.
+
+.. code-block:: js
+
+  let escaped = encodeURIComponent(input); // The return value of this method is safe for XSS.
+  document.body.innerHTML = escaped;
+
+We can model this using the following data extension:
+
+.. code-block:: yaml
+
+  extensions:
+    - addsTo:
+        pack: codeql/javascript-all
+        extensible: barrierModel
+      data:
+        - ["global", "Member[encodeURIComponent].ReturnValue", "html-injection"]
+
+- Since we are adding a barrier, we need to add a tuple to the **barrierModel** extensible predicate.
+- The first column, **"global"**, begins the search for relevant calls at references to the global object.
+- The second column, **Member[encodeURIComponent].ReturnValue**, selects the return value of the **encodeURIComponent** function.
+- The third column, **"html-injection"**, is the kind of the barrier.
+
+Example: Add a barrier guard
+----------------------------
+
+This example shows how to model a barrier guard that stops the flow of taint when a conditional check is performed on data.
+Consider a function called `isValid` which returns `true` when the data is considered safe.
+
+.. code-block:: js
+
+  if (isValid(userInput)) { // The check guards the use, so the input is safe.
+    db.query(userInput); // This is safe.
+  }
+
+We can model this using the following data extension:
+
+.. code-block:: yaml
+
+  extensions:
+    - addsTo:
+        pack: codeql/javascript-all
+        extensible: barrierGuardModel
+      data:
+        - ["my-package", "Member[isValid].Argument[0]", "true", "sql-injection"]
+
+- Since we are adding a barrier guard, we need to add a tuple to the **barrierGuardModel** extensible predicate.
+- The first column, **"my-package"**, begins the search at imports of the hypothetical NPM package **my-package**.
+- The second column, **Member[isValid].Argument[0]**, selects the first argument of the `isValid` function. This is the value being validated.
+- The third column, **"true"**, is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply.
+- The fourth column, **"sql-injection"**, is the kind of the barrier guard.
+
 Reference material
 ------------------
 

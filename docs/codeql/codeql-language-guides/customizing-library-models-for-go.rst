@@ -341,6 +341,88 @@ The remaining values are used to define the ``access path``, the ``kind``, and t
 - The ninth value ``taint`` is the kind of the flow. ``taint`` means that taint is propagated through the call.
 - The tenth value ``manual`` is the provenance of the summary, which is used to identify the origin of the summary.
 
+Example: Add a barrier using the ``Htmlquote`` function
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This example shows how the Go query pack models a barrier that stops the flow of taint.
+The ``Htmlquote`` function from the beego framework HTML-escapes a string, which prevents HTML injection attacks.
+
+.. code-block:: go
+
+    func Render(w http.ResponseWriter, r *http.Request) {
+        name := r.FormValue("name")
+        safe := beego.Htmlquote(name) // The return value of this function is safe to use in HTML.
+        ...
+    }
+
+We need to add a tuple to the ``barrierModel``\(package, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+
+.. code-block:: yaml
+
+   extensions:
+     - addsTo:
+         pack: codeql/go-all
+         extensible: barrierModel
+       data:
+         - ["group:beego", "", True, "Htmlquote", "", "", "ReturnValue", "html-injection", "manual"]
+
+Since we are adding a barrier, we need to add a tuple to the ``barrierModel`` extensible predicate.
+The first five values identify the function to be modeled as a barrier.
+
+- The first value ``group:beego`` is the package group name. The ``group:`` prefix indicates that this is a package group, which is used to match multiple package paths that refer to the same package.
+- The second value ``""`` is left blank since the function is not a method of a type.
+- The third value ``True`` is a flag that indicates whether or not the barrier also applies to subtypes. This has no effect for non-method functions.
+- The fourth value ``Htmlquote`` is the function name.
+- The fifth value ``""`` is the input type signature. For Go it should always be an empty string.
+
+The sixth value should be left empty and is out of scope for this documentation.
+The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the barrier.
+
+- The seventh value ``ReturnValue`` is the access path to the output of the barrier, which means that the return value is considered sanitized.
+- The eighth value ``html-injection`` is the kind of the barrier. The barrier kind must match the kind used in the query where the barrier should take effect. In this case, it matches the ``html-injection`` sink kind used by XSS queries.
+- The ninth value ``manual`` is the provenance of the barrier, which is used to identify the origin of the barrier.
+
+Example: Add a barrier guard
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This example shows how to model a barrier guard that stops the flow of taint when a conditional check is performed on data.
+A barrier guard model is used when a function returns a boolean that indicates whether the data is safe to use.
+Consider a function called ``IsSafe`` which returns ``true`` when the data is considered safe for SQL injection.
+
+.. code-block:: go
+
+    func Query(db *sql.DB, input string) {
+        if example.IsSafe(input) { // The check guards the query, so the input is safe.
+            db.Query(input) // This is not a SQL injection vulnerability.
+        }
+    }
+
+We need to add a tuple to the ``barrierGuardModel``\(package, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance) extensible predicate by updating a data extension file.
+
+.. code-block:: yaml
+
+   extensions:
+     - addsTo:
+         pack: codeql/go-all
+         extensible: barrierGuardModel
+       data:
+         - ["example.com/example", "", False, "IsSafe", "", "", "Argument[0]", "true", "sql-injection", "manual"]
+
+Since we are adding a barrier guard, we need to add a tuple to the ``barrierGuardModel`` extensible predicate.
+The first five values identify the function to be modeled as a barrier guard.
+
+- The first value ``example.com/example`` is the package name.
+- The second value ``""`` is left blank since the function is not a method of a type.
+- The third value ``False`` is a flag that indicates whether or not the barrier guard also applies to subtypes. This has no effect for non-method functions.
+- The fourth value ``IsSafe`` is the function name.
+- The fifth value ``""`` is the input type signature. For Go it should always be an empty string.
+
+The sixth value should be left empty and is out of scope for this documentation.
+The remaining values are used to define the ``access path``, the ``accepting value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
+
+- The seventh value ``Argument[0]`` is the access path to the input whose flow is blocked. In this case, the first argument to the function (``input`` in the example).
+- The eighth value ``true`` is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply. In this case, when ``IsSafe`` returns ``true``, the input is considered safe.
+- The ninth value ``sql-injection`` is the kind of the barrier guard. The barrier guard kind is used to define the queries where the barrier guard is in scope. In this case - the SQL injection queries.
+- The tenth value ``manual`` is the provenance of the barrier guard, which is used to identify the origin of the barrier guard.
+
 Example: Accessing the ``Body`` field of an HTTP request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This example shows how we can model a field read as a source of tainted data.

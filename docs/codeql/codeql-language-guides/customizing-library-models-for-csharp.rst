@@ -309,6 +309,90 @@ For the remaining values for both rows:
 
 That is, the first row specifies that values can flow from the elements of the qualifier enumerable into the first argument of the function provided to ``Select``.  The second row specifies that values can flow from the return value of the function to the elements of the enumerable returned from ``Select``.
 
+Example: Add a barrier for the ``RawUrl`` property
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This example shows how we can model a property as a barrier for a specific kind of query.
+A barrier model is used to define that the flow of taint stops at the modeled element for the specified kind of query.
+Here we model the getter of the ``RawUrl`` property of the ``HttpRequest`` class as a barrier for URL redirection queries.
+The ``RawUrl`` property returns the raw URL of the current request, which is considered safe for URL redirects because it is the URL of the current request and cannot be manipulated by an attacker.
+
+.. code-block:: csharp
+
+   public static void TaintBarrier(HttpRequest request) {
+       string url = request.RawUrl; // The return value of this property is considered safe for URL redirects.
+       Response.Redirect(url); // This is not a URL redirection vulnerability.
+   }
+
+We need to add a tuple to the ``barrierModel``\(namespace, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+
+.. code-block:: yaml
+
+   extensions:
+     - addsTo:
+         pack: codeql/csharp-all
+         extensible: barrierModel
+       data:
+         - ["System.Web", "HttpRequest", False, "get_RawUrl", "()", "", "ReturnValue", "url-redirection", "manual"]
+
+Since we are adding a barrier, we need to add a tuple to the ``barrierModel`` extensible predicate.
+The first five values identify the callable (in this case the getter of a property) to be modeled as a barrier.
+
+- The first value ``System.Web`` is the namespace name.
+- The second value ``HttpRequest`` is the class (type) name.
+- The third value ``False`` is a flag that indicates whether or not the barrier also applies to all overrides of the method.
+- The fourth value ``get_RawUrl`` is the method name. Getter and setter methods are named ``get_<name>`` and ``set_<name>`` respectively.
+- The fifth value ``()`` is the method input type signature.
+
+The sixth value should be left empty and is out of scope for this documentation.
+The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the barrier.
+
+- The seventh value ``ReturnValue`` is the access path to the return value of the property getter, which means that the return value is considered safe.
+- The eighth value ``url-redirection`` is the kind of the barrier. The barrier kind is used to define the queries where the barrier is in scope. In this case - the URL redirection queries.
+- The ninth value ``manual`` is the provenance of the barrier, which is used to identify the origin of the barrier.
+
+Example: Add a barrier guard for the ``IsAbsoluteUri`` property
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This example shows how we can model a property as a barrier guard for a specific kind of query.
+A barrier guard model is used to stop the flow of taint when a conditional check is performed on data.
+Here we model the getter of the ``IsAbsoluteUri`` property of the ``Uri`` class as a barrier guard for URL redirection queries.
+When the ``IsAbsoluteUri`` property returns ``false``, the URL is relative and therefore safe for URL redirects because it cannot redirect to an external site controlled by an attacker.
+
+.. code-block:: csharp
+
+   public static void TaintBarrierGuard(Uri uri) {
+       if (!uri.IsAbsoluteUri) { // The check guards the redirect, so the URL is safe.
+           Response.Redirect(uri.ToString()); // This is not a URL redirection vulnerability.
+       }
+   }
+
+We need to add a tuple to the ``barrierGuardModel``\(namespace, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance) extensible predicate by updating a data extension file.
+
+.. code-block:: yaml
+
+   extensions:
+     - addsTo:
+         pack: codeql/csharp-all
+         extensible: barrierGuardModel
+       data:
+         - ["System", "Uri", False, "get_IsAbsoluteUri", "()", "", "Argument[this]", "false", "url-redirection", "manual"]
+
+Since we are adding a barrier guard, we need to add a tuple to the ``barrierGuardModel`` extensible predicate.
+The first five values identify the callable (in this case the getter of a property) to be modeled as a barrier guard.
+
+- The first value ``System`` is the namespace name.
+- The second value ``Uri`` is the class (type) name.
+- The third value ``False`` is a flag that indicates whether or not the barrier guard also applies to all overrides of the method.
+- The fourth value ``get_IsAbsoluteUri`` is the method name. Getter and setter methods are named ``get_<name>`` and ``set_<name>`` respectively.
+- The fifth value ``()`` is the method input type signature.
+
+The sixth value should be left empty and is out of scope for this documentation.
+The remaining values are used to define the ``access path``, the ``accepting value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
+
+- The seventh value ``Argument[this]`` is the access path to the input whose flow is blocked. In this case, the qualifier of the property access (``uri`` in the example).
+- The eighth value ``false`` is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply. In this case, when ``IsAbsoluteUri`` is ``false``, the URL is relative and considered safe.
+- The ninth value ``url-redirection`` is the kind of the barrier guard. The barrier guard kind is used to define the queries where the barrier guard is in scope. In this case - the URL redirection queries.
+- The tenth value ``manual`` is the provenance of the barrier guard, which is used to identify the origin of the barrier guard.
+
 Example: Add a ``neutral`` method
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This example shows how we can model a method as being neutral with respect to flow. We will also cover how to model a property by modeling the getter of the ``Now`` property of the ``DateTime`` class as neutral.

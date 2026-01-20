@@ -178,6 +178,88 @@ The remaining values are used to define the input and output specifications, the
 - The ninth value ``"taint"`` is the kind of the flow. ``taint`` means that taint is propagated through the call.
 - The tenth value ``"manual"`` is the provenance of the summary, which is used to identify the origin of the summary model.
 
+Example: Taint barrier using the ``mysql_real_escape_string`` function
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example shows how the CPP query pack models the ``mysql_real_escape_string`` function as a barrier for SQL injection.
+This function escapes special characters in a string for use in an SQL statement, which prevents SQL injection attacks.
+
+.. code-block:: cpp
+
+   char *query = "SELECT * FROM users WHERE name = '%s'";
+   char *name = get_untrusted_input();
+   char *escaped_name = new char[2 * strlen(name) + 1];
+   mysql_real_escape_string(mysql, escaped_name, name, strlen(name)); // The escaped_name is safe for SQL injection.
+   sprintf(query_buffer, query, escaped_name);
+
+We need to add a tuple to the ``barrierModel``\(namespace, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+
+.. code-block:: yaml
+
+   extensions:
+     - addsTo:
+         pack: codeql/cpp-all
+         extensible: barrierModel
+       data:
+         - ["", "", False, "mysql_real_escape_string", "", "", "Argument[*1]", "sql-injection", "manual"]
+
+Since we are adding a barrier, we need to add a tuple to the ``barrierModel`` extensible predicate.
+The first five values identify the callable (in this case a free function) to be modeled as a barrier.
+
+- The first value ``""`` is the namespace name.
+- The second value ``""`` is the name of the type (class) that contains the method. Because we're modelling a free function, the type is left blank.
+- The third value ``False`` is a flag that indicates whether or not the barrier also applies to all overrides of the method. For a free function, this should be ``False``.
+- The fourth value ``"mysql_real_escape_string"`` is the function name.
+- The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name.
+
+The sixth value should be left empty and is out of scope for this documentation.
+The remaining values are used to define the output specification, the ``kind``, and the ``provenance`` (origin) of the barrier.
+
+- The seventh value ``"Argument[*1]"`` is the output specification, which means in this case that the barrier is the first indirection (or pointed-to value, ``*``) of the second argument (``Argument[1]``) passed to the function.
+- The eighth value ``"sql-injection"`` is the kind of the barrier. The barrier kind is used to define the queries where the barrier is in scope.
+- The ninth value ``"manual"`` is the provenance of the barrier, which is used to identify the origin of the barrier model.
+
+Example: Add a barrier guard
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example shows how to model a barrier guard that stops the flow of taint when a conditional check is performed on data.
+A barrier guard model is used when a function returns a boolean that indicates whether the data is safe to use.
+Consider a function called ``is_safe`` which returns ``true`` when the data is considered safe.
+
+.. code-block:: cpp
+
+   if (is_safe(user_input)) { // The check guards the use, so the input is safe.
+       mysql_query(user_input); // This is safe.
+   }
+
+We need to add a tuple to the ``barrierGuardModel``\(namespace, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance) extensible predicate by updating a data extension file.
+
+.. code-block:: yaml
+
+   extensions:
+     - addsTo:
+         pack: codeql/cpp-all
+         extensible: barrierGuardModel
+       data:
+         - ["", "", False, "is_safe", "", "", "Argument[*0]", "true", "sql-injection", "manual"]
+
+Since we are adding a barrier guard, we need to add a tuple to the ``barrierGuardModel`` extensible predicate.
+The first five values identify the callable (in this case a free function) to be modeled as a barrier guard.
+
+- The first value ``""`` is the namespace name.
+- The second value ``""`` is the name of the type (class) that contains the method. Because we're modelling a free function, the type is left blank.
+- The third value ``False`` is a flag that indicates whether or not the barrier guard also applies to all overrides of the method. For a free function, this should be ``False``.
+- The fourth value ``"is_safe"`` is the function name.
+- The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name.
+
+The sixth value should be left empty and is out of scope for this documentation.
+The remaining values are used to define the input specification, the ``accepting value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
+
+- The seventh value ``Argument[*0]`` is the input specification (the value being validated). In this case, the first indirection (or pointed-to value, ``*``) of the first argument (``Argument[0]``) passed to the function.
+- The eighth value ``true`` is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply.
+- The ninth value ``sql-injection`` is the kind of the barrier guard. The barrier guard kind is used to define the queries where the barrier guard is in scope.
+- The tenth value ``manual`` is the provenance of the barrier guard, which is used to identify the origin of the barrier guard.
+
 .. _threat-models-cpp:
 
 Threat models

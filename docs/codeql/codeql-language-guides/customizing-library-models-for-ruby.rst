@@ -232,6 +232,65 @@ We can model this using the following data extension:
 
 - The last column, **taint**, indicates the kind of flow to add.
 
+Example: Taint barrier using the 'escape' method
+------------------------------------------------
+
+In this example, we'll show how to add the return value of **Mysql2::Client#escape** as a barrier for SQL injection.
+
+.. code-block:: ruby
+
+  client = Mysql2::Client.new
+  escaped = client.escape(input) # The return value of this method is safe for SQL injection.
+  client.query("SELECT * FROM users WHERE name = '#{escaped}'")
+
+We can model this using the following data extension:
+
+.. code-block:: yaml
+
+  extensions:
+    - addsTo:
+        pack: codeql/ruby-all
+        extensible: barrierModel
+      data:
+        - ["Mysql2::Client!", "Method[escape].ReturnValue", "sql-injection"]
+
+- Since we are adding a barrier, we need to add a tuple to the **barrierModel** extensible predicate.
+- The first column, **"Mysql2::Client!"**, begins the search for relevant calls at references to the **Mysql2::Client** class.
+  The **!** suffix indicates that we want to search for references to the class itself, rather than instances of the class.
+- The second column, **"Method[escape].ReturnValue"**, selects the return value of the **escape** method.
+- The third column, **"sql-injection"**, is the kind of the barrier.
+
+Example: Add a barrier guard
+----------------------------
+
+This example shows how to model a barrier guard that stops the flow of taint when a conditional check is performed on data.
+Consider a validation method ``Validator.is_safe`` which returns ``true`` when the data is considered safe.
+
+.. code-block:: ruby
+
+  if Validator.is_safe(user_input)
+    # The check guards the use, so the input is safe.
+    client.query("SELECT * FROM users WHERE name = '#{user_input}'")
+  end
+
+We can model this using the following data extension:
+
+.. code-block:: yaml
+
+  extensions:
+    - addsTo:
+        pack: codeql/ruby-all
+        extensible: barrierGuardModel
+      data:
+        - ["Validator!", "Method[is_safe].Argument[0]", "true", "sql-injection"]
+
+- Since we are adding a barrier guard, we need to add a tuple to the **barrierGuardModel** extensible predicate.
+- The first column, **"Validator!"**, begins the search at references to the **Validator** class.
+  The **!** suffix indicates that we want to search for references to the class itself, rather than instances of the class.
+- The second column, **"Method[is_safe].Argument[0]"**, selects the first argument of the **is_safe** method. This is the value being validated.
+- The third column, **"true"**, is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply.
+- The fourth column, **"sql-injection"**, is the kind of the barrier guard.
+
 Reference material
 ------------------
 

@@ -281,6 +281,66 @@ We might also provide a summary stating that the elements of the input list are 
 The tracking of list elements is imprecise in that the analysis does not know where in the list the tracked value is found.
 So this summary simply states that if the value is found somewhere in the input list, it will also be found somewhere in the output list, unchanged.
 
+Example: Taint barrier using the 'escape' function
+--------------------------------------------------
+
+In this example, we'll show how to add the return value of **html.escape** as a barrier for XSS.
+
+.. code-block:: python
+
+  import html
+  escaped = html.escape(unknown) # The return value of this function is safe for XSS.
+
+We can model this using the following data extension:
+
+.. code-block:: yaml
+
+  extensions:
+    - addsTo:
+        pack: codeql/python-all
+        extensible: barrierModel
+      data:
+        - ["html", "Member[escape].ReturnValue", "html-injection"]
+
+- Since we are adding a barrier, we need to add a tuple to the **barrierModel** extensible predicate.
+- The first column, **"html"**, begins the search at places where the **html** module is imported.
+- The second column, **Member[escape].ReturnValue**, selects the return value of the **escape** function from the **html** module.
+- The third column, **"html-injection"**, is the kind of the barrier.
+
+Example: Add a barrier guard
+----------------------------
+
+This example shows how to model a barrier guard that stops the flow of taint when a conditional check is performed on data.
+A barrier guard model is used when a function returns a boolean that indicates whether the data is safe to use.
+Consider the function ``url_has_allowed_host_and_scheme`` from the ``django.utils.http`` package which returns ``true`` when the URL is in a safe domain.
+
+.. code-block:: python
+
+  if url_has_allowed_host_and_scheme(url, allowed_hosts=...): # The check guards the use of 'url', so it is safe.
+      redirect(url) # This is safe.
+
+We need to add a tuple to the ``barrierGuardModel``\(type, path, branch, kind, madId) extensible predicate by updating a data extension file.
+
+.. code-block:: yaml
+
+  extensions:
+    - addsTo:
+        pack: codeql/python-all
+        extensible: barrierGuardModel
+      data:
+        - [
+            "django",
+            "Member[utils].Member[http].Member[url_has_allowed_host_and_scheme].Argument[0,url:]",
+            "true",
+            "url-redirection",
+          ]
+
+- Since we are adding a barrier guard, we need to add a tuple to the **barrierGuardModel** extensible predicate.
+- The first column, **"django"**, begins the search at places where the **django** package is imported.
+- The second column, **Member[utils].Member[http].Member[url_has_allowed_host_and_scheme].Argument[0,url:]**, selects the first argument (or the keyword argument ``url``) of the ``url_has_allowed_host_and_scheme`` function in the ``django.utils.http`` module. This is the value being validated.
+- The third column, **"true"**, is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply.
+- The fourth column, **"url-redirection"**, is the kind of the barrier guard. The barrier guard kind is used to define the queries where the barrier guard is in scope.
+
 Reference material
 ------------------
 

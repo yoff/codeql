@@ -259,6 +259,91 @@ For the remaining values for both rows:
 
 That is, the first row specifies that values can flow from the elements of the qualifier stream into the first argument of the function provided to ``map``.  The second row specifies that values can flow from the return value of the function to the elements of the stream returned from ``map``.
 
+Example: Taint barrier in the ``java.io`` package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This example shows how the Java query pack models the return value from the ``getName`` method as a barrier for path injection.
+This is the ``getName`` method in the ``File`` class, which is located in the ``java.io`` package. The method returns only the final component of a path, which means that it protects against path injection vulnerabilities.
+
+.. code-block:: java
+
+   public static void barrier(File file) {
+       String name = file.getName(); // The return value of this method is a barrier for path injection.
+       ...
+   }
+
+We need to add a tuple to the ``barrierModel``\(package, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+
+.. code-block:: yaml
+
+   extensions:
+     - addsTo:
+         pack: codeql/java-all
+         extensible: barrierModel
+       data:
+         - ["java.io", "File", True, "getName", "()", "", "ReturnValue", "path-injection", "manual"]
+
+
+Since we are adding a new barrier, we need to add a tuple to the ``barrierModel`` extensible predicate.
+The first five values identify the callable (in this case a method) to be modeled as a barrier.
+
+- The first value ``java.io`` is the package name.
+- The second value ``File`` is the name of the class (type) that contains the method.
+- The third value ``True`` is a flag that indicates whether or not the barrier also applies to all overrides of the method.
+- The fourth value ``getName`` is the method name.
+- The fifth value ``()`` is the method input type signature.
+
+The sixth value should be left empty and is out of scope for this documentation.
+The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the barrier.
+
+- The seventh value ``ReturnValue`` is the access path to the return of the method, which means that it is the return value that should be considered a barrier.
+- The eighth value ``path-injection`` is the kind of the barrier. The barrier kind is used to define the queries where the barrier is in scope. In this case - the path injection queries.
+- The ninth value ``manual`` is the provenance of the barrier, which is used to identify the origin of the barrier.
+
+Example: Taint barrier guard in the ``java.net`` package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This example shows how the Java query pack models the ``isAbsolute`` method as a barrier guard for request forgery.
+This is the ``isAbsolute`` method in the ``URI`` class, which is located in the ``java.net`` package.
+A barrier guard model is used to stop the flow of taint when a conditional check is performed on data.
+When the ``isAbsolute`` method returns ``false``, the URI is relative and therefore safe for request forgery because it cannot redirect to an external server controlled by an attacker.
+
+.. code-block:: java
+
+   public static void barrierguard(URI uri) throws IOException {
+       if (!uri.isAbsolute()) { // The check guards the request, so the URI is safe.
+           URL url = uri.toURL();
+           url.openConnection(); // This is not a request forgery vulnerability.
+       }
+   }
+
+We need to add a tuple to the ``barrierGuardModel``\(package, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance) extensible predicate by updating a data extension file.
+
+.. code-block:: yaml
+
+   extensions:
+     - addsTo:
+         pack: codeql/java-all
+         extensible: barrierGuardModel
+       data:
+         - ["java.net", "URI", True, "isAbsolute", "()", "", "Argument[this]", "false", "request-forgery", "manual"]
+
+
+Since we are adding a barrier guard, we need to add a tuple to the ``barrierGuardModel`` extensible predicate.
+The first five values identify the callable (in this case a method) to be modeled as a barrier guard.
+
+- The first value ``java.net`` is the package name.
+- The second value ``URI`` is the name of the class (type) that contains the method.
+- The third value ``True`` is a flag that indicates whether or not the barrier guard also applies to all overrides of the method.
+- The fourth value ``isAbsolute`` is the method name.
+- The fifth value ``()`` is the method input type signature.
+
+The sixth value should be left empty and is out of scope for this documentation.
+The remaining values are used to define the ``access path``, the ``accepting value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
+
+- The seventh value ``Argument[this]`` is the access path to the input whose flow is blocked. In this case, the qualifier of the method call (``uri`` in the example).
+- The eighth value ``false`` is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply. In this case, when ``isAbsolute`` is ``false``, the URI is relative and considered safe.
+- The ninth value ``request-forgery`` is the kind of the barrier guard. The barrier guard kind is used to define the queries where the barrier guard is in scope. In this case - the request forgery queries.
+- The tenth value ``manual`` is the provenance of the barrier guard, which is used to identify the origin of the barrier guard.
+
 Example: Add a ``neutral`` method
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This example shows how the Java query pack models the ``now`` method as being neutral with respect to flow.
