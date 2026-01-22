@@ -47,14 +47,16 @@ module OpenAI {
         classRef()
             .getMember("responses")
             .getMember("create")
-            .getKeywordParameter(["input", "instructions"]) or
+            .getKeywordParameter(["input", "instructions"])
+      or
       content =
         classRef()
             .getMember("responses")
             .getMember("create")
             .getKeywordParameter(["input", "instructions"])
             .getASubscript()
-            .getSubscript("content") or
+            .getSubscript("content")
+      or
       content =
         classRef()
             .getMember("realtime")
@@ -64,7 +66,8 @@ module OpenAI {
             .getMember("item")
             .getMember("create")
             .getKeywordParameter("item")
-            .getSubscript("content") or
+            .getSubscript("content")
+      or
       content =
         classRef()
             .getMember("chat")
