@@ -7,10 +7,11 @@
 import python
 private import semmle.python.dataflow.new.DataFlow
 private import semmle.python.Concepts
+private import experimental.semmle.python.Concepts
 private import semmle.python.dataflow.new.RemoteFlowSources
 private import semmle.python.dataflow.new.BarrierGuards
 private import semmle.python.frameworks.data.ModelsAsData
-private import semmle.python.frameworks.OpenAI
+private import experimental.semmle.python.frameworks.OpenAI
 
 /**
  * Provides default sources, sinks and sanitizers for detecting

@@ -11,7 +11,7 @@
  */
 
 import python
-import semmle.python.security.dataflow.PromptInjectionQuery
+import experimental.semmle.python.security.dataflow.PromptInjectionQuery
 import PromptInjectionFlow::PathGraph
 
 from PromptInjectionFlow::PathNode source, PromptInjectionFlow::PathNode sink
