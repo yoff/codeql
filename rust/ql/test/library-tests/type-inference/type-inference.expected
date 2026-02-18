@@ -4012,6 +4012,70 @@ inferCertainType
 | overloading.rs:397:10:397:10 | b |  | {EXTERNAL LOCATION} | bool |
 | overloading.rs:397:25:401:5 | { ... } |  | overloading.rs:372:5:372:14 | S1 |
 | overloading.rs:398:20:398:20 | b |  | {EXTERNAL LOCATION} | bool |
+| overloading.rs:408:16:408:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:408:16:408:20 | SelfParam | TRef | overloading.rs:407:5:410:5 | Self [trait Trait] |
+| overloading.rs:409:16:409:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:409:16:409:20 | SelfParam | TRef | overloading.rs:407:5:410:5 | Self [trait Trait] |
+| overloading.rs:414:16:414:16 | x |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:414:16:414:16 | x | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:414:16:414:16 | x | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:414:26:414:27 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:417:16:417:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:417:16:417:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:417:16:417:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:417:23:417:24 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:422:16:422:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:422:16:422:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:422:16:422:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:422:23:426:9 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:423:13:423:24 | ...::foo(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:423:20:423:23 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:423:20:423:23 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:423:20:423:23 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:424:13:424:31 | ...::foo(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:424:27:424:30 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:424:27:424:30 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:424:27:424:30 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:425:13:425:16 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:425:13:425:16 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:425:13:425:16 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:429:16:429:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:429:16:429:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:429:16:429:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:429:23:433:9 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:430:13:430:24 | ...::bar(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:430:20:430:23 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:430:20:430:23 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:430:20:430:23 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:431:13:431:31 | ...::bar(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:431:27:431:30 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:431:27:431:30 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:431:27:431:30 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:432:13:432:16 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:432:13:432:16 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:432:13:432:16 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:438:16:438:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:438:16:438:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:438:16:438:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:438:23:442:9 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:440:13:440:31 | ...::foo(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:440:27:440:30 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:440:27:440:30 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:440:27:440:30 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:441:13:441:16 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:441:13:441:16 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:441:13:441:16 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:445:16:445:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:445:16:445:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:445:16:445:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:445:23:449:9 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:447:13:447:31 | ...::bar(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:447:27:447:30 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:447:27:447:30 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:447:27:447:30 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:448:13:448:16 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:448:13:448:16 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:448:13:448:16 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
 | pattern_matching.rs:13:26:133:1 | { ... } |  | {EXTERNAL LOCATION} | Option |
 | pattern_matching.rs:13:26:133:1 | { ... } | T | {EXTERNAL LOCATION} | () |
 | pattern_matching.rs:15:5:18:5 | if ... {...} |  | {EXTERNAL LOCATION} | () |
@@ -4960,6 +5024,17 @@ inferCertainType
 | regressions.rs:67:29:67:33 | other | TRef | regressions.rs:41:5:42:14 | S2 |
 | regressions.rs:71:14:75:5 | { ... } |  | {EXTERNAL LOCATION} | () |
 | regressions.rs:74:22:74:24 | &s2 |  | {EXTERNAL LOCATION} | & |
+| regressions.rs:82:20:82:24 | value |  | regressions.rs:81:18:81:18 | T |
+| regressions.rs:86:20:86:20 | s |  | regressions.rs:85:10:85:10 | T |
+| regressions.rs:86:34:88:9 | { ... } |  | regressions.rs:85:10:85:10 | T |
+| regressions.rs:87:13:87:13 | s |  | regressions.rs:85:10:85:10 | T |
+| regressions.rs:92:20:92:22 | val |  | regressions.rs:91:10:91:10 | T |
+| regressions.rs:92:41:94:9 | { ... } |  | {EXTERNAL LOCATION} | Option |
+| regressions.rs:92:41:94:9 | { ... } | T | regressions.rs:91:10:91:10 | T |
+| regressions.rs:93:18:93:20 | val |  | regressions.rs:91:10:91:10 | T |
+| regressions.rs:99:22:99:22 | x |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:103:5:107:5 | { ... } |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:33:104:33 | x |  | regressions.rs:99:18:99:19 | T2 |
 inferType
 | associated_types.rs:5:15:5:18 | SelfParam |  | associated_types.rs:1:1:2:21 | Wrapper |
 | associated_types.rs:5:15:5:18 | SelfParam | A | associated_types.rs:4:6:4:6 | A |
@@ -12675,6 +12750,74 @@ inferType
 | overloading.rs:399:17:399:29 | ...::from(...) |  | overloading.rs:372:5:372:14 | S1 |
 | overloading.rs:399:28:399:28 | s |  | overloading.rs:364:5:365:13 | S |
 | overloading.rs:400:9:400:9 | x |  | overloading.rs:372:5:372:14 | S1 |
+| overloading.rs:408:16:408:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:408:16:408:20 | SelfParam | TRef | overloading.rs:407:5:410:5 | Self [trait Trait] |
+| overloading.rs:409:16:409:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:409:16:409:20 | SelfParam | TRef | overloading.rs:407:5:410:5 | Self [trait Trait] |
+| overloading.rs:414:16:414:16 | x |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:414:16:414:16 | x | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:414:16:414:16 | x | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:414:26:414:27 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:417:16:417:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:417:16:417:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:417:16:417:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:417:23:417:24 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:422:16:422:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:422:16:422:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:422:16:422:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:422:23:426:9 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:423:13:423:24 | ...::foo(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:423:20:423:23 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:423:20:423:23 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:423:20:423:23 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:424:13:424:31 | ...::foo(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:424:27:424:30 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:424:27:424:30 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:424:27:424:30 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:425:13:425:16 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:425:13:425:16 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:425:13:425:16 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:425:13:425:22 | self.foo() |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:429:16:429:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:429:16:429:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:429:16:429:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:429:23:433:9 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:430:13:430:24 | ...::bar(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:430:20:430:23 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:430:20:430:23 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:430:20:430:23 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:431:13:431:31 | ...::bar(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:431:27:431:30 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:431:27:431:30 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:431:27:431:30 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:432:13:432:16 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:432:13:432:16 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:432:13:432:16 | self | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:432:13:432:22 | self.bar() |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:438:16:438:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:438:16:438:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:438:16:438:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:438:23:442:9 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:440:13:440:31 | ...::foo(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:440:27:440:30 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:440:27:440:30 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:440:27:440:30 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:441:13:441:16 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:441:13:441:16 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:441:13:441:16 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:441:13:441:22 | self.foo() |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:445:16:445:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:445:16:445:20 | SelfParam | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:445:16:445:20 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:445:23:449:9 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:447:13:447:31 | ...::bar(...) |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:447:27:447:30 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:447:27:447:30 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:447:27:447:30 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:448:13:448:16 | self |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:448:13:448:16 | self | TRef | overloading.rs:405:5:405:19 | S |
+| overloading.rs:448:13:448:16 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:448:13:448:22 | self.bar() |  | {EXTERNAL LOCATION} | () |
 | pattern_matching.rs:13:26:133:1 | { ... } |  | {EXTERNAL LOCATION} | Option |
 | pattern_matching.rs:13:26:133:1 | { ... } | T | {EXTERNAL LOCATION} | () |
 | pattern_matching.rs:14:9:14:13 | value |  | {EXTERNAL LOCATION} | Option |
@@ -14818,4 +14961,215 @@ inferType
 | regressions.rs:74:22:74:24 | &s2 |  | {EXTERNAL LOCATION} | & |
 | regressions.rs:74:22:74:24 | &s2 | TRef | regressions.rs:41:5:42:14 | S2 |
 | regressions.rs:74:23:74:24 | s2 |  | regressions.rs:41:5:42:14 | S2 |
+| regressions.rs:82:20:82:24 | value |  | regressions.rs:81:18:81:18 | T |
+| regressions.rs:86:20:86:20 | s |  | regressions.rs:85:10:85:10 | T |
+| regressions.rs:86:34:88:9 | { ... } |  | regressions.rs:85:10:85:10 | T |
+| regressions.rs:87:13:87:13 | s |  | regressions.rs:85:10:85:10 | T |
+| regressions.rs:92:20:92:22 | val |  | regressions.rs:91:10:91:10 | T |
+| regressions.rs:92:41:94:9 | { ... } |  | {EXTERNAL LOCATION} | Option |
+| regressions.rs:92:41:94:9 | { ... } | T | regressions.rs:91:10:91:10 | T |
+| regressions.rs:93:13:93:21 | Some(...) |  | {EXTERNAL LOCATION} | Option |
+| regressions.rs:93:13:93:21 | Some(...) | T | regressions.rs:91:10:91:10 | T |
+| regressions.rs:93:18:93:20 | val |  | regressions.rs:91:10:91:10 | T |
+| regressions.rs:99:22:99:22 | x |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:103:5:107:5 | { ... } |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y |  | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y |  | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:13:104:13 | y | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) |  | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) |  | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:104:17:104:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:104:33:104:33 | x |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z |  | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z |  | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:13:105:13 | z | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) |  | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) |  | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:17:105:34 | ...::my_from(...) | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y |  | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y |  | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:105:33:105:33 | y | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z |  | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z |  | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z |  | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T.T.T.T | {EXTERNAL LOCATION} | Option |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:14:99:15 | T1 |
+| regressions.rs:106:9:106:9 | z | T.T.T.T.T.T.T.T.T.T | regressions.rs:99:18:99:19 | T2 |
 testFailures
