@@ -99,6 +99,29 @@ extensible predicate neutralModel(
 );
 
 /**
+ * Holds if in a call to the function with canonical path `path`, the value referred
+ * to by `output` is a barrier of the given `kind` and `madId` is the data
+ * extension row number.
+ */
+extensible predicate barrierModel(
+  string path, string output, string kind, string provenance, QlBuiltins::ExtensionId madId
+);
+
+/**
+ * Holds if in a call to the function with canonical path `path`, the value referred
+ * to by `input` is a barrier guard of the given `kind` and `madId` is the data
+ * extension row number.
+ * the value referred to by `input` is assumed to lead to a parameter of a call
+ * (possibly `self`), and the call is guarding the parameter.
+ * `branch` is either `true` or `false`, indicating which branch of the guard
+ * is protecting the parameter.
+ */
+extensible predicate barrierGuardModel(
+  string path, string input, string branch, string kind, string provenance,
+  QlBuiltins::ExtensionId madId
+);
+
+/**
  * Holds if the given extension tuple `madId` should pretty-print as `model`.
  *
  * This predicate should only be used in tests.
