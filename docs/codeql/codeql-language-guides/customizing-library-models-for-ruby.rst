@@ -27,6 +27,8 @@ The CodeQL library for Ruby exposes the following extensible predicates:
 - **sinkModel**\(type, path, kind)
 - **typeModel**\(type1, type2, path)
 - **summaryModel**\(type, path, input, output, kind)
+- **barrierModel**\(type, path, kind)
+- **barrierGuardModel**\(type, path, branch, kind)
 
 We'll explain how to use these using a few examples, and provide some reference material at the end of this article.
 
