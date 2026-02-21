@@ -9,7 +9,7 @@ Python analysis can be customized by adding library models in data extension fil
 
 A data extension for Python is a YAML file of the form:
 
-.. code-block:: yaml 
+.. code-block:: yaml
 
   extensions:
     - addsTo:
@@ -177,7 +177,7 @@ Note that this source is already known by the CodeQL Python analysis, but for th
   The **!** at the end of the type name indicates that we are looking for the class itself rather than instances of this class.
 
 - The second column is an access path that is evaluated from left to right, starting at the values that were identified by the first column.
-  
+
     - **Call** selects calls to the class. That is, constructor calls.
     - **Argument[0,upload_to:]** selects the first positional argument, or the named argument named **upload_to**. Note that the colon at the end of the argument name indicates that we are looking for a named argument.
     - **Parameter[1]** selects the second parameter of the callback function, which is the parameter receiving the filename.

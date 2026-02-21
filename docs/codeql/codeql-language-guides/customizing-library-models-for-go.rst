@@ -171,7 +171,7 @@ We need to add a tuple to the ``summaryModel``\(package, type, subtypes, name, s
          pack: codeql/go-all
          extensible: summaryModel
        data:
-         - ["slices", "", False, "Max", "", "", "Argument[0].ArrayElement", "ReturnValue", "value", "manual"] 
+         - ["slices", "", False, "Max", "", "", "Argument[0].ArrayElement", "ReturnValue", "value", "manual"]
 
 Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 The first row defines flow from the first argument (``a`` in the example) to the return value (``max`` in the example).
@@ -307,7 +307,7 @@ This example shows how the Go query pack models flow through a method for a simp
         host := u.Hostname() // There is taint flow from u to host.
         ...
     }
-    
+
 We need to add a tuple to the ``summaryModel``\(package, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
@@ -387,7 +387,7 @@ Note that packages hosted at ``gopkg.in`` use a slightly different syntax: the m
 To write models that only apply to ``github.com/couchbase/gocb/v2``, it is sufficient to include the major version suffix (``/v2``) in the package column. To write models that only apply to ``github.com/couchbase/gocb``, you may prefix the package column with ``fixed-version:``. For example, here are two models for a method that has changed name from v1 to v2.
 
 .. code-block:: yaml
-  
+
     extensions:
     - addsTo:
         pack: codeql/go-all
