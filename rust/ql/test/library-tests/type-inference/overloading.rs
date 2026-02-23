@@ -421,7 +421,7 @@ mod inherent_before_trait {
         // <S<i32>_as_Trait>::foo
         fn foo(&self) {
             S::foo(self); // $ MISSING: target=S<i32>::foo
-            S::<i32>::foo(self); // $ MISSING: target=S<i32>::foo
+            S::<i32>::foo(self); // $ target=S<i32>::foo
             self.foo() // $ target=<S<i32>_as_Trait>::foo
         }
 
@@ -437,7 +437,7 @@ mod inherent_before_trait {
         // <S<i64>_as_Trait>::foo
         fn foo(&self) {
             // `S::foo(self);` is not valid
-            S::<i64>::foo(self); // $ MISSING: target=<S<i64>_as_Trait>::foo
+            S::<i64>::foo(self); // $ target=<S<i64>_as_Trait>::foo
             self.foo() // $ target=<S<i64>_as_Trait>::foo
         }
 
