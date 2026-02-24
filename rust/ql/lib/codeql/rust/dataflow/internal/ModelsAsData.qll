@@ -146,6 +146,16 @@ predicate interpretModelForTest(QlBuiltins::ExtensionId madId, string model) {
     neutralModel(path, kind, _, madId) and
     model = "Neutral: " + path + "; " + kind
   )
+  or
+  exists(string path, string output, string kind |
+    barrierModel(path, output, kind, _, madId) and
+    model = "Barrier: " + path + "; " + output + "; " + kind
+  )
+  or
+  exists(string path, string input, string branch, string kind |
+    barrierGuardModel(path, input, branch, kind, _, madId) and
+    model = "Barrier guard: " + path + "; " + input + "; " + branch + "; " + kind
+  )
 }
 
 private class SummarizedCallableFromModel extends SummarizedCallable::Range {
