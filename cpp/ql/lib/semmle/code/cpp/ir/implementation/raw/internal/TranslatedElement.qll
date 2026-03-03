@@ -767,12 +767,20 @@ newtype TTranslatedElement =
       expr = initList.getFieldExpr(field, position).getFullyConverted()
     )
     or
-    exists(ConstructorFieldInit init |
+    exists(ConstructorDirectFieldInit init |
       not ignoreExpr(init) and
       ast = init and
       field = init.getTarget() and
       expr = init.getExpr().getFullyConverted() and
       position = -1
+    )
+  } or
+  // The initialization of a field via a default member initializer.
+  TTranslatedDefaultFieldInitialization(Expr ast, Field field) {
+    exists(ConstructorDefaultFieldInit init |
+      not ignoreExpr(init) and
+      ast = init and
+      field = init.getTarget()
     )
   } or
   // The value initialization of a field due to an omitted member of an
