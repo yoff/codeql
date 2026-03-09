@@ -353,7 +353,7 @@ module CsvValidation {
     )
   }
 
-  string getIncorrectConstructorSummaryOutput() {
+  private string getIncorrectConstructorSummaryOutput() {
     exists(string namespace, string type, string name, string output |
       type = name or
       type = name + "<" + any(string s)
