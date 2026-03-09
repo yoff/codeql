@@ -1,7 +1,7 @@
 /**
  * Provides a class for representing and reasoning about properties of data-flow nodes.
  */
-overlay[local?]
+overlay[local]
 module;
 
 import go

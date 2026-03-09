@@ -1,5 +1,5 @@
 /** Provides classes for working with Go frontend errors recorded during extraction. */
-overlay[local?]
+overlay[local]
 module;
 
 import go

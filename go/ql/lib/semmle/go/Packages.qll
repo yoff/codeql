@@ -1,7 +1,7 @@
 /**
  * Provides classes for working with packages.
  */
-overlay[local?]
+overlay[local]
 module;
 
 import go

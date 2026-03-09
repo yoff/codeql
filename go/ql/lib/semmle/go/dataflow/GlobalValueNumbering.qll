@@ -29,7 +29,7 @@
  * common reason for this is that the analysis cannot prove that there
  * are no side-effects that might cause the computed value to change.
  */
-overlay[local?]
+overlay[local]
 module;
 
 /*

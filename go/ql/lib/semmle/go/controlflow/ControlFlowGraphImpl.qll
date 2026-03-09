@@ -3,7 +3,7 @@
  *
  * Provides predicates for building intra-procedural CFGs.
  */
-overlay[local?]
+overlay[local]
 module;
 
 import go

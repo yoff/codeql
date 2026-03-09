@@ -1,5 +1,5 @@
 /** This module provides general utility classes and predicates. */
-overlay[local?]
+overlay[local]
 module;
 
 /**

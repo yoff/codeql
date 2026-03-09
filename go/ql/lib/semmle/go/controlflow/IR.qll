@@ -9,7 +9,7 @@
  * Each instruction is also a control-flow node, but there are control-flow nodes that are not
  * instructions (synthetic entry and exit nodes, as well as no-op skip nodes).
  */
-overlay[local?]
+overlay[local]
 module;
 
 import go

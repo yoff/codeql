@@ -1,7 +1,7 @@
 /**
  * Provides classes for working with static single assignment form (SSA).
  */
-overlay[local?]
+overlay[local]
 module;
 
 import go

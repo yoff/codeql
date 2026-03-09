@@ -3,7 +3,7 @@
  *
  * Provides predicates for constructing an SSA representation for functions.
  */
-overlay[local?]
+overlay[local]
 module;
 
 import go

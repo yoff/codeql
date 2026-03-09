@@ -1,7 +1,7 @@
 /**
  * Provides classes for working with a CFG-based program representation.
  */
-overlay[local?]
+overlay[local]
 module;
 
 import go

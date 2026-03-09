@@ -1,7 +1,7 @@
 /**
  * Provides classes for working with scopes and declared objects.
  */
-overlay[local?]
+overlay[local]
 module;
 
 import go

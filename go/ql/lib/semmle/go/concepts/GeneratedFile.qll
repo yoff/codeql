@@ -1,5 +1,5 @@
 /** Provides a class for generated files. */
-overlay[local?]
+overlay[local]
 module;
 
 import go

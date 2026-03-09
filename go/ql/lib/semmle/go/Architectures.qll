@@ -1,5 +1,5 @@
 /** Provides classes for working with architectures. */
-overlay[local?]
+overlay[local]
 module;
 
 import go

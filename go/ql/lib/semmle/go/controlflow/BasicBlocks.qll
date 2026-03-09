@@ -1,7 +1,7 @@
 /**
  * Provides classes for working with basic blocks.
  */
-overlay[local?]
+overlay[local]
 module;
 
 import go
