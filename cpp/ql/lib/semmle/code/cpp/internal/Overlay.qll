@@ -11,7 +11,7 @@ overlay[local]
 predicate isOverlay() { databaseMetadata("isOverlay", "true") }
 
 /**
- * Holds if the TRAP file or tag `t` is reachable from some source file
+ * Holds if the TRAP file or tag `t` is reachable from source file `sourceFile`
  * in the base (isOverlayVariant=false) or overlay (isOverlayVariant=true) variant.
  */
 overlay[local]
