@@ -41,7 +41,8 @@ private predicate locallyInTrapOrTag(boolean isOverlayVariant, @element e, @trap
  * - We have knowledge about what TRAP file or tag it is in (in the base).
  * - It is not in any overlay TRAP file or tag that is reachable from an overlay source file.
  * - For every base TRAP file or tag that contains it and is reachable from a base source file,
- *   either the source file has changed or the overlay has redefined the TRAP file or tag.
+ *   either the source file has changed, or the overlay has redefined the TRAP file or tag,
+ *   or the overlay runner has re-extracted the same source file.
  */
 overlay[discard_entity]
 private predicate discardElement(@element e) {
@@ -54,7 +55,7 @@ private predicate discardElement(@element e) {
   not exists(@trap_or_tag t | locallyInTrapOrTag(true, e, t) |
     locallyReachableTrapOrTag(true, _, t)
   ) and
-  // Finally, we have to make sure that base shouldn't retain it.
+  // Finally, we have to make sure the base variant does not retain it.
   // If it is reachable from a base source file, then that is
   // sufficient unless either the base source file has changed (in
   // particular, been deleted), or the overlay has redefined the TRAP
