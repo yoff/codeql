@@ -232,7 +232,7 @@ signature module AstSig<LocationSig Location> {
      * under the case nodes, which may or may not be statements themselves, or
      * the switches may have a flat structure where the cases are just labels
      * and the case bodies are sequences of statements between case statements.
-     * This predicate accomodates the latter.
+     * This predicate accommodates the latter.
      */
     Stmt getStmt(int index);
   }
