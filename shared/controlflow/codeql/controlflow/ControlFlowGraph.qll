@@ -224,6 +224,17 @@ signature module AstSig<LocationSig Location> {
 
     /** Gets the case at the specified (zero-based) `index`. */
     Case getCase(int index);
+
+    /**
+     * Gets the statement at the specified (zero-based) `index`, if any.
+     *
+     * Depending on the language, switches may have their case bodies nested
+     * under the case nodes, which may or may not be statements themselves, or
+     * the switches may have a flat structure where the cases are just labels
+     * and the case bodies are sequences of statements between case statements.
+     * This predicate accomodates the latter.
+     */
+    Stmt getStmt(int index);
   }
 
   /** A case in a switch. */
@@ -235,12 +246,13 @@ signature module AstSig<LocationSig Location> {
     Expr getGuard();
 
     /**
-     * Gets the body element of this case at the specified (zero-based) `index`.
+     * Gets the body of this case, if any.
      *
-     * This is either unique when the case has a single right-hand side, or it
-     * is the sequence of statements between this case and the next case.
+     * A case can either have a body as a single child AST node given by this
+     * predicate, or it can have an implicit body given by the sequence of
+     * statements between this case and the next case.
      */
-    AstNode getBodyElement(int index);
+    AstNode getBody();
   }
 
   class DefaultCase extends Case;
@@ -1075,7 +1087,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         )
         or
         exists(Switch switch |
-          ast = switch.getCase(_).getBodyElement(_) and
+          ast = getCaseBodyElement(switch.getCase(_), _) and
           n.isAfter(switch) and
           c.getSuccessorType() instanceof BreakSuccessor
         |
@@ -1107,10 +1119,40 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         result = rank[rnk](Case c, int i | getCaseControlFlowOrder(s, c) = i | c order by i)
       }
 
-      private AstNode getFirstCaseBodyElement(Case case) {
-        result = case.getBodyElement(0)
+      private int numberOfStmts(Switch s) { result = strictcount(s.getStmt(_)) }
+
+      private predicate caseIndex(Switch s, Case c, int caseIdx, int caseStmtPos) {
+        c = s.getCase(caseIdx) and
+        c = s.getStmt(caseStmtPos)
+      }
+
+      /**
+       * Gets the body element of `case` at the specified (zero-based) `index`.
+       *
+       * This is either unique when the case has a single right-hand side, or it
+       * is the sequence of statements between this case and the next case.
+       */
+      private AstNode getCaseBodyElement(Case case, int index) {
+        result = case.getBody() and index = 0
         or
-        not exists(case.getBodyElement(0)) and
+        not exists(case.getBody()) and
+        exists(Switch s, int caseIdx, int caseStmtPos, int nextCaseStmtPos |
+          caseIndex(pragma[only_bind_into](s), case, caseIdx, caseStmtPos) and
+          (
+            caseIndex(pragma[only_bind_into](s), _, caseIdx + 1, nextCaseStmtPos)
+            or
+            not exists(s.getCase(caseIdx + 1)) and
+            nextCaseStmtPos = numberOfStmts(s)
+          ) and
+          index = [0 .. nextCaseStmtPos - caseStmtPos - 2] and
+          result = pragma[only_bind_into](s).getStmt(caseStmtPos + 1 + index)
+        )
+      }
+
+      private AstNode getFirstCaseBodyElement(Case case) {
+        result = getCaseBodyElement(case, 0)
+        or
+        not exists(getCaseBodyElement(case, 0)) and
         exists(Switch s, int i |
           fallsThrough(case) and
           // fall-through follows AST order, not case control flow order:
@@ -1120,10 +1162,10 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
       }
 
       private AstNode getNextCaseBodyElement(AstNode bodyElement) {
-        exists(Case case, int i | case.getBodyElement(i) = bodyElement |
-          result = case.getBodyElement(i + 1)
+        exists(Case case, int i | getCaseBodyElement(case, i) = bodyElement |
+          result = getCaseBodyElement(case, i + 1)
           or
-          not exists(case.getBodyElement(i + 1)) and
+          not exists(getCaseBodyElement(case, i + 1)) and
           exists(Switch s, int j |
             fallsThrough(case) and
             // fall-through follows AST order, not case control flow order:
@@ -1474,7 +1516,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           or
           n1.isAfter(caseBodyElement) and
           not exists(getNextCaseBodyElement(caseBodyElement)) and
-          n2.isAfter(any(Switch s | s.getCase(_).getBodyElement(_) = caseBodyElement))
+          n2.isAfter(any(Switch s | getCaseBodyElement(s.getCase(_), _) = caseBodyElement))
         )
       }
 
