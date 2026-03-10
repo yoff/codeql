@@ -261,7 +261,7 @@ signature module AstSig<LocationSig Location> {
    * Holds if this case can fall through to the next case if it is not
    * otherwise prevented with a `break` or similar.
    */
-  default predicate fallsThrough(Case c) { none() }
+  default predicate fallsThrough(Case c) { not exists(c.getBody()) }
 
   /** A ternary conditional expression. */
   class ConditionalExpr extends Expr {

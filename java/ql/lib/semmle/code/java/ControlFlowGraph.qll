@@ -165,8 +165,6 @@ private module Ast implements AstSig<Location> {
 
   class DefaultCase extends Case instanceof J::DefaultCase { }
 
-  predicate fallsThrough(Case c) { not c.(J::SwitchCase).isRule() }
-
   class ConditionalExpr = J::ConditionalExpr;
 
   class BinaryExpr = J::BinaryExpr;
