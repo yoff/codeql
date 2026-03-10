@@ -226,16 +226,6 @@ signature module AstSig<LocationSig Location> {
     Case getCase(int index);
   }
 
-  /**
-   * Gets an integer indicating the control flow order of a case within a switch.
-   * This is most often the same as the AST order, but can be different in some
-   * languages if the language allows a default case to appear before other
-   * cases.
-   *
-   * The values do not need to be contiguous; only the relative ordering matters.
-   */
-  default int getCaseControlFlowOrder(Switch s, Case c) { s.getCase(result) = c }
-
   /** A case in a switch. */
   class Case extends AstNode {
     /** Gets a pattern being matched by this case. */
@@ -252,6 +242,8 @@ signature module AstSig<LocationSig Location> {
      */
     AstNode getBodyElement(int index);
   }
+
+  class DefaultCase extends Case;
 
   /**
    * Holds if this case can fall through to the next case if it is not
@@ -938,7 +930,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
        *
        * A match-all case can still ultimately fail to match if it has a guard.
        */
-      default predicate matchAll(Case c) { none() }
+      default predicate matchAll(Case c) { c instanceof DefaultCase }
 
       /**
        * Holds if `ast` may result in an abrupt completion `c` originating at
@@ -1093,6 +1085,21 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
             c.hasLabel(l) and
             Input1::hasLabel(switch, l)
           )
+        )
+      }
+
+      /**
+       * Gets an integer indicating the control flow order of a case within a
+       * switch. This is equal to the AST order, except that default cases are
+       * always last in control flow order, even if some languages allow them
+       * to appear before other cases in the AST.
+       */
+      private int getCaseControlFlowOrder(Switch s, Case c) {
+        exists(int pos | s.getCase(pos) = c |
+          // if a default case is not last in the AST, move it last in the CFG order
+          if c instanceof DefaultCase and exists(s.getCase(pos + 1))
+          then result = strictcount(s.getCase(_))
+          else result = pos
         )
       }
 

@@ -134,15 +134,6 @@ private module Ast implements AstSig<Location> {
     }
   }
 
-  int getCaseControlFlowOrder(Switch s, Case c) {
-    exists(int pos | s.getCase(pos) = c |
-      // if a default case is not last in the AST, move it last in the CFG order
-      if c instanceof DefaultCase and exists(s.getCase(pos + 1))
-      then result = strictcount(s.getCase(_))
-      else result = pos
-    )
-  }
-
   private Stmt getSwitchStmt(Switch s, int i) {
     result = s.(SwitchStmt).getStmt(i) or
     result = s.(SwitchExpr).getStmt(i)
@@ -190,6 +181,8 @@ private module Ast implements AstSig<Location> {
       )
     }
   }
+
+  class DefaultCase extends Case instanceof J::DefaultCase { }
 
   predicate fallsThrough(Case c) { not c.(J::SwitchCase).isRule() }
 
