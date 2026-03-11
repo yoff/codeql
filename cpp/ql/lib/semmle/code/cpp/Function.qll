@@ -524,6 +524,14 @@ class Function extends Declaration, ControlFlowNode, AccessHolder, @function {
       not exists(NewOrNewArrayExpr new | e = new.getAllocatorCall().getArgument(0))
     )
   }
+
+  /**
+   * Holds if this function has ambiguous return type (this occurs sometimes in
+   * Build Mode None).
+   */
+  predicate hasAmbiguousReturnType() {
+    count(this.getType()) != 1
+  }
 }
 
 pragma[noinline]
