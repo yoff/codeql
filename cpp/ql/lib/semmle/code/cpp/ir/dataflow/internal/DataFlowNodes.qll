@@ -767,10 +767,11 @@ module Public {
    */
   class UninitializedNode extends Node {
     LocalVariable v;
+    int indirectionIndex;
 
     UninitializedNode() {
       exists(SsaImpl::Definition def, SsaImpl::SourceVariable sv |
-        def.getIndirectionIndex() = 0 and
+        def.getIndirectionIndex() = indirectionIndex and
         def.getValue().asInstruction() instanceof UninitializedInstruction and
         SsaImpl::defToNode(this, def, sv) and
         v = sv.getBaseVariable().(SsaImpl::BaseIRVariable).getIRVariable().getAst()
@@ -779,6 +780,9 @@ module Public {
 
     /** Gets the uninitialized local variable corresponding to this node. */
     LocalVariable getLocalVariable() { result = v }
+
+    /** Gets the level of indirection to get to this node. */
+    int getIndirectionIndex() { result = indirectionIndex }
   }
 
   /**
