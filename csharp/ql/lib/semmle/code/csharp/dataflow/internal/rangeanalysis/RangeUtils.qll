@@ -20,7 +20,7 @@ private module Impl {
 
   /** Holds if SSA definition `def` equals `e + delta`. */
   predicate ssaUpdateStep(ExplicitDefinition def, ExprNode e, int delta) {
-    exists(ControlFlow::Node cfn | cfn = def.getControlFlowNode() |
+    exists(ControlFlowNode cfn | cfn = def.getControlFlowNode() |
       e = cfn.(ExprNode::Assignment).getRightOperand() and
       delta = 0 and
       not cfn instanceof ExprNode::AssignOperation
