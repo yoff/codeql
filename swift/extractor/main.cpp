@@ -81,7 +81,7 @@ static void turnOffSilVerifications(swift::SILOptions& options) {
   options.VerifyExclusivity = false;
   options.VerifyNone = true;
   options.VerifySILOwnership = false;
-  options.EnableStackProtection = false; // Causes crashes on Linux
+  options.EnableStackProtection = false;  // Causes crashes on Linux
 }
 
 codeql::TrapDomain invocationTrapDomain(codeql::SwiftExtractorState& state);
