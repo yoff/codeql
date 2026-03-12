@@ -4079,6 +4079,51 @@ inferCertainType
 | overloading.rs:448:13:448:16 | self |  | {EXTERNAL LOCATION} | & |
 | overloading.rs:448:13:448:16 | self | TRef | overloading.rs:405:5:405:19 | S |
 | overloading.rs:448:13:448:16 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:455:14:455:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:455:14:455:18 | SelfParam | TRef | overloading.rs:454:5:456:5 | Self [trait MyTrait] |
+| overloading.rs:461:14:461:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:461:14:461:18 | SelfParam | TRef | overloading.rs:458:5:462:5 | Self [trait MyTrait2] |
+| overloading.rs:461:21:461:21 | x |  | overloading.rs:458:20:458:27 | T |
+| overloading.rs:467:14:467:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:467:14:467:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:467:14:467:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:467:28:469:9 | { ... } |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:473:14:473:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:473:14:473:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:473:14:473:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:473:28:475:9 | { ... } |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:481:14:481:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:481:14:481:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:481:14:481:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:481:21:481:21 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:481:21:481:21 | x | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:481:48:483:9 | { ... } |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:489:14:489:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:489:14:489:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:489:14:489:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:489:21:489:21 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:489:21:489:21 | x | T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:489:48:491:9 | { ... } |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:497:14:497:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:497:14:497:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:497:14:497:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:497:21:497:21 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:497:21:497:21 | x | T | {EXTERNAL LOCATION} | bool |
+| overloading.rs:497:49:499:9 | { ... } |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:502:36:502:36 | x |  | overloading.rs:502:19:502:33 | T2 |
+| overloading.rs:502:49:504:5 | { ... } |  | overloading.rs:502:15:502:16 | T1 |
+| overloading.rs:503:9:503:9 | x |  | overloading.rs:502:19:502:33 | T2 |
+| overloading.rs:506:38:506:38 | x |  | overloading.rs:506:16:506:17 | T1 |
+| overloading.rs:506:45:506:45 | y |  | overloading.rs:506:20:506:35 | T2 |
+| overloading.rs:506:66:508:5 | { ... } |  | overloading.rs:506:20:506:35 | T2::Output[MyTrait2] |
+| overloading.rs:507:9:507:9 | y |  | overloading.rs:506:20:506:35 | T2 |
+| overloading.rs:507:13:507:13 | x |  | overloading.rs:506:16:506:17 | T1 |
+| overloading.rs:510:15:522:5 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:513:13:513:13 | z |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:516:13:516:13 | y |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:516:17:516:35 | call_f::<...>(...) |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:519:27:519:30 | 0i32 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:521:27:521:30 | 0i64 |  | {EXTERNAL LOCATION} | i64 |
 | pattern_matching.rs:13:26:133:1 | { ... } |  | {EXTERNAL LOCATION} | Option |
 | pattern_matching.rs:13:26:133:1 | { ... } | T | {EXTERNAL LOCATION} | () |
 | pattern_matching.rs:15:5:18:5 | if ... {...} |  | {EXTERNAL LOCATION} | () |
@@ -12830,6 +12875,107 @@ inferType
 | overloading.rs:448:13:448:16 | self | TRef | overloading.rs:405:5:405:19 | S |
 | overloading.rs:448:13:448:16 | self | TRef.T | {EXTERNAL LOCATION} | i64 |
 | overloading.rs:448:13:448:22 | self.bar() |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:455:14:455:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:455:14:455:18 | SelfParam | TRef | overloading.rs:454:5:456:5 | Self [trait MyTrait] |
+| overloading.rs:461:14:461:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:461:14:461:18 | SelfParam | TRef | overloading.rs:458:5:462:5 | Self [trait MyTrait2] |
+| overloading.rs:461:21:461:21 | x |  | overloading.rs:458:20:458:27 | T |
+| overloading.rs:467:14:467:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:467:14:467:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:467:14:467:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:467:28:469:9 | { ... } |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:468:13:468:13 | 0 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:473:14:473:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:473:14:473:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:473:14:473:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:473:28:475:9 | { ... } |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:474:13:474:13 | 0 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:474:13:474:13 | 0 |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:481:14:481:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:481:14:481:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:481:14:481:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:481:21:481:21 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:481:21:481:21 | x | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:481:48:483:9 | { ... } |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:482:13:482:13 | 0 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:489:14:489:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:489:14:489:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:489:14:489:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:489:21:489:21 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:489:21:489:21 | x | T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:489:48:491:9 | { ... } |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:490:13:490:13 | 0 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:490:13:490:13 | 0 |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:497:14:497:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
+| overloading.rs:497:14:497:18 | SelfParam | TRef | overloading.rs:464:5:464:19 | S |
+| overloading.rs:497:14:497:18 | SelfParam | TRef.T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:497:21:497:21 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:497:21:497:21 | x | T | {EXTERNAL LOCATION} | bool |
+| overloading.rs:497:49:499:9 | { ... } |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:498:13:498:13 | 0 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:498:13:498:13 | 0 |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:502:36:502:36 | x |  | overloading.rs:502:19:502:33 | T2 |
+| overloading.rs:502:49:504:5 | { ... } |  | overloading.rs:502:15:502:16 | T1 |
+| overloading.rs:503:9:503:9 | x |  | overloading.rs:502:19:502:33 | T2 |
+| overloading.rs:503:9:503:13 | x.f() |  | overloading.rs:502:15:502:16 | T1 |
+| overloading.rs:506:38:506:38 | x |  | overloading.rs:506:16:506:17 | T1 |
+| overloading.rs:506:45:506:45 | y |  | overloading.rs:506:20:506:35 | T2 |
+| overloading.rs:506:66:508:5 | { ... } |  | overloading.rs:506:20:506:35 | T2::Output[MyTrait2] |
+| overloading.rs:507:9:507:9 | y |  | overloading.rs:506:20:506:35 | T2 |
+| overloading.rs:507:9:507:14 | y.f(...) |  | overloading.rs:506:20:506:35 | T2::Output[MyTrait2] |
+| overloading.rs:507:13:507:13 | x |  | overloading.rs:506:16:506:17 | T1 |
+| overloading.rs:510:15:522:5 | { ... } |  | {EXTERNAL LOCATION} | () |
+| overloading.rs:511:13:511:13 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:511:13:511:13 | x | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:511:17:511:20 | S(...) |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:511:17:511:20 | S(...) | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:511:19:511:19 | 0 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:512:13:512:13 | y |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:512:13:512:13 | y |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:512:17:512:25 | call_f(...) |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:512:17:512:25 | call_f(...) |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:512:24:512:24 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:512:24:512:24 | x | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:513:13:513:13 | z |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:513:22:513:22 | y |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:513:22:513:22 | y |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:515:13:515:13 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:515:13:515:13 | x | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:515:17:515:20 | S(...) |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:515:17:515:20 | S(...) | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:515:19:515:19 | 0 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:516:13:516:13 | y |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:516:17:516:35 | call_f::<...>(...) |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:516:34:516:34 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:516:34:516:34 | x | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:518:13:518:13 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:518:13:518:13 | x | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:518:17:518:20 | S(...) |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:518:17:518:20 | S(...) | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:518:19:518:19 | 0 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:519:13:519:13 | y |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:519:13:519:13 | y |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:519:17:519:35 | call_f2(...) |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:519:17:519:35 | call_f2(...) |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:519:25:519:31 | S(...) |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:519:25:519:31 | S(...) | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:519:27:519:30 | 0i32 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:519:34:519:34 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:519:34:519:34 | x | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:520:13:520:13 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:520:13:520:13 | x | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:520:17:520:20 | S(...) |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:520:17:520:20 | S(...) | T | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:520:19:520:19 | 0 |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:521:13:521:13 | y |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:521:13:521:13 | y |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:521:17:521:35 | call_f2(...) |  | {EXTERNAL LOCATION} | i32 |
+| overloading.rs:521:17:521:35 | call_f2(...) |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:521:25:521:31 | S(...) |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:521:25:521:31 | S(...) | T | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:521:27:521:30 | 0i64 |  | {EXTERNAL LOCATION} | i64 |
+| overloading.rs:521:34:521:34 | x |  | overloading.rs:464:5:464:19 | S |
+| overloading.rs:521:34:521:34 | x | T | {EXTERNAL LOCATION} | i32 |
 | pattern_matching.rs:13:26:133:1 | { ... } |  | {EXTERNAL LOCATION} | Option |
 | pattern_matching.rs:13:26:133:1 | { ... } | T | {EXTERNAL LOCATION} | () |
 | pattern_matching.rs:14:9:14:13 | value |  | {EXTERNAL LOCATION} | Option |
