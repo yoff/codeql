@@ -1154,7 +1154,7 @@ private module Cached {
         )
       )
       or
-      lambdaCallExpr(_, cfn)
+      lambdaCallExpr(_, _, cfn)
     } or
     TFlowSummaryNode(FlowSummaryImpl::Private::SummaryNode sn) {
       sn.getSummarizedCallable() instanceof CallableUsedInSource
@@ -1588,7 +1588,7 @@ private module ArgumentNodes {
   class DelegateSelfArgumentNode extends ArgumentNodeImpl, ExprNode {
     private DataFlowCall call_;
 
-    DelegateSelfArgumentNode() { lambdaCallExpr(call_, this.getControlFlowNode()) }
+    DelegateSelfArgumentNode() { lambdaCallExpr(call_, this.getExpr(), _) }
 
     override predicate argumentOf(DataFlowCall call, ArgumentPosition pos) {
       call = call_ and
@@ -2855,45 +2855,26 @@ private predicate isLocalFunctionCallReceiver(
   f = receiver.getTarget().getUnboundDeclaration()
 }
 
-private class LambdaConfiguration extends ControlFlowReachabilityConfiguration {
-  LambdaConfiguration() { this = "LambdaConfiguration" }
-
-  override predicate candidate(
-    Expr e1, Expr e2, ControlFlowElement scope, boolean exactScope, boolean isSuccessor
-  ) {
-    e1 = e2.(DelegateLikeCall).getExpr() and
-    exactScope = false and
-    scope = e2 and
-    isSuccessor = true
-    or
-    e1 = e2.(DelegateCreation).getArgument() and
-    exactScope = false and
-    scope = e2 and
-    isSuccessor = true
-    or
-    isLocalFunctionCallReceiver(e2, e1, _) and
-    exactScope = false and
-    scope = e2 and
-    isSuccessor = true
-  }
-}
-
-private predicate lambdaCallExpr(DataFlowCall call, ControlFlow::Node receiver) {
-  exists(LambdaConfiguration x, DelegateLikeCall dc |
-    x.hasExprPath(dc.getExpr(), receiver, dc, call.getControlFlowNode())
+private predicate lambdaCallExpr(DataFlowCall call, Expr receiver, ControlFlow::Node receiverCfn) {
+  exists(DelegateLikeCall dc |
+    call.(ExplicitDelegateLikeDataFlowCall).getCall() = dc and
+    receiver = dc.getExpr() and
+    receiverCfn = receiver.getControlFlowNode()
   )
   or
   // In local function calls, `F()`, we use the local function access `F`
   // to represent the receiver. Only needed for flow through captured variables.
-  exists(LambdaConfiguration x, LocalFunctionCall fc |
-    x.hasExprPath(fc.getAChild(), receiver, fc, call.getControlFlowNode())
+  exists(LocalFunctionCall fc |
+    receiver = fc.getAChild() and
+    receiverCfn = receiver.getControlFlowNode() and
+    fc.getControlFlowNode() = call.getControlFlowNode()
   )
 }
 
 /** Holds if `call` is a lambda call where `receiver` is the lambda expression. */
 predicate lambdaCall(DataFlowCall call, LambdaCallKind kind, Node receiver) {
   (
-    lambdaCallExpr(call, receiver.(ExprNode).getControlFlowNode()) and
+    lambdaCallExpr(call, receiver.asExpr(), _) and
     // local function calls can be resolved directly without a flow analysis
     not call.getControlFlowNode().getAstNode() instanceof LocalFunctionCall
     or
@@ -2903,9 +2884,9 @@ predicate lambdaCall(DataFlowCall call, LambdaCallKind kind, Node receiver) {
 }
 
 private predicate delegateCreationStep(Node nodeFrom, Node nodeTo) {
-  exists(LambdaConfiguration x, DelegateCreation dc |
-    x.hasExprPath(dc.getArgument(), nodeFrom.(ExprNode).getControlFlowNode(), dc,
-      nodeTo.(ExprNode).getControlFlowNode())
+  exists(DelegateCreation dc |
+    dc.getArgument() = nodeFrom.asExpr() and
+    dc = nodeTo.asExpr()
   )
 }
 
