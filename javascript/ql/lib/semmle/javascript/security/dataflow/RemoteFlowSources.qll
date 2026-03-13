@@ -85,16 +85,16 @@ class ClientSideRemoteFlowKind extends string {
    */
   predicate isUrl() { this = "browser-url" }
 
-  /** Holds if this is the `query` or `fragment` kind. */
+  /** Holds if this is the `browser-url-query` or `browser-url-fragment` kind. */
   predicate isQueryOrFragment() { this.isQuery() or this.isFragment() }
 
-  /** Holds if this is the `path`, `query`, or `fragment` kind. */
+  /** Holds if this is the `browser-url-path`, `browser-url-query`, or `browser-url-fragment` kind. */
   predicate isPathOrQueryOrFragment() { this.isPath() or this.isQuery() or this.isFragment() }
 
-  /** Holds if this is the `path` or `url` kind. */
+  /** Holds if this is the `browser-url-path` or `browser-url` kind. */
   predicate isPathOrUrl() { this.isPath() or this.isUrl() }
 
-  /** Holds if this is the `name` kind, describing sources derived from the window name, such as `window.name`. */
+  /** Holds if this is the `browser-window-name` kind, describing sources derived from the window name, such as `window.name`. */
   predicate isWindowName() { this = "browser-window-name" }
 
   /**

@@ -148,4 +148,4 @@ var server2 = http.createServer(function (req, res) {
 });
 
 const custom = require('testlib').getServerSource(); // $ Source[js/request-forgery]
-request(custom) // $ Alert[js/request-forgery];
+request(custom); // $ Alert[js/request-forgery]
