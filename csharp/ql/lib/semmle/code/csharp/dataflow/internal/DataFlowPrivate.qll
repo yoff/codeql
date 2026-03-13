@@ -283,7 +283,7 @@ module VariableCapture {
   private import semmle.code.csharp.controlflow.BasicBlocks as BasicBlocks
 
   private predicate closureFlowStep(ControlFlow::Nodes::ExprNode e1, ControlFlow::Nodes::ExprNode e2) {
-    e1 = LocalFlow::getALastEvalNode(e2)
+    e1.getExpr() = LocalFlow::getALastEvalNode(e2.getExpr())
     or
     exists(Ssa::Definition def, AssignableDefinition adef |
       LocalFlow::defAssigns(adef, _, _, e1) and
@@ -528,98 +528,58 @@ module SsaFlow {
 
 /** Provides predicates related to local data flow. */
 module LocalFlow {
-  class LocalExprStepConfiguration extends ControlFlowReachabilityConfiguration {
-    LocalExprStepConfiguration() { this = "LocalExprStepConfiguration" }
-
-    override predicate candidate(
-      Expr e1, Expr e2, ControlFlowElement scope, boolean exactScope, boolean isSuccessor
-    ) {
-      exactScope = false and
-      (
-        e1 = e2.(ParenthesizedExpr).getExpr() and
-        scope = e2 and
-        isSuccessor = true
-        or
-        e1 = e2.(NullCoalescingExpr).getAnOperand() and
-        scope = e2 and
-        isSuccessor = true
-        or
-        e1 = e2.(SuppressNullableWarningExpr).getExpr() and
-        scope = e2 and
-        isSuccessor = true
-        or
-        e2 =
-          any(ConditionalExpr ce |
-            e1 = ce.getThen() or
-            e1 = ce.getElse()
-          ) and
-        scope = e2 and
-        isSuccessor = true
-        or
-        e1 = e2.(Cast).getExpr() and
-        scope = e2 and
-        isSuccessor = true
-        or
-        // An `=` expression, where the result of the expression is used
-        e2 =
-          any(AssignExpr ae |
-            ae.getParent() = any(ControlFlowElement cfe | not cfe instanceof ExprStmt) and
-            e1 = ae.getRValue()
-          ) and
-        scope = e2 and
-        isSuccessor = true
-        or
-        e1 = e2.(ObjectCreation).getInitializer() and
-        scope = e2 and
-        isSuccessor = false
-        or
-        e1 = e2.(ArrayCreation).getInitializer() and
-        scope = e2 and
-        isSuccessor = false
-        or
-        e1 = e2.(SwitchExpr).getACase().getBody() and
-        scope = e2 and
-        isSuccessor = true
-        or
-        e1 = e2.(CheckedExpr).getExpr() and
-        scope = e2 and
-        isSuccessor = true
-        or
-        e1 = e2.(UncheckedExpr).getExpr() and
-        scope = e2 and
-        isSuccessor = true
-        or
-        e1 = e2.(CollectionExpression).getAnElement() and
-        e1 instanceof SpreadElementExpr and
-        scope = e2 and
-        isSuccessor = true
-        or
-        e1 = e2.(SpreadElementExpr).getExpr() and
-        scope = e2 and
-        isSuccessor = true
-        or
-        exists(WithExpr we |
-          scope = we and
-          isSuccessor = true
-        |
-          e1 = we.getExpr() and
-          e2 = we.getInitializer()
-          or
-          e1 = we.getInitializer() and
-          e2 = we
-        )
-        or
-        scope = any(AssignExpr ae | ae.getLValue().(TupleExpr) = e2 and ae.getRValue() = e1) and
-        isSuccessor = false
-        or
-        isSuccessor = true and
-        exists(ControlFlowElement cfe | cfe = e2.(TupleExpr).(PatternExpr).getPatternMatch() |
-          cfe.(IsExpr).getExpr() = e1 and scope = cfe
-          or
-          exists(Switch sw | sw.getACase() = cfe and sw.getExpr() = e1 and scope = sw)
-        )
+  predicate localExprStep(Expr e1, Expr e2) {
+    e1 = e2.(ParenthesizedExpr).getExpr()
+    or
+    e1 = e2.(NullCoalescingExpr).getAnOperand()
+    or
+    e1 = e2.(SuppressNullableWarningExpr).getExpr()
+    or
+    e2 =
+      any(ConditionalExpr ce |
+        e1 = ce.getThen() or
+        e1 = ce.getElse()
       )
-    }
+    or
+    e1 = e2.(Cast).getExpr()
+    or
+    // An `=` expression, where the result of the expression is used
+    e2 =
+      any(AssignExpr ae |
+        ae.getParent() = any(ControlFlowElement cfe | not cfe instanceof ExprStmt) and
+        e1 = ae.getRValue()
+      )
+    or
+    e1 = e2.(ObjectCreation).getInitializer()
+    or
+    e1 = e2.(ArrayCreation).getInitializer()
+    or
+    e1 = e2.(SwitchExpr).getACase().getBody()
+    or
+    e1 = e2.(CheckedExpr).getExpr()
+    or
+    e1 = e2.(UncheckedExpr).getExpr()
+    or
+    e1 = e2.(CollectionExpression).getAnElement() and
+    e1 instanceof SpreadElementExpr
+    or
+    e1 = e2.(SpreadElementExpr).getExpr()
+    or
+    exists(WithExpr we |
+      e1 = we.getExpr() and
+      e2 = we.getInitializer()
+      or
+      e1 = we.getInitializer() and
+      e2 = we
+    )
+    or
+    exists(AssignExpr ae | ae.getLValue().(TupleExpr) = e2 and ae.getRValue() = e1)
+    or
+    exists(ControlFlowElement cfe | cfe = e2.(TupleExpr).(PatternExpr).getPatternMatch() |
+      cfe.(IsExpr).getExpr() = e1
+      or
+      exists(Switch sw | sw.getACase() = cfe and sw.getExpr() = e1)
+    )
   }
 
   predicate defAssigns(
@@ -646,7 +606,7 @@ module LocalFlow {
   }
 
   predicate localFlowStepCommon(Node nodeFrom, Node nodeTo) {
-    hasNodePath(any(LocalExprStepConfiguration x), nodeFrom, nodeTo)
+    localExprStep(nodeFrom.asExpr(), nodeTo.asExpr())
     or
     defAssigns(nodeFrom, nodeTo)
     or
@@ -674,11 +634,12 @@ module LocalFlow {
   }
 
   /**
-   * Gets a node that may execute last in `n`, and which, when it executes last,
-   * will be the value of `n`.
+   * Gets a node that may execute last in `e`, and which, when it executes last,
+   * will be the value of `e`.
    */
-  ControlFlow::Nodes::ExprNode getALastEvalNode(ControlFlow::Nodes::ExprNode cfn) {
-    exists(Expr e | any(LocalExprStepConfiguration x).hasExprPath(_, result, e, cfn) |
+  Expr getALastEvalNode(Expr e) {
+    localExprStep(result, e) and
+    (
       e instanceof ConditionalExpr or
       e instanceof Cast or
       e instanceof NullCoalescingExpr or
@@ -702,9 +663,7 @@ module LocalFlow {
    * we add a reverse flow step from `[post] b ? x : y` to `[post] x` and to
    * `[post] y`, in order for the side-effect of `m` to reach both `x` and `y`.
    */
-  ControlFlow::Nodes::ExprNode getPostUpdateReverseStep(ControlFlow::Nodes::ExprNode e) {
-    result = getALastEvalNode(e)
-  }
+  Expr getPostUpdateReverseStep(Expr e) { result = getALastEvalNode(e) }
 
   /**
    * Holds if the value of `node2` is given by `node1`.
@@ -720,7 +679,7 @@ module LocalFlow {
     or
     defAssigns(node1, node2)
     or
-    hasNodePath(any(LocalExprStepConfiguration x), node1, node2) and
+    localExprStep(node1.asExpr(), node2.asExpr()) and
     (
       node2.asExpr() instanceof Cast or
       node2.asExpr() instanceof AssignExpr
@@ -765,12 +724,8 @@ predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo, string model) {
     or
     nodeTo = nodeFrom.(LocalFunctionCreationNode).getAnAccess(true)
     or
-    nodeTo.(PostUpdateNode).getPreUpdateNode().(ExprNode).getControlFlowNode() =
-      LocalFlow::getPostUpdateReverseStep(nodeFrom
-            .(PostUpdateNode)
-            .getPreUpdateNode()
-            .(ExprNode)
-            .getControlFlowNode())
+    nodeTo.(PostUpdateNode).getPreUpdateNode().asExpr() =
+      LocalFlow::getPostUpdateReverseStep(nodeFrom.(PostUpdateNode).getPreUpdateNode().asExpr())
   ) and
   model = ""
   or
@@ -1119,10 +1074,10 @@ private module Cached {
       (
         cfn.getExpr() instanceof Argument
         or
-        cfn =
-          LocalFlow::getPostUpdateReverseStep(any(ControlFlow::Nodes::ExprNode e |
-              exists(any(SourcePostUpdateNode p).getPreUpdateNode().asExprAtNode(e))
-            ))
+        cfn.getExpr() =
+          LocalFlow::getPostUpdateReverseStep(any(SourcePostUpdateNode p)
+                .getPreUpdateNode()
+                .asExpr())
       ) and
       exprMayHavePostUpdateNode(cfn.getExpr())
       or
