@@ -2378,133 +2378,51 @@ predicate storeStep(Node node1, ContentSet c, Node node2) {
   storeStepDelegateCall(node1, c, node2)
 }
 
-pragma[nomagic]
-private predicate isAssignExprLValueDescendant(Expr e) {
-  e = any(AssignExpr ae).getLValue()
-  or
-  exists(Expr parent |
-    isAssignExprLValueDescendant(parent) and
-    e = parent.getAChildExpr()
-  )
-}
-
-private class ReadStepConfiguration extends ControlFlowReachabilityConfiguration {
-  ReadStepConfiguration() { this = "ReadStepConfiguration" }
-
-  override predicate candidate(
-    Expr e1, Expr e2, ControlFlowElement scope, boolean exactScope, boolean isSuccessor
-  ) {
-    exactScope = false and
-    isSuccessor = true and
-    fieldOrPropertyRead(e1, _, e2) and
-    scope = e2
-    or
-    exactScope = false and
-    isSuccessor = true and
-    dynamicPropertyRead(e1, _, e2) and
-    scope = e2
-    or
-    exactScope = false and
-    isSuccessor = true and
-    arrayRead(e1, e2) and
-    scope = e2
-    or
-    exactScope = false and
-    e1 = e2.(AwaitExpr).getExpr() and
-    scope = e2 and
-    isSuccessor = true
-    or
-    exactScope = false and
-    e2 = e1.(TupleExpr).getAnArgument() and
-    scope = e1 and
-    isSuccessor = false
-  }
-
-  override predicate candidateDef(
-    Expr e, AssignableDefinition defTo, ControlFlowElement scope, boolean exactScope,
-    boolean isSuccessor
-  ) {
-    exists(ForeachStmt fs |
-      e = fs.getIterableExpr() and
-      defTo.(AssignableDefinitions::LocalVariableDefinition).getDeclaration() =
-        fs.getVariableDeclExpr() and
-      isSuccessor = true
-    |
-      scope = fs and
-      exactScope = true
-      or
-      scope = fs.getIterableExpr() and
-      exactScope = false
-      or
-      scope = fs.getVariableDeclExpr() and
-      exactScope = false
-    )
-    or
-    scope =
-      any(AssignExpr ae |
-        ae = defTo.(AssignableDefinitions::TupleAssignmentDefinition).getAssignment() and
-        isAssignExprLValueDescendant(e.(TupleExpr)) and
-        exactScope = false and
-        isSuccessor = true
-      )
-    or
-    scope =
-      any(TupleExpr te |
-        te.getAnArgument() = defTo.(AssignableDefinitions::LocalVariableDefinition).getDeclaration() and
-        e = te and
-        exactScope = false and
-        isSuccessor = false
-      )
-  }
-}
-
 private predicate readContentStep(Node node1, Content c, Node node2) {
-  exists(ReadStepConfiguration x |
-    hasNodePath(x, node1, node2) and
-    arrayRead(node1.asExpr(), node2.asExpr()) and
+  arrayRead(node1.asExpr(), node2.asExpr()) and
+  c instanceof ElementContent
+  or
+  exists(
+    ForeachStmt fs, Ssa::ExplicitDefinition def,
+    AssignableDefinitions::LocalVariableDefinition defTo
+  |
+    node1.asExpr() = fs.getIterableExpr() and
+    defTo.getDeclaration() = fs.getVariableDeclExpr() and
+    def.getADefinition() = defTo and
+    node2.(SsaDefinitionNode).getDefinition() = def and
     c instanceof ElementContent
+  )
+  or
+  node1 =
+    any(InstanceParameterAccessPreNode n |
+      n.getUnderlyingControlFlowNode() = node2.(ExprNode).getControlFlowNode() and
+      n.getParameter() = c.(PrimaryConstructorParameterContent).getParameter()
+    ) and
+  node2.asExpr() instanceof ParameterRead
+  or
+  // node1 = (..., node2, ...)
+  // node1.ItemX flows to node2
+  exists(TupleExpr te, int i, Expr item |
+    te = node1.asExpr() and
+    not te.isConstruction() and
+    c.(FieldContent).getField() = te.getType().(TupleType).getElement(i).getUnboundDeclaration() and
+    // node1 = (..., item, ...)
+    te.getArgument(i) = item
+  |
+    // item = (..., ..., ...) in node1 = (..., (..., ..., ...), ...)
+    node2.asExpr().(TupleExpr) = item
     or
-    exists(ForeachStmt fs, Ssa::ExplicitDefinition def |
-      x.hasDefPath(fs.getIterableExpr(), node1.getControlFlowNode(), def.getADefinition(),
-        def.getControlFlowNode()) and
-      node2.(SsaDefinitionNode).getDefinition() = def and
-      c instanceof ElementContent
+    // item = variable in node1 = (..., variable, ...)
+    exists(AssignableDefinitions::TupleAssignmentDefinition tad |
+      node2.(AssignableDefinitionNode).getDefinition() = tad and
+      tad.getLeaf() = item
     )
     or
-    node1 =
-      any(InstanceParameterAccessPreNode n |
-        n.getUnderlyingControlFlowNode() = node2.(ExprNode).getControlFlowNode() and
-        n.getParameter() = c.(PrimaryConstructorParameterContent).getParameter()
-      ) and
-    node2.asExpr() instanceof ParameterRead
-    or
-    // node1 = (..., node2, ...)
-    // node1.ItemX flows to node2
-    exists(TupleExpr te, int i, Expr item |
-      te = node1.asExpr() and
-      not te.isConstruction() and
-      c.(FieldContent).getField() = te.getType().(TupleType).getElement(i).getUnboundDeclaration() and
-      // node1 = (..., item, ...)
-      te.getArgument(i) = item
-    |
-      // item = (..., ..., ...) in node1 = (..., (..., ..., ...), ...)
-      node2.asExpr().(TupleExpr) = item and
-      hasNodePath(x, node1, node2)
-      or
-      // item = variable in node1 = (..., variable, ...)
-      exists(AssignableDefinitions::TupleAssignmentDefinition tad |
-        node2.(AssignableDefinitionNode).getDefinition() = tad and
-        tad.getLeaf() = item and
-        hasNodePath(x, node1, node2)
-      )
-      or
-      // item = variable in node1 = (..., variable, ...) in a case/is var (..., ...)
-      isPatternExprDescendant(te) and
-      exists(AssignableDefinitions::LocalVariableDefinition lvd |
-        node2.(AssignableDefinitionNode).getDefinition() = lvd and
-        lvd.getDeclaration() = item and
-        hasNodePath(x, node1, node2)
-      )
+    // item = variable in node1 = (..., variable, ...) in a case/is var (..., ...)
+    isPatternExprDescendant(te) and
+    exists(AssignableDefinitions::LocalVariableDefinition lvd |
+      node2.(AssignableDefinitionNode).getDefinition() = lvd and
+      lvd.getDeclaration() = item
     )
   )
   or
@@ -2535,14 +2453,12 @@ predicate readStep(Node node1, ContentSet c, Node node2) {
     c.isSingleton(cont)
   )
   or
-  exists(ReadStepConfiguration x | hasNodePath(x, node1, node2) |
-    fieldOrPropertyRead(node1.asExpr(), c, node2.asExpr())
-    or
-    dynamicPropertyRead(node1.asExpr(), c, node2.asExpr())
-    or
-    node2.asExpr().(AwaitExpr).getExpr() = node1.asExpr() and
-    c = getResultContent()
-  )
+  fieldOrPropertyRead(node1.asExpr(), c, node2.asExpr())
+  or
+  dynamicPropertyRead(node1.asExpr(), c, node2.asExpr())
+  or
+  node2.asExpr().(AwaitExpr).getExpr() = node1.asExpr() and
+  c = getResultContent()
   or
   FlowSummaryImpl::Private::Steps::summaryReadStep(node1.(FlowSummaryNode).getSummaryNode(), c,
     node2.(FlowSummaryNode).getSummaryNode())
