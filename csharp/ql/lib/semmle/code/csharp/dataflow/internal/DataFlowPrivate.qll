@@ -834,11 +834,11 @@ private class Argument extends Expr {
 }
 
 /**
- * Holds if `e` is an assignment of `src` to field or property `c` of `q`.
+ * Holds if there is an assignment of `src` to field or property `c` of `q`.
  *
  * `postUpdate` indicates whether the store targets a post-update node.
  */
-private predicate fieldOrPropertyStore(Expr e, ContentSet c, Expr src, Expr q, boolean postUpdate) {
+private predicate fieldOrPropertyStore(ContentSet c, Expr src, Expr q, boolean postUpdate) {
   exists(FieldOrProperty f |
     c = f.getContentSet() and
     (
@@ -861,25 +861,20 @@ private predicate fieldOrPropertyStore(Expr e, ContentSet c, Expr src, Expr q, b
       f = fa.getTarget() and
       src = def.getSource() and
       q = fa.getQualifier() and
-      e = def.getExpr() and
       postUpdate = true
     )
     or
     // `with` expression initializer, `x with { f = src }`
-    e =
-      any(WithExpr we |
-        exists(MemberInitializer mi |
-          q = we and
-          mi = we.getInitializer().getAMemberInitializer() and
-          f = mi.getInitializedMember() and
-          src = mi.getRValue() and
-          postUpdate = false
-        )
-      )
+    exists(WithExpr we, MemberInitializer mi |
+      q = we and
+      mi = we.getInitializer().getAMemberInitializer() and
+      f = mi.getInitializedMember() and
+      src = mi.getRValue() and
+      postUpdate = false
+    )
     or
     // Object initializer, `new C() { f = src }`
     exists(MemberInitializer mi |
-      e = q and
       mi = q.(ObjectInitializer).getAMemberInitializer() and
       q.getParent() instanceof ObjectCreation and
       f = mi.getInitializedMember() and
@@ -888,16 +883,13 @@ private predicate fieldOrPropertyStore(Expr e, ContentSet c, Expr src, Expr q, b
     )
     or
     // Tuple element, `(..., src, ...)` `f` is `ItemX` of tuple `q`
-    e =
-      any(TupleExpr te |
-        exists(int i |
-          e = q and
-          src = te.getArgument(i) and
-          te.isConstruction() and
-          f = q.getType().(TupleType).getElement(i) and
-          postUpdate = false
-        )
-      )
+    exists(TupleExpr te, int i |
+      te = q and
+      src = te.getArgument(i) and
+      te.isConstruction() and
+      f = q.getType().(TupleType).getElement(i) and
+      postUpdate = false
+    )
   )
   or
   // A write to a dynamic property
@@ -907,7 +899,6 @@ private predicate fieldOrPropertyStore(Expr e, ContentSet c, Expr src, Expr q, b
     c.isDynamicProperty(dp) and
     src = def.getSource() and
     q = dma.getQualifier() and
-    e = def.getExpr() and
     postUpdate = true
   )
 }
@@ -943,22 +934,20 @@ private predicate collectionStore(Expr src, CollectionExpression ce) {
 }
 
 /**
- * Holds if `e` is an expression that adds `src` to array `a`.
+ * Holds if there is an expression that adds `src` to array `a`.
  *
  * `postUpdate` indicates whether the store targets a post-update node.
  */
-private predicate arrayStore(Expr e, Expr src, Expr a, boolean postUpdate) {
+private predicate arrayStore(Expr src, Expr a, boolean postUpdate) {
   // Direct assignment, `a[i] = src`
   exists(AssignableDefinition def |
     a = def.getTargetAccess().(ArrayWrite).getQualifier() and
     src = def.getSource() and
-    e = def.getExpr() and
     postUpdate = true
   )
   or
   // Array initializer, `new [] { src }`
   src = a.(ArrayInitializer).getAnElement() and
-  e = a and
   postUpdate = false
   or
   // Member initializer, `new C { Array = { [i] = src } }`
@@ -966,7 +955,6 @@ private predicate arrayStore(Expr e, Expr src, Expr a, boolean postUpdate) {
     mi = a.(ObjectInitializer).getAMemberInitializer() and
     mi.getLValue() instanceof ArrayAccess and
     mi.getRValue() = src and
-    e = a and
     postUpdate = false
   )
 }
@@ -1149,9 +1137,9 @@ private module Cached {
       exprMayHavePostUpdateNode(cfn.getExpr())
       or
       exists(Expr e | e = cfn.getExpr() |
-        fieldOrPropertyStore(_, _, _, e, true)
+        fieldOrPropertyStore(_, _, e, true)
         or
-        arrayStore(_, _, e, true)
+        arrayStore(_, e, true)
         or
         // needed for reverse stores; e.g. `x.f1.f2 = y` induces
         // a store step of `f1` into `x`
@@ -2236,30 +2224,6 @@ predicate jumpStep(Node pred, Node succ) {
   succ = pred.(LocalFunctionCreationNode).getAnAccess(false)
 }
 
-private class StoreStepConfiguration extends ControlFlowReachabilityConfiguration {
-  StoreStepConfiguration() { this = "StoreStepConfiguration" }
-
-  override predicate candidate(
-    Expr e1, Expr e2, ControlFlowElement scope, boolean exactScope, boolean isSuccessor
-  ) {
-    exactScope = false and
-    fieldOrPropertyStore(scope, _, e1, e2, isSuccessor.booleanNot())
-    or
-    exactScope = false and
-    arrayStore(scope, e1, e2, isSuccessor.booleanNot())
-    or
-    exactScope = false and
-    isSuccessor = true and
-    collectionStore(e1, e2) and
-    scope = e2
-    or
-    exactScope = false and
-    isSuccessor = true and
-    isParamsArg(e2, e1, _) and
-    scope = e2
-  }
-}
-
 pragma[nomagic]
 private ContentSet getResultContent() {
   result.isProperty(any(SystemThreadingTasksTaskTClass c_).getResultProperty())
@@ -2282,21 +2246,17 @@ private predicate recordParameter(RecordType t, Parameter p, string name) {
 }
 
 private predicate storeContentStep(Node node1, Content c, Node node2) {
-  exists(StoreStepConfiguration x, ExprNode node, boolean postUpdate |
-    hasNodePath(x, node1, node) and
+  exists(ExprNode node, boolean postUpdate |
     if postUpdate = true then node = node2.(PostUpdateNode).getPreUpdateNode() else node = node2
   |
-    arrayStore(_, node1.asExpr(), node.getExpr(), postUpdate) and c instanceof ElementContent
+    arrayStore(node1.asExpr(), node.getExpr(), postUpdate) and c instanceof ElementContent
   )
   or
-  exists(StoreStepConfiguration x | hasNodePath(x, node1, node2) |
-    collectionStore(node1.asExpr(), node2.asExpr()) and c instanceof ElementContent
-  )
+  collectionStore(node1.asExpr(), node2.asExpr()) and c instanceof ElementContent
   or
-  exists(StoreStepConfiguration x, Expr arg, ControlFlow::Node callCfn |
-    x.hasExprPath(arg, node1.(ExprNode).getControlFlowNode(), _, callCfn) and
-    node2 = TParamsArgumentNode(callCfn) and
-    isParamsArg(_, arg, _) and
+  exists(Call call |
+    node2 = TParamsArgumentNode(call.getControlFlowNode()) and
+    isParamsArg(call, node1.asExpr(), _) and
     c instanceof ElementContent
   )
   or
@@ -2352,11 +2312,10 @@ predicate storeStep(Node node1, ContentSet c, Node node2) {
     c.isSingleton(cont)
   )
   or
-  exists(StoreStepConfiguration x, ExprNode node, boolean postUpdate |
-    hasNodePath(x, node1, node) and
+  exists(ExprNode node, boolean postUpdate |
     if postUpdate = true then node = node2.(PostUpdateNode).getPreUpdateNode() else node = node2
   |
-    fieldOrPropertyStore(_, c, node1.asExpr(), node.getExpr(), postUpdate)
+    fieldOrPropertyStore(c, node1.asExpr(), node.getExpr(), postUpdate)
   )
   or
   exists(Expr e |
@@ -2492,9 +2451,9 @@ predicate clearsContent(Node n, ContentSet c) {
     c.isSingleton(cont)
   )
   or
-  fieldOrPropertyStore(_, c, _, n.asExpr(), true)
+  fieldOrPropertyStore(c, _, n.asExpr(), true)
   or
-  fieldOrPropertyStore(_, c, _, n.(ObjectInitializerNode).getInitializer(), false)
+  fieldOrPropertyStore(c, _, n.(ObjectInitializerNode).getInitializer(), false)
   or
   FlowSummaryImpl::Private::Steps::summaryClearsContent(n.(FlowSummaryNode).getSummaryNode(), c)
   or
