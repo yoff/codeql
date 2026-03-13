@@ -618,6 +618,25 @@ module Public {
     LocalVariable asUninitialized() { result = this.(UninitializedNode).getLocalVariable() }
 
     /**
+     * Gets the uninitialized local variable corresponding to this node behind
+     * the given levels of indirection, if any.
+     */
+    LocalVariable asIndirectUninitialized(int indirectionIndex) {
+      exists(IndirectUninitializedNode indirectUninitializedNode |
+        this = indirectUninitializedNode and
+        indirectUninitializedNode.getIndirectionIndex() = indirectionIndex
+      |
+        result = indirectUninitializedNode.getLocalVariable()
+      )
+    }
+
+    /**
+     * Gets the uninitialized local variable corresponding to this node behind
+     * any levels of indirection, if any.
+     */
+    LocalVariable asIndirectUninitialized() { result = this.asIndirectUninitialized(_) }
+
+    /**
      * Gets the positional parameter corresponding to the node that represents
      * the value of the parameter after `index` number of loads, if any. For
      * example, in:
@@ -779,6 +798,34 @@ module Public {
 
     /** Gets the uninitialized local variable corresponding to this node. */
     LocalVariable getLocalVariable() { result = v }
+  }
+
+  /**
+   * The value of an uninitialized local variable behind one or more levels of
+   * indirection, viewed as a node in a data flow graph.
+   *
+   * NOTE: For the direct value of the uninitialized local variable, see
+   * `UninitializedNode`.
+   */
+  class IndirectUninitializedNode extends Node {
+    LocalVariable v;
+    int indirectionIndex;
+
+    IndirectUninitializedNode() {
+      exists(SsaImpl::Definition def, SsaImpl::SourceVariable sv |
+        def.getIndirectionIndex() = indirectionIndex and
+        indirectionIndex > 0 and // With `indirectionIndex` = 0, this class becomes the same as `UninitializedNode`.
+        def.getValue().asInstruction() instanceof UninitializedInstruction and
+        SsaImpl::defToNode(this, def, sv) and
+        v = sv.getBaseVariable().(SsaImpl::BaseIRVariable).getIRVariable().getAst()
+      )
+    }
+
+    /** Gets the uninitialized local variable corresponding to this node. */
+    LocalVariable getLocalVariable() { result = v }
+
+    /** Gets the level of indirection to get to this node. */
+    int getIndirectionIndex() { result = indirectionIndex }
   }
 
   /**
