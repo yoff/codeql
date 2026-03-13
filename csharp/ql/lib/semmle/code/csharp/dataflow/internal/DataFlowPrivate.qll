@@ -1551,35 +1551,15 @@ abstract private class ArgumentNodeImpl extends Node {
 }
 
 private module ArgumentNodes {
-  private class ArgumentConfiguration extends ControlFlowReachabilityConfiguration {
-    ArgumentConfiguration() { this = "ArgumentConfiguration" }
-
-    override predicate candidate(
-      Expr e1, Expr e2, ControlFlowElement scope, boolean exactScope, boolean isSuccessor
-    ) {
-      e1.(Argument).isArgumentOf(e2, _) and
-      exactScope = false and
-      isSuccessor = true and
-      if e2 instanceof PropertyWrite
-      then
-        exists(AssignableDefinition def |
-          def.getTargetAccess() = e2 and
-          scope = def.getExpr()
-        )
-      else scope = e2
-    }
-  }
-
   /** A data-flow node that represents an explicit call argument. */
   class ExplicitArgumentNode extends ArgumentNodeImpl {
     ExplicitArgumentNode() { this.asExpr() instanceof Argument }
 
     override predicate argumentOf(DataFlowCall call, ArgumentPosition pos) {
-      exists(ArgumentConfiguration x, Expr c, Argument arg |
+      exists(Expr c, Argument arg |
         arg = this.asExpr() and
         c = call.getExpr() and
-        arg.isArgumentOf(c, pos) and
-        x.hasExprPath(_, this.getControlFlowNode(), _, call.getControlFlowNode())
+        arg.isArgumentOf(c, pos)
       )
     }
   }
