@@ -406,7 +406,7 @@ Adds a new taint source. Most taint-tracking queries will use the new source.
 
 - **type**: Name of a type from which to evaluate **path**.
 - **path**: Access path leading to the source.
-- **kind**: Kind of source to add. See the section on :ref:`source kinds <threat-models-javascript>` for supported values.
+- **kind**: Kind of source to add. See the section on source kinds for a list of supported kinds.
 
 Example:
 
