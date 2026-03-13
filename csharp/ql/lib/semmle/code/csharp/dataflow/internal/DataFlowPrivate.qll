@@ -286,7 +286,7 @@ module VariableCapture {
     e1 = LocalFlow::getALastEvalNode(e2)
     or
     exists(Ssa::Definition def, AssignableDefinition adef |
-      LocalFlow::defAssigns(adef, _, e1) and
+      LocalFlow::defAssigns(adef, _, _, e1) and
       def.getAnUltimateDefinition().(Ssa::ExplicitDefinition).getADefinition() = adef and
       exists(def.getAReadAtNode(e2))
     )
@@ -379,7 +379,7 @@ module VariableCapture {
         this = def.getExpr().getAControlFlowNode()
       }
 
-      ControlFlow::Node getRhs() { LocalFlow::defAssigns(def, this, result) }
+      ControlFlow::Node getRhs() { LocalFlow::defAssigns(def, this, _, result) }
 
       CapturedVariable getVariable() { result = v }
     }
@@ -620,35 +620,22 @@ module LocalFlow {
         )
       )
     }
-
-    override predicate candidateDef(
-      Expr e, AssignableDefinition def, ControlFlowElement scope, boolean exactScope,
-      boolean isSuccessor
-    ) {
-      // Flow from source to definition
-      exactScope = false and
-      def.getSource() = e and
-      (
-        scope = def.getExpr() and
-        isSuccessor = true
-        or
-        scope = def.(AssignableDefinitions::PatternDefinition).getMatch().(IsExpr) and
-        isSuccessor = false
-        or
-        exists(Switch s |
-          s.getACase() = def.(AssignableDefinitions::PatternDefinition).getMatch() and
-          isSuccessor = true
-        |
-          scope = s.getExpr()
-          or
-          scope = s.getACase()
-        )
-      )
-    }
   }
 
-  predicate defAssigns(AssignableDefinition def, ControlFlow::Node cfnDef, ControlFlow::Node value) {
-    any(LocalExprStepConfiguration x).hasDefPath(_, value, def, cfnDef)
+  predicate defAssigns(
+    AssignableDefinition def, ControlFlow::Node cfnDef, Expr value, ControlFlow::Node valueCfn
+  ) {
+    def.getSource() = value and
+    valueCfn = value.getControlFlowNode() and
+    cfnDef = def.getExpr().getAControlFlowNode()
+  }
+
+  private predicate defAssigns(ExprNode value, AssignableDefinitionNode defNode) {
+    exists(ControlFlow::Node cfn, AssignableDefinition def, ControlFlow::Node cfnDef |
+      defAssigns(def, cfnDef, value.getExpr(), _) and
+      cfn = value.getControlFlowNode() and
+      defNode = TAssignableDefinitionNode(def, cfnDef)
+    )
   }
 
   /**
@@ -660,6 +647,8 @@ module LocalFlow {
 
   predicate localFlowStepCommon(Node nodeFrom, Node nodeTo) {
     hasNodePath(any(LocalExprStepConfiguration x), nodeFrom, nodeTo)
+    or
+    defAssigns(nodeFrom, nodeTo)
     or
     ThisFlow::adjacentThisRefs(nodeFrom, nodeTo) and
     nodeFrom != nodeTo
@@ -729,9 +718,10 @@ module LocalFlow {
       e instanceof ThisAccess or e instanceof BaseAccess
     )
     or
+    defAssigns(node1, node2)
+    or
     hasNodePath(any(LocalExprStepConfiguration x), node1, node2) and
     (
-      node2 instanceof AssignableDefinitionNode or
       node2.asExpr() instanceof Cast or
       node2.asExpr() instanceof AssignExpr
     )
