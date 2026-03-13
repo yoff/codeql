@@ -343,8 +343,8 @@ private class FunctionDeclaration extends Function {
   }
 }
 
-private class AssocFunction extends FunctionDeclaration {
-  AssocFunction() { this.isAssoc(_) }
+private class AssocFunctionDeclaration extends FunctionDeclaration {
+  AssocFunctionDeclaration() { this.isAssoc(_) }
 }
 
 pragma[nomagic]
@@ -1114,10 +1114,10 @@ private Trait getCallExprTraitQualifier(CallExpr ce) {
 }
 
 pragma[nomagic]
-private predicate nonAssocFunction(ItemNode i) { not i instanceof AssocFunction }
+private predicate nonAssocFunction(ItemNode i) { not i instanceof AssocFunctionDeclaration }
 
 /**
- * A call expression that can resolve to something that is not an associated
+ * A call expression that can only resolve to something that is not an associated
  * function, and hence does not need type inference for resolution.
  */
 private class NonAssocCallExpr extends CallExpr {
@@ -1201,9 +1201,7 @@ private module ContextTyping {
   abstract class ContextTypedCallCand extends AstNode {
     abstract Type getTypeArgument(TypeArgumentPosition apos, TypePath path);
 
-    private predicate hasTypeArgument(TypeArgumentPosition apos) {
-      exists(this.getTypeArgument(apos, _))
-    }
+    predicate hasTypeArgument(TypeArgumentPosition apos) { exists(this.getTypeArgument(apos, _)) }
 
     /**
      * Holds if this call resolves to `target` inside `i`, and the return type
@@ -2209,7 +2207,7 @@ private module AssocFunctionResolution {
      * in `derefChain` and `borrow`.
      */
     pragma[nomagic]
-    AssocFunction resolveCallTarget(
+    AssocFunctionDeclaration resolveCallTarget(
       ImplOrTraitItemNode i, FunctionPosition selfPos, DerefChain derefChain, BorrowKind borrow
     ) {
       exists(AssocFunctionCallCand afcc |
@@ -2288,7 +2286,9 @@ private module AssocFunctionResolution {
       exists(getCallExprPathQualifier(this)) and
       // even if a target cannot be resolved by path resolution, it may still
       // be possible to resolve a blanket implementation (so not `forex`)
-      forall(ItemNode i | i = CallExprImpl::getResolvedFunction(this) | i instanceof AssocFunction)
+      forall(ItemNode i | i = CallExprImpl::getResolvedFunction(this) |
+        i instanceof AssocFunctionDeclaration
+      )
     }
 
     override predicate hasNameAndArity(string name, int arity) {
@@ -2373,7 +2373,9 @@ private module AssocFunctionResolution {
   }
 
   pragma[nomagic]
-  private AssocFunction getAssocFunctionSuccessor(ImplOrTraitItemNode i, string name, int arity) {
+  private AssocFunctionDeclaration getAssocFunctionSuccessor(
+    ImplOrTraitItemNode i, string name, int arity
+  ) {
     result = i.getASuccessor(name) and
     arity = result.getNumberOfParamsInclSelf()
   }
@@ -2488,7 +2490,7 @@ private module AssocFunctionResolution {
     }
 
     pragma[nomagic]
-    AssocFunction resolveCallTargetCand(ImplOrTraitItemNode i) {
+    AssocFunctionDeclaration resolveCallTargetCand(ImplOrTraitItemNode i) {
       exists(string name, int arity |
         this.selfArgIsInstantiationOf(i, name, arity) and
         result = getAssocFunctionSuccessor(i, name, arity)
@@ -2497,7 +2499,7 @@ private module AssocFunctionResolution {
 
     /** Gets the associated function targeted by this call, if any. */
     pragma[nomagic]
-    AssocFunction resolveCallTarget(ImplOrTraitItemNode i) {
+    AssocFunctionDeclaration resolveCallTarget(ImplOrTraitItemNode i) {
       result = this.resolveCallTargetCand(i) and
       not FunctionOverloading::functionResolutionDependsOnArgument(i, result, _, _)
       or
@@ -2896,7 +2898,7 @@ private module FunctionCallMatchingInput implements MatchingWithEnvironmentInput
       result = this.getInferredNonSelfType(pos, path)
     }
 
-    private AssocFunction getTarget(ImplOrTraitItemNode i, string derefChainBorrow) {
+    private AssocFunctionDeclaration getTarget(ImplOrTraitItemNode i, string derefChainBorrow) {
       exists(DerefChain derefChain, BorrowKind borrow |
         derefChainBorrow = encodeDerefChainBorrow(derefChain, borrow) and
         result = super.resolveCallTarget(i, _, derefChain, borrow) // mutual recursion; resolving method calls requires resolving types and vice versa
@@ -2904,10 +2906,7 @@ private module FunctionCallMatchingInput implements MatchingWithEnvironmentInput
     }
 
     override Declaration getTarget(string derefChainBorrow) {
-      exists(ImplOrTraitItemNodeOption i, AssocFunction f |
-        f = this.getTarget(i.asSome(), derefChainBorrow) and
-        result = TFunctionDeclaration(i, f)
-      )
+      exists(ImplOrTraitItemNode i | result.isAssocFunction(i, this.getTarget(i, derefChainBorrow)))
     }
 
     pragma[nomagic]
@@ -2926,7 +2925,9 @@ private module FunctionCallMatchingInput implements MatchingWithEnvironmentInput
     }
   }
 
-  private class NonAssocFunctionCallAccess extends Access instanceof NonAssocCallExpr {
+  private class NonAssocFunctionCallAccess extends Access instanceof NonAssocCallExpr,
+    CallExprImpl::CallExprCall
+  {
     pragma[nomagic]
     override Type getTypeArgument(TypeArgumentPosition apos, TypePath path) {
       result = NonAssocCallExpr.super.getTypeArgument(apos, path)
@@ -2949,11 +2950,9 @@ private module FunctionCallMatchingInput implements MatchingWithEnvironmentInput
 
     pragma[nomagic]
     private Declaration getTarget() {
-      exists(ImplOrTraitItemNodeOption i, FunctionDeclaration f |
-        f = super.resolveCallTargetViaPathResolution() and
-        f.isDirectlyFor(i) and
-        result = TFunctionDeclaration(i, f)
-      )
+      result =
+        TFunctionDeclaration(ImplOrTraitItemNodeOption::none_(),
+          super.resolveCallTargetViaPathResolution())
     }
 
     override Declaration getTarget(string derefChainBorrow) {
@@ -2964,9 +2963,16 @@ private module FunctionCallMatchingInput implements MatchingWithEnvironmentInput
     pragma[nomagic]
     override predicate hasUnknownTypeAt(string derefChainBorrow, FunctionPosition pos, TypePath path) {
       derefChainBorrow = noDerefChainBorrow() and
-      exists(ImplOrTraitItemNodeOption i, FunctionDeclaration f |
-        TFunctionDeclaration(i, f) = this.getTarget() and
-        this.hasUnknownTypeAt(i.asSome(), f, pos, path)
+      exists(FunctionDeclaration f, TypeParameter tp |
+        f = super.resolveCallTargetViaPathResolution() and
+        pos.isReturn() and
+        tp = f.getReturnType(_, path) and
+        not tp = f.getParameterType(_, _, _) and
+        // check that no explicit type arguments have been supplied for `tp`
+        not exists(TypeArgumentPosition tapos |
+          this.hasTypeArgument(tapos) and
+          TTypeParamTypeParameter(tapos.asTypeParam()) = tp
+        )
       )
     }
   }
@@ -3135,6 +3141,11 @@ private module TupleLikeConstructionMatchingInput implements MatchingInputSig {
   class Declaration = TupleLikeConstructor;
 
   class Access extends NonAssocCallExpr, ContextTyping::ContextTypedCallCand {
+    Access() {
+      this instanceof CallExprImpl::TupleStructExpr or
+      this instanceof CallExprImpl::TupleVariantExpr
+    }
+
     override Type getTypeArgument(TypeArgumentPosition apos, TypePath path) {
       result = NonAssocCallExpr.super.getTypeArgument(apos, path)
     }

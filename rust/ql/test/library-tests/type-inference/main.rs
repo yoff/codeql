@@ -2698,7 +2698,7 @@ mod context_typed {
         let s = Default::default(); // $ target=default type=s:S
         S::f(s); // $ target=f
 
-        let z = free_function(); // $ target=free_function MISSING: type=z:i32
+        let z = free_function(); // $ target=free_function type=z:i32
         x.push(z); // $ target=push
     }
 }

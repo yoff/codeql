@@ -12195,10 +12195,13 @@ inferType
 | main.rs:2698:17:2698:34 | ...::default(...) |  | main.rs:2639:5:2640:13 | S |
 | main.rs:2699:9:2699:15 | ...::f(...) |  | {EXTERNAL LOCATION} | () |
 | main.rs:2699:14:2699:14 | s |  | main.rs:2639:5:2640:13 | S |
+| main.rs:2701:13:2701:13 | z |  | {EXTERNAL LOCATION} | i32 |
+| main.rs:2701:17:2701:31 | free_function(...) |  | {EXTERNAL LOCATION} | i32 |
 | main.rs:2702:9:2702:9 | x |  | {EXTERNAL LOCATION} | Vec |
 | main.rs:2702:9:2702:9 | x | A | {EXTERNAL LOCATION} | Global |
 | main.rs:2702:9:2702:9 | x | T | {EXTERNAL LOCATION} | i32 |
 | main.rs:2702:9:2702:17 | x.push(...) |  | {EXTERNAL LOCATION} | () |
+| main.rs:2702:16:2702:16 | z |  | {EXTERNAL LOCATION} | i32 |
 | main.rs:2709:14:2709:17 | SelfParam |  | main.rs:2707:5:2715:5 | Self [trait MyTrait] |
 | main.rs:2712:14:2712:18 | SelfParam |  | {EXTERNAL LOCATION} | & |
 | main.rs:2712:14:2712:18 | SelfParam | TRef | main.rs:2707:5:2715:5 | Self [trait MyTrait] |
