@@ -5,112 +5,49 @@ private import TypeAbstraction
 private import TypeMention
 private import TypeInference
 
-private signature predicate includeSelfSig();
-
-// We construct `FunctionPosition` and `FunctionPositionAdj` using two different underlying
-// `newtype`s in order to prevent unintended mixing of the two
-private module MkFunctionPosition<includeSelfSig/0 includeSelf> {
-  private newtype TFunctionPosition =
-    TArgumentFunctionPosition(ArgumentPosition pos) {
-      if pos.isSelf() then includeSelf() else any()
-    } or
-    TReturnFunctionPosition()
-
-  class FunctionPosition extends TFunctionPosition {
-    int asPosition() { result = this.asArgumentPosition().asPosition() }
-
-    predicate isPosition() { exists(this.asPosition()) }
-
-    ArgumentPosition asArgumentPosition() { this = TArgumentFunctionPosition(result) }
-
-    predicate isTypeQualifier() { this.asArgumentPosition().isTypeQualifier() }
-
-    predicate isReturn() { this = TReturnFunctionPosition() }
-
-    TypeMention getTypeMention(Function f) {
-      result = f.getParam(this.asPosition()).getTypeRepr()
-      or
-      this.isReturn() and
-      result = getReturnTypeMention(f)
-    }
-
-    string toString() {
-      result = this.asArgumentPosition().toString()
-      or
-      this.isReturn() and
-      result = "(return)"
-    }
-  }
-}
-
-private predicate any_() { any() }
+private newtype TFunctionPosition =
+  TArgumentFunctionPosition(ArgumentPosition pos) { not pos.isSelf() } or
+  TReturnFunctionPosition()
 
 /**
- * A position of a type related to a function.
+ * A function-call adjusted position of a type related to a function.
  *
- * Either `self`, `return`, or a positional parameter index.
+ * Either `return` or a positional parameter index, where `self` is translated
+ * to position `0` and subsequent positional parameters at index `i` are
+ * translated to position `i + 1`.
  */
-final class FunctionPosition extends MkFunctionPosition<any_/0>::FunctionPosition {
-  predicate isSelf() { this.asArgumentPosition().isSelf() }
+class FunctionPosition extends TFunctionPosition {
+  int asPosition() { result = this.asArgumentPosition().asPosition() }
 
-  predicate isSelfOrTypeQualifier() { this.isSelf() or this.isTypeQualifier() }
+  predicate isPosition() { exists(this.asPosition()) }
 
-  override TypeMention getTypeMention(Function f) {
-    result = super.getTypeMention(f)
+  ArgumentPosition asArgumentPosition() { this = TArgumentFunctionPosition(result) }
+
+  predicate isTypeQualifier() { this.asArgumentPosition().isTypeQualifier() }
+
+  predicate isReturn() { this = TReturnFunctionPosition() }
+
+  TypeMention getTypeMention(Function f) {
+    (
+      if f instanceof Method
+      then
+        result = f.getParam(this.asPosition() - 1).getTypeRepr()
+        or
+        result = getSelfParamTypeMention(f.getSelfParam()) and
+        this.asPosition() = 0
+      else result = f.getParam(this.asPosition()).getTypeRepr()
+    )
     or
-    this.isSelf() and
-    result = getSelfParamTypeMention(f.getSelfParam())
+    this.isReturn() and
+    result = getReturnTypeMention(f)
   }
 
-  /**
-   * Gets the corresponding position when function call syntax is used, assuming
-   * this position is for a method.
-   */
-  pragma[nomagic]
-  FunctionPositionAdj getFunctionCallAdjusted() {
-    this.isReturn() and result.isReturn()
+  string toString() {
+    result = this.asArgumentPosition().toString()
     or
-    this.isTypeQualifier() and
-    result.isTypeQualifier()
-    or
-    this.isSelf() and result.asPosition() = 0
-    or
-    result.asPosition() = this.asPosition() + 1
+    this.isReturn() and
+    result = "(return)"
   }
-
-  /**
-   * Gets the corresponding position when function call syntax is used, assuming
-   * this position is _not_ for a method.
-   */
-  pragma[nomagic]
-  FunctionPositionAdj asAdjusted() {
-    this.isReturn() and result.isReturn()
-    or
-    this.isTypeQualifier() and
-    result.isTypeQualifier()
-    or
-    result.asPosition() = this.asPosition()
-  }
-
-  /**
-   * Gets the corresponding position when `f` is invoked via function call
-   * syntax.
-   */
-  bindingset[f]
-  FunctionPositionAdj getFunctionCallAdjusted(Function f) {
-    if f.hasSelfParam() then result = this.getFunctionCallAdjusted() else result = this.asAdjusted()
-  }
-}
-
-private predicate none_() { none() }
-
-/**
- * A function-call adjust position of a type related to a function.
- *
- * Either `return` or a positional parameter index.
- */
-final class FunctionPositionAdj extends MkFunctionPosition<none_/0>::FunctionPosition {
-  FunctionPosition asNonAdjusted() { this = result.asAdjusted() }
 }
 
 /**
@@ -119,20 +56,6 @@ final class FunctionPositionAdj extends MkFunctionPosition<none_/0>::FunctionPos
  */
 module FunctionPositionMatchingInput {
   class DeclarationPosition = FunctionPosition;
-
-  class AccessPosition = DeclarationPosition;
-
-  predicate accessDeclarationPositionMatch(AccessPosition apos, DeclarationPosition dpos) {
-    apos = dpos
-  }
-}
-
-/**
- * A helper module for implementing `Matching(WithEnvironment)InputSig` with
- * `DeclarationPosition = AccessPosition = FunctionPositionAdj`.
- */
-module FunctionPositionAdjMatchingInput {
-  class DeclarationPosition = FunctionPositionAdj;
 
   class AccessPosition = DeclarationPosition;
 
@@ -378,10 +301,10 @@ signature module ArgsAreInstantiationsOfInputSig {
    * `tp` is a type parameter of the trait being implemented by `f` or the trait to which
    * `f` belongs.
    *
-   * `posAdj` is one of the function-call adjusted positions in `f` in which the relevant
+   * `pos` is one of the function-call adjusted positions in `f` in which the relevant
    * type occurs.
    */
-  predicate toCheck(ImplOrTraitItemNode i, Function f, TypeParameter tp, FunctionPositionAdj posAdj);
+  predicate toCheck(ImplOrTraitItemNode i, Function f, TypeParameter tp, FunctionPosition pos);
 
   /** A call whose argument types are to be checked. */
   class Call {
@@ -389,7 +312,7 @@ signature module ArgsAreInstantiationsOfInputSig {
 
     Location getLocation();
 
-    Type getArgType(FunctionPositionAdj posAdj, TypePath path);
+    Type getArgType(FunctionPosition pos, TypePath path);
 
     predicate hasTargetCand(ImplOrTraitItemNode i, Function f);
   }
@@ -403,9 +326,9 @@ signature module ArgsAreInstantiationsOfInputSig {
 module ArgsAreInstantiationsOf<ArgsAreInstantiationsOfInputSig Input> {
   pragma[nomagic]
   private predicate toCheckRanked(
-    ImplOrTraitItemNode i, Function f, TypeParameter tp, FunctionPositionAdj posAdj, int rnk
+    ImplOrTraitItemNode i, Function f, TypeParameter tp, FunctionPosition pos, int rnk
   ) {
-    Input::toCheck(i, f, tp, posAdj) and
+    Input::toCheck(i, f, tp, pos) and
     tp =
       rank[rnk + 1](TypeParameter tp0, int j |
         Input::toCheck(i, f, tp0, _) and
@@ -417,59 +340,53 @@ module ArgsAreInstantiationsOf<ArgsAreInstantiationsOfInputSig Input> {
 
   pragma[nomagic]
   private predicate toCheck(
-    ImplOrTraitItemNode i, Function f, TypeParameter tp, FunctionPositionAdj posAdj,
-    AssocFunctionType t
+    ImplOrTraitItemNode i, Function f, TypeParameter tp, FunctionPosition pos, AssocFunctionType t
   ) {
-    exists(FunctionPosition pos |
-      Input::toCheck(i, f, tp, posAdj) and
-      t.appliesTo(f, i, pos) and
-      posAdj = pos.getFunctionCallAdjusted(f)
-    )
+    Input::toCheck(i, f, tp, pos) and
+    t.appliesTo(f, i, pos)
   }
 
-  private newtype TCallAndPosAdj =
-    MkCallAndPosAdj(Input::Call call, FunctionPositionAdj posAdj) {
-      exists(call.getArgType(posAdj, _))
-    }
+  private newtype TCallAndPos =
+    MkCallAndPos(Input::Call call, FunctionPosition pos) { exists(call.getArgType(pos, _)) }
 
   /** A call tagged with a function-call adjusted position. */
-  private class CallAndPosAdj extends MkCallAndPosAdj {
+  private class CallAndPos extends MkCallAndPos {
     Input::Call call;
-    FunctionPositionAdj posAdj;
+    FunctionPosition pos;
 
-    CallAndPosAdj() { this = MkCallAndPosAdj(call, posAdj) }
+    CallAndPos() { this = MkCallAndPos(call, pos) }
 
     Input::Call getCall() { result = call }
 
-    FunctionPositionAdj getPosAdj() { result = posAdj }
+    FunctionPosition getPos() { result = pos }
 
     Location getLocation() { result = call.getLocation() }
 
-    Type getTypeAt(TypePath path) { result = call.getArgType(posAdj, path) }
+    Type getTypeAt(TypePath path) { result = call.getArgType(pos, path) }
 
-    string toString() { result = call.toString() + " [arg " + posAdj + "]" }
+    string toString() { result = call.toString() + " [arg " + pos + "]" }
   }
 
   pragma[nomagic]
   private predicate potentialInstantiationOf0(
-    CallAndPosAdj cp, Input::Call call, TypeParameter tp, FunctionPositionAdj posAdj, Function f,
+    CallAndPos cp, Input::Call call, TypeParameter tp, FunctionPosition pos, Function f,
     TypeAbstraction abs, AssocFunctionType constraint
   ) {
-    cp = MkCallAndPosAdj(call, pragma[only_bind_into](posAdj)) and
+    cp = MkCallAndPos(call, pragma[only_bind_into](pos)) and
     call.hasTargetCand(abs, f) and
-    toCheck(abs, f, tp, pragma[only_bind_into](posAdj), constraint)
+    toCheck(abs, f, tp, pragma[only_bind_into](pos), constraint)
   }
 
   private module ArgIsInstantiationOfToIndexInput implements
-    IsInstantiationOfInputSig<CallAndPosAdj, AssocFunctionType>
+    IsInstantiationOfInputSig<CallAndPos, AssocFunctionType>
   {
     pragma[nomagic]
     predicate potentialInstantiationOf(
-      CallAndPosAdj cp, TypeAbstraction abs, AssocFunctionType constraint
+      CallAndPos cp, TypeAbstraction abs, AssocFunctionType constraint
     ) {
-      exists(Input::Call call, TypeParameter tp, FunctionPositionAdj posAdj, int rnk, Function f |
-        potentialInstantiationOf0(cp, call, tp, posAdj, f, abs, constraint) and
-        toCheckRanked(abs, f, tp, posAdj, rnk)
+      exists(Input::Call call, TypeParameter tp, FunctionPosition pos, int rnk, Function f |
+        potentialInstantiationOf0(cp, call, tp, pos, f, abs, constraint) and
+        toCheckRanked(abs, f, tp, pos, rnk)
       |
         rnk = 0
         or
@@ -481,15 +398,15 @@ module ArgsAreInstantiationsOf<ArgsAreInstantiationsOfInputSig Input> {
   }
 
   private module ArgIsInstantiationOfToIndex =
-    ArgIsInstantiationOf<CallAndPosAdj, ArgIsInstantiationOfToIndexInput>;
+    ArgIsInstantiationOf<CallAndPos, ArgIsInstantiationOfToIndexInput>;
 
   pragma[nomagic]
   private predicate argIsInstantiationOf(
     Input::Call call, ImplOrTraitItemNode i, Function f, int rnk
   ) {
-    exists(FunctionPositionAdj posAdj |
-      ArgIsInstantiationOfToIndex::argIsInstantiationOf(MkCallAndPosAdj(call, posAdj), i, _) and
-      toCheckRanked(i, f, _, posAdj, rnk)
+    exists(FunctionPosition pos |
+      ArgIsInstantiationOfToIndex::argIsInstantiationOf(MkCallAndPos(call, pos), i, _) and
+      toCheckRanked(i, f, _, pos, rnk)
     )
   }
 
@@ -521,11 +438,11 @@ module ArgsAreInstantiationsOf<ArgsAreInstantiationsOfInputSig Input> {
   }
 
   private module ArgsAreNotInstantiationOfInput implements
-    IsInstantiationOfInputSig<CallAndPosAdj, AssocFunctionType>
+    IsInstantiationOfInputSig<CallAndPos, AssocFunctionType>
   {
     pragma[nomagic]
     predicate potentialInstantiationOf(
-      CallAndPosAdj cp, TypeAbstraction abs, AssocFunctionType constraint
+      CallAndPos cp, TypeAbstraction abs, AssocFunctionType constraint
     ) {
       potentialInstantiationOf0(cp, _, _, _, _, abs, constraint)
     }
@@ -534,13 +451,13 @@ module ArgsAreInstantiationsOf<ArgsAreInstantiationsOfInputSig Input> {
   }
 
   private module ArgsAreNotInstantiationOf =
-    ArgIsInstantiationOf<CallAndPosAdj, ArgsAreNotInstantiationOfInput>;
+    ArgIsInstantiationOf<CallAndPos, ArgsAreNotInstantiationOfInput>;
 
   pragma[nomagic]
   private predicate argsAreNotInstantiationsOf0(
-    Input::Call call, FunctionPositionAdj posAdj, ImplOrTraitItemNode i
+    Input::Call call, FunctionPosition pos, ImplOrTraitItemNode i
   ) {
-    ArgsAreNotInstantiationOf::argIsNotInstantiationOf(MkCallAndPosAdj(call, posAdj), i, _, _)
+    ArgsAreNotInstantiationOf::argIsNotInstantiationOf(MkCallAndPos(call, pos), i, _, _)
   }
 
   /**
@@ -551,10 +468,10 @@ module ArgsAreInstantiationsOf<ArgsAreInstantiationsOfInputSig Input> {
    */
   pragma[nomagic]
   predicate argsAreNotInstantiationsOf(Input::Call call, ImplOrTraitItemNode i, Function f) {
-    exists(FunctionPositionAdj posAdj |
-      argsAreNotInstantiationsOf0(call, posAdj, i) and
+    exists(FunctionPosition pos |
+      argsAreNotInstantiationsOf0(call, pos, i) and
       call.hasTargetCand(i, f) and
-      Input::toCheck(i, f, _, posAdj)
+      Input::toCheck(i, f, _, pos)
     )
   }
 }
