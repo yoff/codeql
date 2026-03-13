@@ -1825,27 +1825,6 @@ private module OutNodes {
     }
   }
 
-  class ObjectOrCollectionInitializerConfiguration extends ControlFlowReachabilityConfiguration {
-    ObjectOrCollectionInitializerConfiguration() {
-      this = "ObjectOrCollectionInitializerConfiguration"
-    }
-
-    override predicate candidate(
-      Expr e1, Expr e2, ControlFlowElement scope, boolean exactScope, boolean isSuccessor
-    ) {
-      exactScope = false and
-      scope = e1 and
-      isSuccessor = true and
-      exists(ObjectOrCollectionInitializer init | init = e1.(ObjectCreation).getInitializer() |
-        // E.g. `new Dictionary<int, string>{ {0, "a"}, {1, "b"} }`
-        e2 = init.(CollectionInitializer).getAnElementInitializer()
-        or
-        // E.g. `new Dictionary<int, string>() { [0] = "a", [1] = "b" }`
-        e2 = init.(ObjectInitializer).getAMemberInitializer().getLValue()
-      )
-    }
-  }
-
   /**
    * A data-flow node that reads a value returned by a callable using an
    * `out` or `ref` parameter.
@@ -2672,8 +2651,13 @@ module PostUpdateNodes {
 
     override predicate argumentOf(DataFlowCall call, ArgumentPosition pos) {
       pos.isQualifier() and
-      any(ObjectOrCollectionInitializerConfiguration x)
-          .hasExprPath(_, cfn, _, call.getControlFlowNode())
+      exists(ObjectOrCollectionInitializer init | init = oc.getInitializer() |
+        // E.g. `new Dictionary<int, string>{ {0, "a"}, {1, "b"} }`
+        call.getExpr() = init.(CollectionInitializer).getAnElementInitializer()
+        or
+        // E.g. `new Dictionary<int, string>() { [0] = "a", [1] = "b" }`
+        call.getExpr() = init.(ObjectInitializer).getAMemberInitializer().getLValue()
+      )
     }
 
     override DataFlowCallable getEnclosingCallableImpl() {
