@@ -2,7 +2,6 @@ private import csharp
 private import DataFlowPublic
 private import DataFlowDispatch
 private import DataFlowImplCommon
-private import ControlFlowReachability
 private import FlowSummaryImpl as FlowSummaryImpl
 private import semmle.code.csharp.dataflow.FlowSummary as FlowSummary
 private import semmle.code.csharp.dataflow.internal.ExternalFlow
@@ -257,24 +256,6 @@ private module ThisFlow {
       thisRank(n2, bb2, 1)
     )
   }
-}
-
-/**
- * Holds if there is a control-flow path from `n1` to `n2`. `n2` is either an
- * expression node or an SSA definition node.
- */
-pragma[nomagic]
-predicate hasNodePath(ControlFlowReachabilityConfiguration conf, ExprNode n1, Node n2) {
-  exists(ControlFlow::Node cfn1, ControlFlow::Node cfn2 | conf.hasExprPath(_, cfn1, _, cfn2) |
-    cfn1 = n1.getControlFlowNode() and
-    cfn2 = n2.(ExprNode).getControlFlowNode()
-  )
-  or
-  exists(ControlFlow::Node cfn, AssignableDefinition def, ControlFlow::Node cfnDef |
-    conf.hasDefPath(_, cfn, def, cfnDef) and
-    cfn = n1.getControlFlowNode() and
-    n2 = TAssignableDefinitionNode(def, cfnDef)
-  )
 }
 
 /** Provides logic related to captured variables. */
