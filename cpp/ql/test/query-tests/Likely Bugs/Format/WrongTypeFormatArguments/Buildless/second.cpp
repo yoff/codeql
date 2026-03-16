@@ -10,8 +10,8 @@ void test_size_t() {
 
     printf("%zd", s); // GOOD
     printf("%zi", s); // GOOD
-    printf("%zu", s); // GOOD [FALSE POSITIVE]
-    printf("%zx", s); // GOOD [FALSE POSITIVE]
+    printf("%zu", s); // GOOD (we generally permits signedness changes) [FALSE POSITIVE]
+    printf("%zx", s); // GOOD (we generally permits signedness changes) [FALSE POSITIVE]
     printf("%d", s); // BAD
     printf("%ld", s); // BAD
     printf("%lld", s); // BAD
