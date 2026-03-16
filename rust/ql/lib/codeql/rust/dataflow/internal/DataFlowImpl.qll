@@ -1157,6 +1157,25 @@ private module Cached {
   cached
   predicate sinkNode(Node n, string kind) { n.(FlowSummaryNode).isSink(kind, _) }
 
+  /** Holds if `n` is a flow barrier of kind `kind`. */
+  cached
+  predicate barrierNode(Node n, string kind) {
+    exists(
+      FlowSummaryImpl::Public::BarrierElement b,
+      FlowSummaryImpl::Private::SummaryComponentStack stack
+    |
+      FlowSummaryImpl::Private::barrierSpec(b, stack, kind, _)
+    |
+      n = FlowSummaryImpl::StepsInput::getSourceNode(b, stack, false)
+      or
+      // For barriers like `Argument[0]` we want to target the pre-update node
+      n =
+        FlowSummaryImpl::StepsInput::getSourceNode(b, stack, true)
+            .(PostUpdateNode)
+            .getPreUpdateNode()
+    )
+  }
+
   /**
    * A step in a flow summary defined using `OptionalStep[name]`. An `OptionalStep` is "opt-in", which means
    * that by default the step is not present in the flow summary and needs to be explicitly enabled by defining
