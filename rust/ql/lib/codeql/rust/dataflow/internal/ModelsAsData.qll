@@ -44,6 +44,7 @@
  */
 
 private import rust
+private import codeql.rust.dataflow.FlowBarrier
 private import codeql.rust.dataflow.FlowSummary
 private import codeql.rust.dataflow.FlowSource
 private import codeql.rust.dataflow.FlowSink
@@ -235,6 +236,22 @@ private class FlowSinkFromModel extends FlowSink::Range {
     not (
       provenance.isGenerated() and
       neutralModel(path, "sink", _, _)
+    )
+  }
+}
+
+private class FlowBarrierFromModel extends FlowBarrier::Range {
+  private string path;
+
+  FlowBarrierFromModel() {
+    barrierModel(path, _, _, _, _) and
+    this.callResolvesTo(path)
+  }
+
+  override predicate isBarrier(string output, string kind, Provenance provenance, string model) {
+    exists(QlBuiltins::ExtensionId madId |
+      barrierModel(path, output, kind, provenance, madId) and
+      model = "MaD:" + madId.toString()
     )
   }
 }
