@@ -529,9 +529,7 @@ class Function extends Declaration, ControlFlowNode, AccessHolder, @function {
    * Holds if this function has an ambiguous return type, meaning that zero or multiple return
    * types for this function are present in the database (this can occur in `build-mode: none`).
    */
-  predicate hasAmbiguousReturnType() {
-    count(this.getType()) != 1
-  }
+  predicate hasAmbiguousReturnType() { count(this.getType()) != 1 }
 }
 
 pragma[noinline]
