@@ -224,17 +224,18 @@ signature module AstSig<LocationSig Location> {
 
     /** Gets the case at the specified (zero-based) `index`. */
     Case getCase(int index);
-  }
 
-  /**
-   * Gets an integer indicating the control flow order of a case within a switch.
-   * This is most often the same as the AST order, but can be different in some
-   * languages if the language allows a default case to appear before other
-   * cases.
-   *
-   * The values do not need to be contiguous; only the relative ordering matters.
-   */
-  default int getCaseControlFlowOrder(Switch s, Case c) { s.getCase(result) = c }
+    /**
+     * Gets the statement at the specified (zero-based) `index`, if any.
+     *
+     * Depending on the language, switches may have their case bodies nested
+     * under the case nodes, which may or may not be statements themselves, or
+     * the switches may have a flat structure where the cases are just labels
+     * and the case bodies are sequences of statements between case statements.
+     * This predicate accommodates the latter.
+     */
+    Stmt getStmt(int index);
+  }
 
   /** A case in a switch. */
   class Case extends AstNode {
@@ -245,19 +246,22 @@ signature module AstSig<LocationSig Location> {
     Expr getGuard();
 
     /**
-     * Gets the body element of this case at the specified (zero-based) `index`.
+     * Gets the body of this case, if any.
      *
-     * This is either unique when the case has a single right-hand side, or it
-     * is the sequence of statements between this case and the next case.
+     * A case can either have a body as a single child AST node given by this
+     * predicate, or it can have an implicit body given by the sequence of
+     * statements between this case and the next case.
      */
-    AstNode getBodyElement(int index);
+    AstNode getBody();
   }
+
+  class DefaultCase extends Case;
 
   /**
    * Holds if this case can fall through to the next case if it is not
    * otherwise prevented with a `break` or similar.
    */
-  default predicate fallsThrough(Case c) { none() }
+  default predicate fallsThrough(Case c) { not exists(c.getBody()) }
 
   /** A ternary conditional expression. */
   class ConditionalExpr extends Expr {
@@ -938,7 +942,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
        *
        * A match-all case can still ultimately fail to match if it has a guard.
        */
-      default predicate matchAll(Case c) { none() }
+      default predicate matchAll(Case c) { c instanceof DefaultCase }
 
       /**
        * Holds if `ast` may result in an abrupt completion `c` originating at
@@ -1083,7 +1087,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         )
         or
         exists(Switch switch |
-          ast = switch.getCase(_).getBodyElement(_) and
+          ast = getCaseBodyElement(switch.getCase(_), _) and
           n.isAfter(switch) and
           c.getSuccessorType() instanceof BreakSuccessor
         |
@@ -1096,14 +1100,59 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         )
       }
 
+      /**
+       * Gets an integer indicating the control flow order of a case within a
+       * switch. This is equal to the AST order, except that default cases are
+       * always last in control flow order, even if some languages allow them
+       * to appear before other cases in the AST.
+       */
+      private int getCaseControlFlowOrder(Switch s, Case c) {
+        exists(int pos | s.getCase(pos) = c |
+          // if a default case is not last in the AST, move it last in the CFG order
+          if c instanceof DefaultCase and exists(s.getCase(pos + 1))
+          then result = strictcount(s.getCase(_))
+          else result = pos
+        )
+      }
+
       private Case getRankedCaseCfgOrder(Switch s, int rnk) {
         result = rank[rnk](Case c, int i | getCaseControlFlowOrder(s, c) = i | c order by i)
       }
 
-      private AstNode getFirstCaseBodyElement(Case case) {
-        result = case.getBodyElement(0)
+      private int numberOfStmts(Switch s) { result = strictcount(s.getStmt(_)) }
+
+      private predicate caseIndex(Switch s, Case c, int caseIdx, int caseStmtPos) {
+        c = s.getCase(caseIdx) and
+        c = s.getStmt(caseStmtPos)
+      }
+
+      /**
+       * Gets the body element of `case` at the specified (zero-based) `index`.
+       *
+       * This is either unique when the case has a single right-hand side, or it
+       * is the sequence of statements between this case and the next case.
+       */
+      private AstNode getCaseBodyElement(Case case, int index) {
+        result = case.getBody() and index = 0
         or
-        not exists(case.getBodyElement(0)) and
+        not exists(case.getBody()) and
+        exists(Switch s, int caseIdx, int caseStmtPos, int nextCaseStmtPos |
+          caseIndex(pragma[only_bind_into](s), case, caseIdx, caseStmtPos) and
+          (
+            caseIndex(pragma[only_bind_into](s), _, caseIdx + 1, nextCaseStmtPos)
+            or
+            not exists(s.getCase(caseIdx + 1)) and
+            nextCaseStmtPos = numberOfStmts(s)
+          ) and
+          index = [0 .. nextCaseStmtPos - caseStmtPos - 2] and
+          result = pragma[only_bind_into](s).getStmt(caseStmtPos + 1 + index)
+        )
+      }
+
+      private AstNode getFirstCaseBodyElement(Case case) {
+        result = getCaseBodyElement(case, 0)
+        or
+        not exists(getCaseBodyElement(case, 0)) and
         exists(Switch s, int i |
           fallsThrough(case) and
           // fall-through follows AST order, not case control flow order:
@@ -1113,10 +1162,10 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
       }
 
       private AstNode getNextCaseBodyElement(AstNode bodyElement) {
-        exists(Case case, int i | case.getBodyElement(i) = bodyElement |
-          result = case.getBodyElement(i + 1)
+        exists(Case case, int i | getCaseBodyElement(case, i) = bodyElement |
+          result = getCaseBodyElement(case, i + 1)
           or
-          not exists(case.getBodyElement(i + 1)) and
+          not exists(getCaseBodyElement(case, i + 1)) and
           exists(Switch s, int j |
             fallsThrough(case) and
             // fall-through follows AST order, not case control flow order:
@@ -1198,28 +1247,6 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           inConditionalContext(boollit, _) and
           n1.isBefore(boollit) and
           n2.isAfterValue(boollit, any(BooleanSuccessor t | t.getValue() = boollit.getValue()))
-        )
-        or
-        exists(ExprStmt exprstmt |
-          n1.isBefore(exprstmt) and
-          n2.isBefore(exprstmt.getExpr())
-          // the `isAfter(exprstmt.getExpr())` to `isAfter(exprstmt)` case is handled by `propagatesValue` above.
-        )
-        or
-        exists(BlockStmt blockstmt |
-          n1.isBefore(blockstmt) and
-          n2.isBefore(blockstmt.getStmt(0))
-          or
-          not exists(blockstmt.getStmt(_)) and
-          n1.isBefore(blockstmt) and
-          n2.isAfter(blockstmt) and
-          not simpleLeafNode(blockstmt)
-          or
-          exists(int i |
-            n1.isAfter(blockstmt.getStmt(i)) and
-            n2.isBefore(blockstmt.getStmt(i + 1))
-          )
-          // the `isAfter(blockstmt.getLastStmt())` to `isAfter(blockstmt)` case is handled by `propagatesValue` above.
         )
         or
         exists(IfStmt ifstmt |
@@ -1434,6 +1461,8 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           exists(int i |
             n1.isAfterValue(getRankedCaseCfgOrder(switch, i),
               any(MatchingSuccessor t | t.getValue() = false))
+            or
+            n1.isAfterFalse(getRankedCaseCfgOrder(switch, i).getGuard())
           |
             n2.isBefore(getRankedCaseCfgOrder(switch, i + 1))
             or
@@ -1478,9 +1507,6 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
             or
             n1.isAfterTrue(case.getGuard()) and
             n2 = beforeBody
-            or
-            n1.isAfterFalse(case.getGuard()) and
-            n2.isAfterValue(case, any(MatchingSuccessor t | t.getValue() = false))
           )
         )
         or
@@ -1490,7 +1516,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           or
           n1.isAfter(caseBodyElement) and
           not exists(getNextCaseBodyElement(caseBodyElement)) and
-          n2.isAfter(any(Switch s | s.getCase(_).getBodyElement(_) = caseBodyElement))
+          n2.isAfter(any(Switch s | getCaseBodyElement(s.getCase(_), _) = caseBodyElement))
         )
       }
 
@@ -1525,8 +1551,11 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           (
             n1.isBefore(ast) and not exists(getRankedChild(ast, _)) and not simpleLeafNode(ast)
             or
-            exists(int i |
-              n1.isAfter(getRankedChild(ast, i)) and not exists(getRankedChild(ast, i + 1))
+            exists(int i, AstNode last |
+              last = getRankedChild(ast, i) and
+              not exists(getRankedChild(ast, i + 1)) and
+              n1.isAfter(last) and
+              not propagatesValue(last, ast)
             )
           ) and
           (if postOrInOrder(ast) then n2.isIn(ast) else n2.isAfter(ast))
