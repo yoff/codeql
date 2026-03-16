@@ -1,2 +1,2 @@
 def process(value):
-    sink(value) #$ prints=source
+    sink(value) #$ flow=source

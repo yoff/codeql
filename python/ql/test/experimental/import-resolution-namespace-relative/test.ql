@@ -19,12 +19,12 @@ private module TestConfig implements DataFlow::ConfigSig {
 private module TestFlow = TaintTracking::Global<TestConfig>;
 
 module FlowTest implements TestSig {
-  string getARelevantTag() { result = "prints" }
+  string getARelevantTag() { result = "flow" }
 
   predicate hasActualResult(Location location, string element, string tag, string value) {
     exists(DataFlow::Node sink |
       TestFlow::flow(_, sink) and
-      tag = "prints" and
+      tag = "flow" and
       location = sink.getLocation() and
       value = "source" and
       element = sink.toString()
