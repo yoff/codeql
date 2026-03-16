@@ -10,12 +10,12 @@ void test_size_t() {
 
     printf("%zd", s); // GOOD
     printf("%zi", s); // GOOD
-    printf("%zu", s); // GOOD (we generally permit signedness changes) [FALSE POSITIVE]
-    printf("%zx", s); // GOOD (we generally permit signedness changes) [FALSE POSITIVE]
-    printf("%d", s); // BAD
-    printf("%ld", s); // BAD
-    printf("%lld", s); // BAD
-    printf("%u", s); // BAD
+    printf("%zu", s); // GOOD (we generally permit signedness changes)
+    printf("%zx", s); // GOOD (we generally permit signedness changes)
+    printf("%d", s); // BAD [NOT DETECTED]
+    printf("%ld", s); // BAD [NOT DETECTED]
+    printf("%lld", s); // BAD [NOT DETECTED]
+    printf("%u", s); // BAD [NOT DETECTED]
 
     char buffer[1024];
 
