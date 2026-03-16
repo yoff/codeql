@@ -780,16 +780,13 @@ module Public {
     final override Type getType() { result = this.getPreUpdateNode().getType() }
   }
 
-  /**
-   * The value of an uninitialized local variable, viewed as a node in a data
-   * flow graph.
-   */
-  class UninitializedNode extends Node {
+  abstract private class AbstractUninitializedNode extends Node {
     LocalVariable v;
+    int indirectionIndex;
 
-    UninitializedNode() {
+    AbstractUninitializedNode() {
       exists(SsaImpl::Definition def, SsaImpl::SourceVariable sv |
-        def.getIndirectionIndex() = 0 and
+        def.getIndirectionIndex() = indirectionIndex and
         def.getValue().asInstruction() instanceof UninitializedInstruction and
         SsaImpl::defToNode(this, def, sv) and
         v = sv.getBaseVariable().(SsaImpl::BaseIRVariable).getIRVariable().getAst()
@@ -801,28 +798,22 @@ module Public {
   }
 
   /**
+   * The value of an uninitialized local variable, viewed as a node in a data
+   * flow graph.
+   */
+  class UninitializedNode extends AbstractUninitializedNode {
+    UninitializedNode() { indirectionIndex = 0 }
+  }
+
+  /**
    * The value of an uninitialized local variable behind one or more levels of
    * indirection, viewed as a node in a data flow graph.
    *
    * NOTE: For the direct value of the uninitialized local variable, see
    * `UninitializedNode`.
    */
-  class IndirectUninitializedNode extends Node {
-    LocalVariable v;
-    int indirectionIndex;
-
-    IndirectUninitializedNode() {
-      exists(SsaImpl::Definition def, SsaImpl::SourceVariable sv |
-        def.getIndirectionIndex() = indirectionIndex and
-        indirectionIndex > 0 and // With `indirectionIndex` = 0, this class becomes the same as `UninitializedNode`.
-        def.getValue().asInstruction() instanceof UninitializedInstruction and
-        SsaImpl::defToNode(this, def, sv) and
-        v = sv.getBaseVariable().(SsaImpl::BaseIRVariable).getIRVariable().getAst()
-      )
-    }
-
-    /** Gets the uninitialized local variable corresponding to this node. */
-    LocalVariable getLocalVariable() { result = v }
+  class IndirectUninitializedNode extends AbstractUninitializedNode {
+    IndirectUninitializedNode() { indirectionIndex > 0 }
 
     /** Gets the level of indirection to get to this node. */
     int getIndirectionIndex() { result = indirectionIndex }
