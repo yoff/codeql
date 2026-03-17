@@ -4,3 +4,8 @@ extensions:
       extensible: barrierModel
     data:
       - ["main::sanitize", "ReturnValue", "test-barrier", "manual"]
+  - addsTo:
+      pack: codeql/rust-all
+      extensible: barrierGuardModel
+    data:
+      - ["main::verify_safe", "Argument[0]", "true", "test-barrier", "manual"]

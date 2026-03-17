@@ -43,6 +43,6 @@ fn verify_safe(s: &str) -> bool {
 fn with_barrier_guard() {
     let s = source(1);
     if verify_safe(s) {
-        sink(s); // $ SPURIOUS: hasValueFlow=1
+        sink(s);
     }
 }
