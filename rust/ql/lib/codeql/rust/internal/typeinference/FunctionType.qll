@@ -15,6 +15,12 @@ private newtype TFunctionPosition =
  * Either `return` or a positional parameter index, where `self` is translated
  * to position `0` and subsequent positional parameters at index `i` are
  * translated to position `i + 1`.
+ *
+ * Function-call adjusted positions are needed when resolving calls of the
+ * form `Foo::f(x_1, ..., x_n)`, where we do not know up front whether `f` is a
+ * method or a non-method, and hence we need to be able to match `x_1` against
+ * both a potential `self` parameter and a potential first positional parameter
+ * (and `x_2, ... x_n` against all subsequent positional parameters).
  */
 class FunctionPosition extends TFunctionPosition {
   int asPosition() { result = this.asArgumentPosition().asPosition() }
