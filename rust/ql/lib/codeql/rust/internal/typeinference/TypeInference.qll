@@ -127,17 +127,15 @@ private module Input implements InputSig1<Location>, InputSig2<PreTypeMention> {
 
   PreTypeMention getABaseTypeMention(Type t) { none() }
 
-  Type getATypeParameterConstraint(TypeParameter tp, TypePath path) {
-    exists(TypeMention tm | result = tm.getTypeAt(path) |
-      tm = tp.(TypeParamTypeParameter).getTypeParam().getATypeBound().getTypeRepr() or
-      tm = tp.(SelfTypeParameter).getTrait() or
-      tm =
-        tp.(ImplTraitTypeTypeParameter)
-            .getImplTraitTypeRepr()
-            .getTypeBoundList()
-            .getABound()
-            .getTypeRepr()
-    )
+  PreTypeMention getATypeParameterConstraint(TypeParameter tp) {
+    result = tp.(TypeParamTypeParameter).getTypeParam().getATypeBound().getTypeRepr() or
+    result = tp.(SelfTypeParameter).getTrait() or
+    result =
+      tp.(ImplTraitTypeTypeParameter)
+          .getImplTraitTypeRepr()
+          .getTypeBoundList()
+          .getABound()
+          .getTypeRepr()
   }
 
   /**
@@ -988,7 +986,7 @@ private module ContextTyping {
     or
     exists(TypeParameter mid |
       assocFunctionMentionsTypeParameterAtNonRetPos(i, f, mid) and
-      tp = getATypeParameterConstraint(mid, _)
+      tp = getATypeParameterConstraint(mid).getTypeAt(_)
     )
   }
 
