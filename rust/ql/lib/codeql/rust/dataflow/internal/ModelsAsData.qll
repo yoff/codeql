@@ -256,6 +256,24 @@ private class FlowBarrierFromModel extends FlowBarrier::Range {
   }
 }
 
+private class FlowBarrierGuardFromModel extends FlowBarrierGuard::Range {
+  private string path;
+
+  FlowBarrierGuardFromModel() {
+    barrierGuardModel(path, _, _, _, _, _) and
+    this.callResolvesTo(path)
+  }
+
+  override predicate isBarrierGuard(
+    string input, string branch, string kind, Provenance provenance, string model
+  ) {
+    exists(QlBuiltins::ExtensionId madId |
+      barrierGuardModel(path, input, branch, kind, provenance, madId) and
+      model = "MaD:" + madId.toString()
+    )
+  }
+}
+
 private module Debug {
   private import FlowSummaryImpl
   private import Private
