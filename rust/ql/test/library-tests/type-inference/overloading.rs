@@ -509,15 +509,15 @@ mod trait_bound_impl_overlap {
 
     fn test() {
         let x = S(0);
-        let y = call_f(x); // $ target=call_f type=y:i32 $ SPURIOUS: type=y:i64
+        let y = call_f(x); // $ target=call_f type=y:i32
         let z: i32 = y;
 
         let x = S(0);
         let y = call_f::<i32, _>(x); // $ target=call_f type=y:i32
 
         let x = S(0);
-        let y = call_f2(S(0i32), x); // $ target=call_f2 type=y:i32 $ SPURIOUS: type=y:i64
+        let y = call_f2(S(0i32), x); // $ target=call_f2 type=y:i32
         let x = S(0);
-        let y = call_f2(S(0i64), x); // $ target=call_f2 type=y:i64 $ SPURIOUS: type=y:i32
+        let y = call_f2(S(0i64), x); // $ target=call_f2 type=y:i64
     }
 }

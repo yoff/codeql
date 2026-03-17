@@ -10775,7 +10775,6 @@ inferType
 | main.rs:2032:56:2034:9 | { ... } |  | {EXTERNAL LOCATION} | & |
 | main.rs:2032:56:2034:9 | { ... } | TRef | main.rs:2028:10:2028:10 | T |
 | main.rs:2033:13:2033:29 | &... |  | {EXTERNAL LOCATION} | & |
-| main.rs:2033:13:2033:29 | &... | TRef | {EXTERNAL LOCATION} | u8 |
 | main.rs:2033:13:2033:29 | &... | TRef | main.rs:2028:10:2028:10 | T |
 | main.rs:2033:14:2033:17 | self |  | {EXTERNAL LOCATION} | & |
 | main.rs:2033:14:2033:17 | self | TRef | main.rs:2013:5:2016:5 | MyVec |
@@ -10783,7 +10782,6 @@ inferType
 | main.rs:2033:14:2033:22 | self.data |  | {EXTERNAL LOCATION} | Vec |
 | main.rs:2033:14:2033:22 | self.data | A | {EXTERNAL LOCATION} | Global |
 | main.rs:2033:14:2033:22 | self.data | T | main.rs:2028:10:2028:10 | T |
-| main.rs:2033:14:2033:29 | ...[index] |  | {EXTERNAL LOCATION} | u8 |
 | main.rs:2033:14:2033:29 | ...[index] |  | main.rs:2028:10:2028:10 | T |
 | main.rs:2033:24:2033:28 | index |  | {EXTERNAL LOCATION} | usize |
 | main.rs:2037:22:2037:26 | slice |  | {EXTERNAL LOCATION} | & |
@@ -12931,14 +12929,11 @@ inferType
 | overloading.rs:511:17:511:20 | S(...) | T | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:511:19:511:19 | 0 |  | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:512:13:512:13 | y |  | {EXTERNAL LOCATION} | i32 |
-| overloading.rs:512:13:512:13 | y |  | {EXTERNAL LOCATION} | i64 |
 | overloading.rs:512:17:512:25 | call_f(...) |  | {EXTERNAL LOCATION} | i32 |
-| overloading.rs:512:17:512:25 | call_f(...) |  | {EXTERNAL LOCATION} | i64 |
 | overloading.rs:512:24:512:24 | x |  | overloading.rs:464:5:464:19 | S |
 | overloading.rs:512:24:512:24 | x | T | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:513:13:513:13 | z |  | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:513:22:513:22 | y |  | {EXTERNAL LOCATION} | i32 |
-| overloading.rs:513:22:513:22 | y |  | {EXTERNAL LOCATION} | i64 |
 | overloading.rs:515:13:515:13 | x |  | overloading.rs:464:5:464:19 | S |
 | overloading.rs:515:13:515:13 | x | T | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:515:17:515:20 | S(...) |  | overloading.rs:464:5:464:19 | S |
@@ -12954,9 +12949,7 @@ inferType
 | overloading.rs:518:17:518:20 | S(...) | T | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:518:19:518:19 | 0 |  | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:519:13:519:13 | y |  | {EXTERNAL LOCATION} | i32 |
-| overloading.rs:519:13:519:13 | y |  | {EXTERNAL LOCATION} | i64 |
 | overloading.rs:519:17:519:35 | call_f2(...) |  | {EXTERNAL LOCATION} | i32 |
-| overloading.rs:519:17:519:35 | call_f2(...) |  | {EXTERNAL LOCATION} | i64 |
 | overloading.rs:519:25:519:31 | S(...) |  | overloading.rs:464:5:464:19 | S |
 | overloading.rs:519:25:519:31 | S(...) | T | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:519:27:519:30 | 0i32 |  | {EXTERNAL LOCATION} | i32 |
@@ -12967,9 +12960,7 @@ inferType
 | overloading.rs:520:17:520:20 | S(...) |  | overloading.rs:464:5:464:19 | S |
 | overloading.rs:520:17:520:20 | S(...) | T | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:520:19:520:19 | 0 |  | {EXTERNAL LOCATION} | i32 |
-| overloading.rs:521:13:521:13 | y |  | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:521:13:521:13 | y |  | {EXTERNAL LOCATION} | i64 |
-| overloading.rs:521:17:521:35 | call_f2(...) |  | {EXTERNAL LOCATION} | i32 |
 | overloading.rs:521:17:521:35 | call_f2(...) |  | {EXTERNAL LOCATION} | i64 |
 | overloading.rs:521:25:521:31 | S(...) |  | overloading.rs:464:5:464:19 | S |
 | overloading.rs:521:25:521:31 | S(...) | T | {EXTERNAL LOCATION} | i64 |
