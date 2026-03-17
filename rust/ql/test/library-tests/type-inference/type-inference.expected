@@ -209,15 +209,15 @@ inferCertainType
 | associated_types.rs:454:24:454:28 | SelfParam | TRef | associated_types.rs:452:5:455:5 | Self [trait Subtrait] |
 | associated_types.rs:463:23:463:27 | SelfParam |  | {EXTERNAL LOCATION} | & |
 | associated_types.rs:463:23:463:27 | SelfParam | TRef | associated_types.rs:457:5:467:5 | Self [trait Subtrait2] |
-| associated_types.rs:463:30:463:31 | c1 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2] |
-| associated_types.rs:463:48:463:49 | c2 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2] |
+| associated_types.rs:463:30:463:31 | c1 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2 (inherited from GetSet)] |
+| associated_types.rs:463:48:463:49 | c2 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2 (inherited from GetSet)] |
 | associated_types.rs:463:66:466:9 | { ... } |  | {EXTERNAL LOCATION} | () |
 | associated_types.rs:464:13:464:16 | self |  | {EXTERNAL LOCATION} | & |
 | associated_types.rs:464:13:464:16 | self | TRef | associated_types.rs:457:5:467:5 | Self [trait Subtrait2] |
-| associated_types.rs:464:22:464:23 | c1 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2] |
+| associated_types.rs:464:22:464:23 | c1 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2 (inherited from GetSet)] |
 | associated_types.rs:465:13:465:16 | self |  | {EXTERNAL LOCATION} | & |
 | associated_types.rs:465:13:465:16 | self | TRef | associated_types.rs:457:5:467:5 | Self [trait Subtrait2] |
-| associated_types.rs:465:22:465:23 | c2 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2] |
+| associated_types.rs:465:22:465:23 | c2 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2 (inherited from GetSet)] |
 | associated_types.rs:474:16:474:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
 | associated_types.rs:474:16:474:20 | SelfParam | TRef | associated_types.rs:469:5:469:24 | MyType |
 | associated_types.rs:474:16:474:20 | SelfParam | TRef.T | associated_types.rs:471:10:471:16 | T |
@@ -5441,17 +5441,17 @@ inferType
 | associated_types.rs:454:24:454:28 | SelfParam | TRef | associated_types.rs:452:5:455:5 | Self [trait Subtrait] |
 | associated_types.rs:463:23:463:27 | SelfParam |  | {EXTERNAL LOCATION} | & |
 | associated_types.rs:463:23:463:27 | SelfParam | TRef | associated_types.rs:457:5:467:5 | Self [trait Subtrait2] |
-| associated_types.rs:463:30:463:31 | c1 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2] |
-| associated_types.rs:463:48:463:49 | c2 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2] |
+| associated_types.rs:463:30:463:31 | c1 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2 (inherited from GetSet)] |
+| associated_types.rs:463:48:463:49 | c2 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2 (inherited from GetSet)] |
 | associated_types.rs:463:66:466:9 | { ... } |  | {EXTERNAL LOCATION} | () |
 | associated_types.rs:464:13:464:16 | self |  | {EXTERNAL LOCATION} | & |
 | associated_types.rs:464:13:464:16 | self | TRef | associated_types.rs:457:5:467:5 | Self [trait Subtrait2] |
 | associated_types.rs:464:13:464:24 | self.set(...) |  | {EXTERNAL LOCATION} | () |
-| associated_types.rs:464:22:464:23 | c1 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2] |
+| associated_types.rs:464:22:464:23 | c1 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2 (inherited from GetSet)] |
 | associated_types.rs:465:13:465:16 | self |  | {EXTERNAL LOCATION} | & |
 | associated_types.rs:465:13:465:16 | self | TRef | associated_types.rs:457:5:467:5 | Self [trait Subtrait2] |
 | associated_types.rs:465:13:465:24 | self.set(...) |  | {EXTERNAL LOCATION} | () |
-| associated_types.rs:465:22:465:23 | c2 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2] |
+| associated_types.rs:465:22:465:23 | c2 |  | associated_types.rs:20:5:20:16 | Output[Subtrait2 (inherited from GetSet)] |
 | associated_types.rs:474:16:474:20 | SelfParam |  | {EXTERNAL LOCATION} | & |
 | associated_types.rs:474:16:474:20 | SelfParam | TRef | associated_types.rs:469:5:469:24 | MyType |
 | associated_types.rs:474:16:474:20 | SelfParam | TRef.T | associated_types.rs:471:10:471:16 | T |
