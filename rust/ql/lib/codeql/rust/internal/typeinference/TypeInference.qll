@@ -2362,8 +2362,7 @@ private module AssocFunctionResolution {
       Location getLocation() { result = afc.getLocation() }
     }
 
-    private module CallSatisfiesDerefConstraintInput implements
-      SatisfiesConstraintInputSig<CallDerefCand>
+    private module CallSatisfiesDerefConstraintInput implements SatisfiesTypeInputSig<CallDerefCand>
     {
       pragma[nomagic]
       predicate relevantConstraint(CallDerefCand mc, Type constraint) {
@@ -2373,7 +2372,7 @@ private module AssocFunctionResolution {
     }
 
     private module CallSatisfiesDerefConstraint =
-      SatisfiesConstraint<CallDerefCand, CallSatisfiesDerefConstraintInput>;
+      SatisfiesType<CallDerefCand, CallSatisfiesDerefConstraintInput>;
 
     pragma[nomagic]
     private AssociatedTypeTypeParameter getDerefTargetTypeParameter() {
@@ -3466,7 +3465,7 @@ final private class AwaitTarget extends Expr {
   Type getTypeAt(TypePath path) { result = inferType(this, path) }
 }
 
-private module AwaitSatisfiesConstraintInput implements SatisfiesConstraintInputSig<AwaitTarget> {
+private module AwaitSatisfiesTypeInput implements SatisfiesTypeInputSig<AwaitTarget> {
   pragma[nomagic]
   predicate relevantConstraint(AwaitTarget term, Type constraint) {
     exists(term) and
@@ -3474,13 +3473,12 @@ private module AwaitSatisfiesConstraintInput implements SatisfiesConstraintInput
   }
 }
 
-private module AwaitSatisfiesConstraint =
-  SatisfiesConstraint<AwaitTarget, AwaitSatisfiesConstraintInput>;
+private module AwaitSatisfiesType = SatisfiesType<AwaitTarget, AwaitSatisfiesTypeInput>;
 
 pragma[nomagic]
 private Type inferAwaitExprType(AstNode n, TypePath path) {
   exists(TypePath exprPath |
-    AwaitSatisfiesConstraint::satisfiesConstraintType(n.(AwaitExpr).getExpr(), _, exprPath, result) and
+    AwaitSatisfiesType::satisfiesConstraintType(n.(AwaitExpr).getExpr(), _, exprPath, result) and
     exprPath.isCons(getFutureOutputTypeParameter(), path)
   )
 }
@@ -3616,9 +3614,7 @@ final private class ForIterableExpr extends Expr {
   Type getTypeAt(TypePath path) { result = inferType(this, path) }
 }
 
-private module ForIterableSatisfiesConstraintInput implements
-  SatisfiesConstraintInputSig<ForIterableExpr>
-{
+private module ForIterableSatisfiesTypeInput implements SatisfiesTypeInputSig<ForIterableExpr> {
   predicate relevantConstraint(ForIterableExpr term, Type constraint) {
     exists(term) and
     exists(Trait t | t = constraint.(TraitType).getTrait() |
@@ -3639,15 +3635,15 @@ private AssociatedTypeTypeParameter getIntoIteratorItemTypeParameter() {
   result = getAssociatedTypeTypeParameter(any(IntoIteratorTrait t).getItemType())
 }
 
-private module ForIterableSatisfiesConstraint =
-  SatisfiesConstraint<ForIterableExpr, ForIterableSatisfiesConstraintInput>;
+private module ForIterableSatisfiesType =
+  SatisfiesType<ForIterableExpr, ForIterableSatisfiesTypeInput>;
 
 pragma[nomagic]
 private Type inferForLoopExprType(AstNode n, TypePath path) {
   // type of iterable -> type of pattern (loop variable)
   exists(ForExpr fe, TypePath exprPath, AssociatedTypeTypeParameter tp |
     n = fe.getPat() and
-    ForIterableSatisfiesConstraint::satisfiesConstraintType(fe.getIterable(), _, exprPath, result) and
+    ForIterableSatisfiesType::satisfiesConstraintType(fe.getIterable(), _, exprPath, result) and
     exprPath.isCons(tp, path)
   |
     tp = getIntoIteratorItemTypeParameter()
@@ -3673,8 +3669,7 @@ final private class InvokedClosureExpr extends Expr {
   CallExpr getCall() { result = call }
 }
 
-private module InvokedClosureSatisfiesConstraintInput implements
-  SatisfiesConstraintInputSig<InvokedClosureExpr>
+private module InvokedClosureSatisfiesTypeInput implements SatisfiesTypeInputSig<InvokedClosureExpr>
 {
   predicate relevantConstraint(InvokedClosureExpr term, Type constraint) {
     exists(term) and
@@ -3682,12 +3677,12 @@ private module InvokedClosureSatisfiesConstraintInput implements
   }
 }
 
-private module InvokedClosureSatisfiesConstraint =
-  SatisfiesConstraint<InvokedClosureExpr, InvokedClosureSatisfiesConstraintInput>;
+private module InvokedClosureSatisfiesType =
+  SatisfiesType<InvokedClosureExpr, InvokedClosureSatisfiesTypeInput>;
 
 /** Gets the type of `ce` when viewed as an implementation of `FnOnce`. */
 private Type invokedClosureFnTypeAt(InvokedClosureExpr ce, TypePath path) {
-  InvokedClosureSatisfiesConstraint::satisfiesConstraintType(ce, _, path, result)
+  InvokedClosureSatisfiesType::satisfiesConstraintType(ce, _, path, result)
 }
 
 /**

@@ -730,14 +730,14 @@ private predicate pathConcreteTypeAssocType(
   )
 }
 
-private module PathSatisfiesConstraintInput implements SatisfiesConstraintInputSig<PreTypeMention> {
+private module PathSatisfiesConstraintInput implements SatisfiesTypeInputSig<PreTypeMention> {
   predicate relevantConstraint(PreTypeMention tm, Type constraint) {
     pathConcreteTypeAssocType(_, tm, constraint.(TraitType).getTrait(), _, _)
   }
 }
 
 private module PathSatisfiesConstraint =
-  SatisfiesConstraint<PreTypeMention, PathSatisfiesConstraintInput>;
+  SatisfiesType<PreTypeMention, PathSatisfiesConstraintInput>;
 
 /**
  * Gets the type of `path` at `typePath` when `path` accesses an associated type
