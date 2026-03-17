@@ -2948,7 +2948,7 @@ private class VariantConstructor extends Constructor instanceof Variant {
 
 /**
  * A matching configuration for resolving types of constructors of enums and
- * structs, such as `Result::Ok(42)`, `Foo { bar = 1 }` and `None`.
+ * structs, such as `Result::Ok(42)`, `Foo { bar: 1 }` and `None`.
  */
 private module ConstructorMatchingInput implements MatchingInputSig {
   import FunctionPositionMatchingInput
@@ -3586,7 +3586,7 @@ private module ConstructorPatMatchingInput implements MatchingInputSig {
       result = inferType(this.getNodeAt(apos), path)
       or
       // The struct/enum type is supplied explicitly as a type qualifier, e.g.
-      // `let Foo<Bar>::Variant { ... } = ...` or
+      // `let Foo::<Bar>::Variant { ... } = ...` or
       // `let Option::<Foo>::Some(x) = ...`.
       apos.isReturn() and
       result = super.getPath().(TypeMention).getTypeAt(path)
