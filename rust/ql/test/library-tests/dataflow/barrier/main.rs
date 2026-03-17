@@ -32,3 +32,17 @@ fn main() {
     let s = source(1);
     sink(s); // $ hasValueFlow=1
 }
+
+fn verify_safe(s: &str) -> bool {
+    match s {
+        "dangerous" => false,
+        _ => true,
+    }
+}
+
+fn with_barrier_guard() {
+    let s = source(1);
+    if verify_safe(s) {
+        sink(s); // $ SPURIOUS: hasValueFlow=1
+    }
+}
