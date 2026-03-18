@@ -2947,10 +2947,10 @@ private class VariantConstructor extends Constructor instanceof Variant {
 }
 
 /**
- * A matching configuration for resolving types of constructors of enums and
+ * A matching configuration for resolving types of constructions of enums and
  * structs, such as `Result::Ok(42)`, `Foo { bar: 1 }` and `None`.
  */
-private module ConstructorMatchingInput implements MatchingInputSig {
+private module ConstructionMatchingInput implements MatchingInputSig {
   import FunctionPositionMatchingInput
 
   class Declaration = Constructor;
@@ -2965,7 +2965,7 @@ private module ConstructorMatchingInput implements MatchingInputSig {
     abstract Type getTypeArgument(TypeArgumentPosition apos, TypePath path);
 
     /**
-     * Holds if the return type of this constructor expression at `path` may
+     * Holds if the return type of this construction expression at `path` may
      * have to be inferred from the context. For example in `Result::Ok(42)` the
      * error type has to be inferred from the context.
      */
@@ -3054,23 +3054,23 @@ private module ConstructorMatchingInput implements MatchingInputSig {
   }
 }
 
-private module ConstructorMatching = Matching<ConstructorMatchingInput>;
+private module ConstructionMatching = Matching<ConstructionMatchingInput>;
 
 pragma[nomagic]
-private Type inferConstructorTypePreCheck(
+private Type inferConstructionTypePreCheck(
   AstNode n, FunctionPosition pos, boolean hasReceiver, TypePath path
 ) {
   hasReceiver = false and
-  exists(ConstructorMatchingInput::Access a | n = a.getNodeAt(pos) |
-    result = ConstructorMatching::inferAccessType(a, pos, path)
+  exists(ConstructionMatchingInput::Access a | n = a.getNodeAt(pos) |
+    result = ConstructionMatching::inferAccessType(a, pos, path)
     or
     a.hasUnknownTypeAt(pos, path) and
     result = TUnknownType()
   )
 }
 
-private predicate inferConstructorType =
-  ContextTyping::CheckContextTyping<inferConstructorTypePreCheck/4>::check/2;
+private predicate inferConstructionType =
+  ContextTyping::CheckContextTyping<inferConstructionTypePreCheck/4>::check/2;
 
 /**
  * A matching configuration for resolving types of operations like `a + b`.
@@ -3556,13 +3556,13 @@ private Type inferDereferencedExprPtrType(AstNode n, TypePath path) {
 }
 
 /**
- * A matching configuration for resolving types of constructor patterns like
+ * A matching configuration for resolving types of deconstruction patterns like
  * `let Foo { bar } = ...` or `let Some(x) = ...`.
  */
-private module ConstructorPatMatchingInput implements MatchingInputSig {
+private module DeconstructionPatMatchingInput implements MatchingInputSig {
   import FunctionPositionMatchingInput
 
-  class Declaration = ConstructorMatchingInput::Declaration;
+  class Declaration = ConstructionMatchingInput::Declaration;
 
   class Access extends Pat instanceof PathAstNode {
     Access() { this instanceof TupleStructPat or this instanceof StructPat }
@@ -3596,17 +3596,17 @@ private module ConstructorPatMatchingInput implements MatchingInputSig {
   }
 }
 
-private module ConstructorPatMatching = Matching<ConstructorPatMatchingInput>;
+private module DeconstructionPatMatching = Matching<DeconstructionPatMatchingInput>;
 
 /**
  * Gets the type of `n` at `path`, where `n` is a pattern for a constructor,
  * either a struct pattern or a tuple-struct pattern.
  */
 pragma[nomagic]
-private Type inferConstructorPatType(AstNode n, TypePath path) {
-  exists(ConstructorPatMatchingInput::Access a, FunctionPosition apos |
+private Type inferDeconstructionPatType(AstNode n, TypePath path) {
+  exists(DeconstructionPatMatchingInput::Access a, FunctionPosition apos |
     n = a.getNodeAt(apos) and
-    result = ConstructorPatMatching::inferAccessType(a, apos, path)
+    result = DeconstructionPatMatching::inferAccessType(a, apos, path)
   )
 }
 
@@ -3919,7 +3919,7 @@ private module Cached {
       or
       result = inferFunctionCallType(n, path)
       or
-      result = inferConstructorType(n, path)
+      result = inferConstructionType(n, path)
       or
       result = inferOperationType(n, path)
       or
@@ -3941,7 +3941,7 @@ private module Cached {
       or
       result = inferClosureExprType(n, path)
       or
-      result = inferConstructorPatType(n, path)
+      result = inferDeconstructionPatType(n, path)
     )
   }
 }
@@ -3990,9 +3990,9 @@ private module Debug {
     t = inferFunctionCallType(n, path)
   }
 
-  predicate debugInferConstructorType(AstNode n, TypePath path, Type t) {
+  predicate debugInferConstructionType(AstNode n, TypePath path, Type t) {
     n = getRelevantLocatable() and
-    t = inferConstructorType(n, path)
+    t = inferConstructionType(n, path)
   }
 
   predicate debugTypeMention(TypeMention tm, TypePath path, Type type) {
