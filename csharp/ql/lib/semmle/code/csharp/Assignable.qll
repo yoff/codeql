@@ -419,9 +419,7 @@ class AssignableDefinition extends TAssignableDefinition {
    * the definitions of `x` and `y` in `M(out x, out y)` and `(x, y) = (0, 1)`
    * relate to the same call to `M` and assignment node, respectively.
    */
-  deprecated ControlFlowNode getAControlFlowNode() {
-    result = this.getExpr().getAControlFlowNode()
-  }
+  deprecated ControlFlowNode getAControlFlowNode() { result = this.getExpr().getAControlFlowNode() }
 
   /**
    * Gets the underlying expression that updates the targeted assignable when
@@ -572,9 +570,7 @@ module AssignableDefinitions {
   }
 
   /** Holds if a node in basic block `bb` assigns to `ref` parameter `p` via definition `def`. */
-  private predicate basicBlockRefParamDef(
-    ControlFlow::BasicBlock bb, Parameter p, AssignableDefinition def
-  ) {
+  private predicate basicBlockRefParamDef(BasicBlock bb, Parameter p, AssignableDefinition def) {
     def = any(RefArg arg).getAnAnalyzableRefDef(p) and
     bb.getANode() = def.getExpr().getAControlFlowNode()
   }
@@ -585,7 +581,7 @@ module AssignableDefinitions {
    * any assignments to `p`.
    */
   pragma[nomagic]
-  private predicate parameterReachesWithoutDef(Parameter p, ControlFlow::BasicBlock bb) {
+  private predicate parameterReachesWithoutDef(Parameter p, BasicBlock bb) {
     forall(AssignableDefinition def | basicBlockRefParamDef(bb, p, def) |
       isUncertainRefCall(def.getTargetAccess())
     ) and
@@ -593,9 +589,7 @@ module AssignableDefinitions {
       any(RefArg arg).isAnalyzable(p) and
       p.getCallable().getEntryPoint() = bb.getFirstNode()
       or
-      exists(ControlFlow::BasicBlock mid | parameterReachesWithoutDef(p, mid) |
-        bb = mid.getASuccessor()
-      )
+      exists(BasicBlock mid | parameterReachesWithoutDef(p, mid) | bb = mid.getASuccessor())
     )
   }
 
@@ -607,7 +601,7 @@ module AssignableDefinitions {
   cached
   predicate isUncertainRefCall(RefArg arg) {
     arg.isPotentialAssignment() and
-    exists(ControlFlow::BasicBlock bb, Parameter p | arg.isAnalyzable(p) |
+    exists(BasicBlock bb, Parameter p | arg.isAnalyzable(p) |
       parameterReachesWithoutDef(p, bb) and
       bb.getLastNode() = p.getCallable().getExitPoint()
     )
