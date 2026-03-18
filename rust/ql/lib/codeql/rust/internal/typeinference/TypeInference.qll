@@ -2974,7 +2974,7 @@ private module ConstructionMatchingInput implements MatchingInputSig {
       exists(Declaration d, TypeParameter tp |
         d = this.getTarget() and
         pos.isReturn() and
-        tp = d.getDeclaredType(pos, path) and
+        tp = d.getReturnType(path) and
         not exists(FunctionPosition pos2 | not pos2.isReturn() and tp = d.getDeclaredType(pos2, _)) and
         // check that no explicit type arguments have been supplied for `tp`
         not exists(TypeArgumentPosition tapos |
