@@ -619,7 +619,7 @@ module Public {
 
     /**
      * Gets the uninitialized local variable corresponding to this node behind
-     * the given levels of indirection, if any.
+     * `index` number of indirections, if any.
      */
     LocalVariable asIndirectUninitialized(int indirectionIndex) {
       exists(IndirectUninitializedNode indirectUninitializedNode |
@@ -632,7 +632,7 @@ module Public {
 
     /**
      * Gets the uninitialized local variable corresponding to this node behind
-     * any levels of indirection, if any.
+     * a number indirections, if any.
      */
     LocalVariable asIndirectUninitialized() { result = this.asIndirectUninitialized(_) }
 
@@ -815,7 +815,7 @@ module Public {
   class IndirectUninitializedNode extends AbstractUninitializedNode {
     IndirectUninitializedNode() { indirectionIndex > 0 }
 
-    /** Gets the level of indirection to get to this node. */
+    /** Gets the indirection index of this node. */
     int getIndirectionIndex() { result = indirectionIndex }
   }
 
