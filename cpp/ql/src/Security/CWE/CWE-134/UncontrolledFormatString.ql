@@ -47,8 +47,7 @@ module Config implements DataFlow::ConfigSig {
     exists(PrintfLikeFunction printf |
       printf.outermostWrapperFunctionCall([node.asExpr(), node.asIndirectExpr()], _)
     ) and
-    not isPrintfImplementation(node.asExpr().getEnclosingFunction()) and
-    not isPrintfImplementation(node.asIndirectExpr().getEnclosingFunction())
+    not isPrintfImplementation([node.asExpr(), node.asIndirectExpr()].getEnclosingFunction())
   }
 
   private predicate isArithmeticNonCharType(ArithmeticType type) {
