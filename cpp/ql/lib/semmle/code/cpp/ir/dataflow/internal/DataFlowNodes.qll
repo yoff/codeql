@@ -621,10 +621,10 @@ module Public {
      * Gets the uninitialized local variable corresponding to this node behind
      * the given levels of indirection, if any.
      */
-    LocalVariable asIndirectUninitialized(int indirectionIndex) {
+    LocalVariable asIndirectUninitialized(int index) {
       exists(IndirectUninitializedNode indirectUninitializedNode |
         this = indirectUninitializedNode and
-        indirectUninitializedNode.getIndirectionIndex() = indirectionIndex
+        indirectUninitializedNode.getIndirectionIndex() = index
       |
         result = indirectUninitializedNode.getLocalVariable()
       )
@@ -808,9 +808,6 @@ module Public {
   /**
    * The value of an uninitialized local variable behind one or more levels of
    * indirection, viewed as a node in a data flow graph.
-   *
-   * NOTE: For the direct value of the uninitialized local variable, see
-   * `UninitializedNode`.
    */
   class IndirectUninitializedNode extends AbstractUninitializedNode {
     IndirectUninitializedNode() { indirectionIndex > 0 }
