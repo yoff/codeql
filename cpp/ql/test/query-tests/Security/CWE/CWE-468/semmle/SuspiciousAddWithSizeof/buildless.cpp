@@ -4,7 +4,7 @@ void test_buildless(const char *p_c, const short *p_short, const int *p_int, con
   *(p_c + sizeof(int)); // GOOD (`sizeof(char)` is 1)
   *(p_short + sizeof(int)); // BAD
   *(p_int + sizeof(int)); // BAD
-  *(p_8 + sizeof(int)); // GOOD (`sizeof(p_8)` is 1, but there's an error in the type)
+  *(p_8 + sizeof(int)); // GOOD (`sizeof(uint8_t)` is 1, but there's an error in the type)
   *(p_16 + sizeof(int)); // BAD [NOT DETECTED]
   *(p_32 + sizeof(int)); // BAD [NOT DETECTED]
 }
