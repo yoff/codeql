@@ -3040,7 +3040,9 @@ private module ConstructionMatchingInput implements MatchingInputSig {
 
     override AstNode getNodeAt(AccessPosition apos) {
       result =
-        this.getFieldExpr(this.getNthStructField(apos.asPosition()).getName().getText()).getExpr()
+        this.getFieldExpr(pragma[only_bind_into](this.getNthStructField(apos.asPosition())
+              .getName()
+              .getText())).getExpr()
       or
       result = this and apos.isReturn()
     }
@@ -3573,7 +3575,9 @@ private module DeconstructionPatMatchingInput implements MatchingInputSig {
       this =
         any(StructPat sp |
           result =
-            sp.getPatField(sp.getNthStructField(apos.asPosition()).getName().getText()).getPat()
+            sp.getPatField(pragma[only_bind_into](sp.getNthStructField(apos.asPosition())
+                  .getName()
+                  .getText())).getPat()
         )
       or
       result = this.(TupleStructPat).getField(apos.asPosition())
