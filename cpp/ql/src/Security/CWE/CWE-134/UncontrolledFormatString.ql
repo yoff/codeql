@@ -27,7 +27,7 @@ predicate isSource(FlowSource source, string sourceType) { sourceType = source.g
  * Holds if `f` is a printf-like function or a (possibly nested) wrapper
  * that forwards a format-string parameter to one.
  *
- * Functions that *implement* printf-like behaviour (e.g. a custom
+ * Functions that *implement* printf-like behavior (e.g. a custom
  * `vsnprintf` variant) internally parse the caller-supplied format string
  * and build small, bounded, local format strings such as `"%d"` or `"%ld"`
  * for inner `sprintf` calls.  Taint that reaches those inner calls via the
