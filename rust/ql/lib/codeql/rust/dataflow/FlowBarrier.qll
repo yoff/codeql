@@ -51,4 +51,27 @@ module FlowBarrier {
 
 final class FlowBarrier = FlowBarrier::Range;
 
+/** Provides the `Range` class used to define the extent of `FlowBarrierGuard`. */
+module FlowBarrierGuard {
+  /** A flow barrier guard. */
+  abstract class Range extends Impl::Public::BarrierGuardElement {
+    bindingset[this]
+    Range() { any() }
+
+    override predicate isBarrierGuard(
+      string input, string branch, string kind, Impl::Public::Provenance provenance, string model
+    ) {
+      this.isBarrierGuard(input, branch, kind) and provenance = "manual" and model = ""
+    }
+
+    /**
+     * Holds if this element is a flow barrier guard of kind `kind`, for data
+     * flowing in as described by `input`, when `this` evaluates to `branch`.
+     */
+    predicate isBarrierGuard(string input, string branch, string kind) { none() }
+  }
+}
+
+final class FlowBarrierGuard = FlowBarrierGuard::Range;
+
 predicate barrierNode = DataFlowImpl::barrierNode/2;

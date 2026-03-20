@@ -381,6 +381,21 @@ module Make<
       abstract predicate isBarrier(string output, string kind, Provenance provenance, string model);
     }
 
+    /** A barrier guard element. */
+    abstract class BarrierGuardElement extends SinkBaseFinal {
+      bindingset[this]
+      BarrierGuardElement() { any() }
+
+      /**
+       * Holds if this element is a flow barrier guard of kind `kind`, for data
+       * flowing in as described by `input`, when `this` evaluates to `branch`.
+       */
+      pragma[nomagic]
+      abstract predicate isBarrierGuard(
+        string input, string branch, string kind, Provenance provenance, string model
+      );
+    }
+
     private signature predicate hasKindSig(string kind);
 
     signature class NeutralCallableSig extends SummarizedCallableBaseFinal {
@@ -748,6 +763,19 @@ module Make<
       )
     }
 
+    private predicate isRelevantBarrierGuard(
+      BarrierGuardElement e, string input, string branch, string kind, Provenance provenance,
+      string model
+    ) {
+      e.isBarrierGuard(input, branch, kind, provenance, model) and
+      (
+        provenance.isManual()
+        or
+        provenance.isGenerated() and
+        not exists(Provenance p | p.isManual() and e.isBarrierGuard(_, _, kind, p, _))
+      )
+    }
+
     private predicate flowSpec(string spec) {
       exists(SummarizedCallable c |
         c.propagatesFlow(spec, _, _, _, _, _)
@@ -758,6 +786,8 @@ module Make<
       isRelevantSource(_, spec, _, _, _)
       or
       isRelevantBarrier(_, spec, _, _, _)
+      or
+      isRelevantBarrierGuard(_, spec, _, _, _, _)
       or
       isRelevantSink(_, spec, _, _, _)
     }
@@ -1551,6 +1581,19 @@ module Make<
       exists(string output |
         isRelevantBarrier(barrier, output, kind, _, model) and
         External::interpretSpec(output, outSpec)
+      )
+    }
+
+    /**
+     * Holds if `barrierGuard` is a relevant barrier guard element with input specification `inSpec`.
+     */
+    predicate barrierGuardSpec(
+      BarrierGuardElement barrierGuard, SummaryComponentStack inSpec, string branch, string kind,
+      string model
+    ) {
+      exists(string input |
+        isRelevantBarrierGuard(barrierGuard, input, branch, kind, _, model) and
+        External::interpretSpec(input, inSpec)
       )
     }
 
