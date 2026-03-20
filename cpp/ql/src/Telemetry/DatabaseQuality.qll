@@ -7,7 +7,7 @@ module CallTargetStats implements StatsSig {
   }
 
   // We assume that calls with an implicit target are calls that could not be
-  // resolved. This is accurate in the vast amount of cases, but is inaccurate
+  // resolved. This is accurate in the vast majority of cases, but is inaccurate
   // for calls that deliberately rely on implicitly declared functions.
   private predicate hasImplicitTarget(RelevantCall call) {
     call.getTarget().getADeclarationEntry().isImplicit()
