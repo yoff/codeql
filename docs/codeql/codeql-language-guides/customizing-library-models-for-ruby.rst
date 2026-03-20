@@ -182,7 +182,7 @@ We can model this using the following data extension:
 
 - Since we're adding flow through a method call, we add a tuple to the **summaryModel** extensible predicate.
 - The first column, **"URI!"**, begins the search for relevant calls at references to the **URI** class.
-- The **!** suffix indicates that we are looking for the class itself, rather than instances of the class.
+  The **!** suffix indicates that we are looking for the class itself, rather than instances of the class.
 - The second column, **Method[decode_uri_component]**, is a path leading to the method calls we wish to model.
   In this case, we select references to the **decode_uri_component** method from the **URI** class.
 - The third column, **Argument[0]**, indicates the input of the flow. In this case, the first argument to the method call.
