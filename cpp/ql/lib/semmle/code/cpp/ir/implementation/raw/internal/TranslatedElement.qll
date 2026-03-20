@@ -918,11 +918,16 @@ newtype TTranslatedElement =
   } or
   // Constructor calls lack a qualifier (`this`) expression, so we need to handle the side effects
   // on `*this` without an `Expr`.
-  TTranslatedStructorQualifierSideEffect(Call call, SideEffectOpcode opcode) {
+  TTranslatedImplicitThisQualifierSideEffect(ExprWithCallSizeEffects call, SideEffectOpcode opcode) {
     not ignoreExpr(call) and
     not ignoreSideEffects(call) and
-    call instanceof ConstructorCall and
-    opcode = getASideEffectOpcode(call, -1)
+    (
+      call instanceof ConstructorCall and
+      opcode = getASideEffectOpcode(call, -1)
+      or
+      call instanceof ConstructorFieldInit and
+      opcode = getDefaultFieldInitSideEffectOpcode()
+    )
   } or
   // The side effect that initializes newly-allocated memory.
   TTranslatedAllocationSideEffect(AllocationExpr expr) { not ignoreSideEffects(expr) } or

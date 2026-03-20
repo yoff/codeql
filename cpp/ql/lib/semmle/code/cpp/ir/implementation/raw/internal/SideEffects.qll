@@ -133,7 +133,7 @@ private predicate hasDefaultSideEffect(Call call, ParameterIndex i, boolean buff
  * An expression that can have call side effects.
  *
  * All kinds of expressions invoke a function as part of their evaluation. This class provides a
- * way to treat those functions similarly, and to get the invoked `Function`.
+ * way to treat those expressions similarly, and to get the invoked `Declaration`.
  */
 class ExprWithCallSizeEffects extends Expr {
   ExprWithCallSizeEffects() {
@@ -142,15 +142,19 @@ class ExprWithCallSizeEffects extends Expr {
     this instanceof NewOrNewArrayExpr
     or
     this instanceof DeleteOrDeleteArrayExpr
+    or
+    this instanceof ConstructorDefaultFieldInit
   }
 
-  /** Gets the `Function` invoked by this expression, if known. */
-  final Function getTarget() {
+  /** Gets the `Declaration` invoked by this expression, if known. */
+  final Declaration getTarget() {
     result = this.(Call).getTarget()
     or
     result = this.(NewOrNewArrayExpr).getAllocator()
     or
     result = this.(DeleteOrDeleteArrayExpr).getDeallocator()
+    or
+    result = this.(ConstructorDefaultFieldInit).getTarget()
   }
 }
 
@@ -175,7 +179,7 @@ Opcode getCallSideEffectOpcode(ExprWithCallSizeEffects expr) {
 /**
  * Returns a side effect opcode for parameter index `i` of the specified call.
  *
- * This predicate will return at most two results: one read side effect, and one write side effect.
+ * This predicate will yield at most two results: one read side effect, and one write side effect.
  */
 Opcode getASideEffectOpcode(Call call, ParameterIndex i) {
   exists(boolean buffer |
@@ -227,4 +231,15 @@ Opcode getASideEffectOpcode(Call call, ParameterIndex i) {
       buffer = true and mustWrite = true and result instanceof Opcode::BufferMustWriteSideEffect
     )
   )
+}
+
+/**
+ * Returns a side effect opcode for a default field initialization.
+ *
+ * This predicate will yield two results: one read side effect, and one write side effect.
+ */
+Opcode getDefaultFieldInitSideEffectOpcode() {
+  result instanceof Opcode::IndirectReadSideEffect
+  or
+  result instanceof Opcode::IndirectMayWriteSideEffect
 }

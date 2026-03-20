@@ -634,13 +634,22 @@ class TranslatedDefaultFieldInitialization extends TranslatedFieldInitialization
     kind instanceof GotoEdge
   }
 
-  override Instruction getALastInstructionInternal() { result = this.getInstruction(CallTag()) }
+  override Instruction getALastInstructionInternal() {
+    result = this.getSideEffects().getALastInstruction()
+  }
+
+  override TranslatedElement getLastChild() { result = this.getSideEffects() }
 
   override Instruction getInstructionSuccessorInternal(InstructionTag tag, EdgeKind kind) {
     tag = CallTargetTag() and
     result = this.getInstruction(CallTag())
     or
     tag = CallTag() and
+    result = this.getSideEffects().getFirstInstruction(kind)
+  }
+
+  override Instruction getChildSuccessorInternal(TranslatedElement child, EdgeKind kind) {
+    child = this.getSideEffects() and
     result = this.getParent().getChildSuccessor(this, kind)
   }
 
@@ -670,7 +679,9 @@ class TranslatedDefaultFieldInitialization extends TranslatedFieldInitialization
     result = field
   }
 
-  override TranslatedElement getChild(int id) { none() }
+  override TranslatedElement getChild(int id) { id = 0 and result = this.getSideEffects() }
+
+  final TranslatedSideEffects getSideEffects() { result.getExpr() = ast }
 }
 
 private string getZeroValue(Type type) {
