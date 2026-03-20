@@ -103,7 +103,7 @@ module SatisfiesBlanketConstraint<
   }
 
   private module SatisfiesBlanketConstraintInput implements
-    SatisfiesConstraintInputSig<ArgumentTypeAndBlanketOffset>
+    SatisfiesTypeInputSig<ArgumentTypeAndBlanketOffset>
   {
     pragma[nomagic]
     additional predicate relevantConstraint(
@@ -123,7 +123,7 @@ module SatisfiesBlanketConstraint<
   }
 
   private module SatisfiesBlanketConstraint =
-    SatisfiesConstraint<ArgumentTypeAndBlanketOffset, SatisfiesBlanketConstraintInput>;
+    SatisfiesType<ArgumentTypeAndBlanketOffset, SatisfiesBlanketConstraintInput>;
 
   /**
    * Holds if the argument type `at` satisfies the first non-trivial blanket

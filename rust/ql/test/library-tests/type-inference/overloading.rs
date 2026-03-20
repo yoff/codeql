@@ -449,3 +449,75 @@ mod inherent_before_trait {
         }
     }
 }
+
+mod trait_bound_impl_overlap {
+    trait MyTrait<T> {
+        fn f(&self) -> T;
+    }
+
+    trait MyTrait2<T = Self> {
+        type Output;
+
+        fn f(&self, x: T) -> Self::Output;
+    }
+
+    struct S<T>(T);
+
+    impl MyTrait<i32> for S<i32> {
+        fn f(&self) -> i32 {
+            0
+        }
+    }
+
+    impl MyTrait<i64> for S<i32> {
+        fn f(&self) -> i64 {
+            0
+        }
+    }
+
+    impl MyTrait2<S<i32>> for S<i32> {
+        type Output = i32;
+
+        fn f(&self, x: S<i32>) -> Self::Output {
+            0
+        }
+    }
+
+    impl MyTrait2<S<i64>> for S<i32> {
+        type Output = <Self as MyTrait2<S<bool>>>::Output;
+
+        fn f(&self, x: S<i64>) -> Self::Output {
+            0
+        }
+    }
+
+    impl MyTrait2<S<bool>> for S<i32> {
+        type Output = i64;
+
+        fn f(&self, x: S<bool>) -> Self::Output {
+            0
+        }
+    }
+
+    fn call_f<T1, T2: MyTrait<T1>>(x: T2) -> T1 {
+        x.f() // $ target=f
+    }
+
+    fn call_f2<T1, T2: MyTrait2<T1>>(x: T1, y: T2) -> T2::Output {
+        y.f(x) // $ target=f
+    }
+
+    fn test() {
+        let x = S(0);
+        let y = call_f(x); // $ target=call_f type=y:i32
+        let z: i32 = y;
+
+        let x = S(0);
+        let y = call_f::<i32, _>(x); // $ target=call_f type=y:i32
+
+        let x = S(0);
+        let y = call_f2(S(0i32), x); // $ target=call_f2 type=y:i32
+        let x = S(0);
+        let y = call_f2(S(0i64), x); // $ target=call_f2 type=y:i64
+    }
+}

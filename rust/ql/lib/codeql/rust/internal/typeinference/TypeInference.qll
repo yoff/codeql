@@ -30,7 +30,7 @@ private newtype TTypeArgumentPosition =
   } or
   TTypeParamTypeArgumentPosition(TypeParam tp)
 
-private module Input implements InputSig1<Location>, InputSig2<PreTypeMention> {
+private module Input1 implements InputSig1<Location> {
   private import Type as T
   private import codeql.rust.elements.internal.generated.Raw
   private import codeql.rust.elements.internal.generated.Synth
@@ -122,22 +122,36 @@ private module Input implements InputSig1<Location>, InputSig2<PreTypeMention> {
         tp0 order by kind, id1, id2
       )
   }
+}
 
-  int getTypePathLimit() { result = 10 }
+private import Input1
 
-  PreTypeMention getABaseTypeMention(Type t) { none() }
+private module M1 = Make1<Location, Input1>;
 
-  Type getATypeParameterConstraint(TypeParameter tp, TypePath path) {
-    exists(TypeMention tm | result = tm.getTypeAt(path) |
-      tm = tp.(TypeParamTypeParameter).getTypeParam().getATypeBound().getTypeRepr() or
-      tm = tp.(SelfTypeParameter).getTrait() or
-      tm =
-        tp.(ImplTraitTypeTypeParameter)
-            .getImplTraitTypeRepr()
-            .getTypeBoundList()
-            .getABound()
-            .getTypeRepr()
-    )
+import M1
+
+predicate getTypePathLimit = Input1::getTypePathLimit/0;
+
+predicate getTypeParameterId = Input1::getTypeParameterId/1;
+
+class TypePath = M1::TypePath;
+
+module TypePath = M1::TypePath;
+
+/**
+ * Provides shared logic for implementing `InputSig2<PreTypeMention>` and
+ * `InputSig2<TypeMention>`.
+ */
+private module Input2Common {
+  AstNode getATypeParameterConstraint(TypeParameter tp) {
+    result = tp.(TypeParamTypeParameter).getTypeParam().getATypeBound().getTypeRepr() or
+    result = tp.(SelfTypeParameter).getTrait() or
+    result =
+      tp.(ImplTraitTypeTypeParameter)
+          .getImplTraitTypeRepr()
+          .getTypeBoundList()
+          .getABound()
+          .getTypeRepr()
   }
 
   /**
@@ -148,7 +162,7 @@ private module Input implements InputSig1<Location>, InputSig2<PreTypeMention> {
    * inference module for more information.
    */
   predicate conditionSatisfiesConstraint(
-    TypeAbstraction abs, PreTypeMention condition, PreTypeMention constraint, boolean transitive
+    TypeAbstraction abs, AstNode condition, AstNode constraint, boolean transitive
   ) {
     // `impl` blocks implementing traits
     transitive = false and
@@ -196,23 +210,64 @@ private module Input implements InputSig1<Location>, InputSig2<PreTypeMention> {
       )
     )
   }
+
+  predicate typeParameterIsFunctionallyDetermined(TypeParameter tp) {
+    tp instanceof AssociatedTypeTypeParameter
+  }
 }
 
-private import Input
+private module PreInput2 implements InputSig2<PreTypeMention> {
+  PreTypeMention getABaseTypeMention(Type t) { none() }
 
-private module M1 = Make1<Location, Input>;
+  PreTypeMention getATypeParameterConstraint(TypeParameter tp) {
+    result = Input2Common::getATypeParameterConstraint(tp)
+  }
 
-import M1
+  predicate conditionSatisfiesConstraint(
+    TypeAbstraction abs, PreTypeMention condition, PreTypeMention constraint, boolean transitive
+  ) {
+    Input2Common::conditionSatisfiesConstraint(abs, condition, constraint, transitive)
+  }
 
-predicate getTypePathLimit = Input::getTypePathLimit/0;
+  predicate typeAbstractionHasAmbiguousConstraintAt(
+    TypeAbstraction abs, Type constraint, TypePath path
+  ) {
+    FunctionOverloading::preImplHasAmbiguousSiblingAt(abs, constraint.(TraitType).getTrait(), path)
+  }
 
-predicate getTypeParameterId = Input::getTypeParameterId/1;
+  predicate typeParameterIsFunctionallyDetermined =
+    Input2Common::typeParameterIsFunctionallyDetermined/1;
+}
 
-class TypePath = M1::TypePath;
+/** Provides an instantiation of the shared type inference library for `PreTypeMention`s. */
+module PreM2 = Make2<PreTypeMention, PreInput2>;
 
-module TypePath = M1::TypePath;
+private module Input2 implements InputSig2<TypeMention> {
+  TypeMention getABaseTypeMention(Type t) { none() }
 
-private module M2 = Make2<PreTypeMention, Input>;
+  TypeMention getATypeParameterConstraint(TypeParameter tp) {
+    result = Input2Common::getATypeParameterConstraint(tp)
+  }
+
+  predicate conditionSatisfiesConstraint(
+    TypeAbstraction abs, TypeMention condition, TypeMention constraint, boolean transitive
+  ) {
+    Input2Common::conditionSatisfiesConstraint(abs, condition, constraint, transitive)
+  }
+
+  predicate typeAbstractionHasAmbiguousConstraintAt(
+    TypeAbstraction abs, Type constraint, TypePath path
+  ) {
+    FunctionOverloading::implHasAmbiguousSiblingAt(abs, constraint.(TraitType).getTrait(), path)
+  }
+
+  predicate typeParameterIsFunctionallyDetermined =
+    Input2Common::typeParameterIsFunctionallyDetermined/1;
+}
+
+private import Input2
+
+private module M2 = Make2<TypeMention, Input2>;
 
 import M2
 
@@ -598,17 +653,18 @@ module CertainTypeInference {
   }
 
   /**
-   * Holds if `n` has complete and certain type information at _some_ type path.
+   * Holds if `n` has complete and certain type information at `path`.
    */
   pragma[nomagic]
-  predicate hasInferredCertainType(AstNode n) { exists(inferCertainType(n, _)) }
+  predicate hasInferredCertainType(AstNode n, TypePath path) { exists(inferCertainType(n, path)) }
 
   /**
-   * Holds if `n` having type `t` at `path` conflicts with certain type information.
+   * Holds if `n` having type `t` at `path` conflicts with certain type information
+   * at `prefix`.
    */
-  bindingset[n, path, t]
+  bindingset[n, prefix, path, t]
   pragma[inline_late]
-  predicate certainTypeConflict(AstNode n, TypePath path, Type t) {
+  predicate certainTypeConflict(AstNode n, TypePath prefix, TypePath path, Type t) {
     inferCertainType(n, path) != t
     or
     // If we infer that `n` has _some_ type at `T1.T2....Tn`, and we also
@@ -617,7 +673,7 @@ module CertainTypeInference {
     // otherwise there is a conflict.
     //
     // Below, `prefix` is `T1.T2...Ti` and `tp` is `T(i+1)`.
-    exists(TypePath prefix, TypePath suffix, TypeParameter tp, Type certainType |
+    exists(TypePath suffix, TypeParameter tp, Type certainType |
       path = prefix.appendInverse(suffix) and
       tp = suffix.getHead() and
       inferCertainType(n, prefix) = certainType and
@@ -988,7 +1044,7 @@ private module ContextTyping {
     or
     exists(TypeParameter mid |
       assocFunctionMentionsTypeParameterAtNonRetPos(i, f, mid) and
-      tp = getATypeParameterConstraint(mid, _)
+      tp = getATypeParameterConstraint(mid).getTypeAt(_)
     )
   }
 
@@ -1056,9 +1112,12 @@ private module ContextTyping {
   pragma[nomagic]
   private predicate hasUnknownType(AstNode n) { hasUnknownTypeAt(n, _) }
 
-  signature Type inferCallTypeSig(
-    AstNode n, FunctionPosition pos, boolean hasReceiver, TypePath path
-  );
+  newtype FunctionPositionKind =
+    SelfKind() or
+    ReturnKind() or
+    PositionalKind()
+
+  signature Type inferCallTypeSig(AstNode n, FunctionPositionKind kind, TypePath path);
 
   /**
    * Given a predicate `inferCallType` for inferring the type of a call at a given
@@ -1066,35 +1125,28 @@ private module ContextTyping {
    * predicate and checks that types are only propagated into arguments when they
    * are context-typed.
    */
-  module CheckContextTyping<inferCallTypeSig/4 inferCallType> {
+  module CheckContextTyping<inferCallTypeSig/3 inferCallType> {
     pragma[nomagic]
     private Type inferCallNonReturnType(
-      AstNode n, FunctionPosition pos, boolean hasReceiver, TypePath path
+      AstNode n, FunctionPositionKind kind, TypePath prefix, TypePath path
     ) {
-      result = inferCallType(n, pos, hasReceiver, path) and
-      not pos.isReturn()
-    }
-
-    pragma[nomagic]
-    private Type inferCallNonReturnType(
-      AstNode n, FunctionPosition pos, boolean hasReceiver, TypePath prefix, TypePath path
-    ) {
-      result = inferCallNonReturnType(n, pos, hasReceiver, path) and
+      result = inferCallType(n, kind, path) and
       hasUnknownType(n) and
+      kind != ReturnKind() and
       prefix = path.getAPrefix()
     }
 
     pragma[nomagic]
     Type check(AstNode n, TypePath path) {
-      result = inferCallType(n, any(FunctionPosition pos | pos.isReturn()), _, path)
+      result = inferCallType(n, ReturnKind(), path)
       or
-      exists(FunctionPosition pos, boolean hasReceiver, TypePath prefix |
-        result = inferCallNonReturnType(n, pos, hasReceiver, prefix, path) and
+      exists(FunctionPositionKind kind, TypePath prefix |
+        result = inferCallNonReturnType(n, kind, prefix, path) and
         hasUnknownTypeAt(n, prefix)
       |
         // Never propagate type information directly into the receiver, since its type
         // must already have been known in order to resolve the call
-        if pos.asPosition() = 0 and hasReceiver = true then not prefix.isEmpty() else any()
+        if kind = SelfKind() then not prefix.isEmpty() else any()
       )
     }
   }
@@ -2362,8 +2414,7 @@ private module AssocFunctionResolution {
       Location getLocation() { result = afc.getLocation() }
     }
 
-    private module CallSatisfiesDerefConstraintInput implements
-      SatisfiesConstraintInputSig<CallDerefCand>
+    private module CallSatisfiesDerefConstraintInput implements SatisfiesTypeInputSig<CallDerefCand>
     {
       pragma[nomagic]
       predicate relevantConstraint(CallDerefCand mc, Type constraint) {
@@ -2373,7 +2424,7 @@ private module AssocFunctionResolution {
     }
 
     private module CallSatisfiesDerefConstraint =
-      SatisfiesConstraint<CallDerefCand, CallSatisfiesDerefConstraintInput>;
+      SatisfiesType<CallDerefCand, CallSatisfiesDerefConstraintInput>;
 
     pragma[nomagic]
     private AssociatedTypeTypeParameter getDerefTargetTypeParameter() {
@@ -2880,17 +2931,20 @@ private Type inferFunctionCallTypeSelf(
 }
 
 private Type inferFunctionCallTypePreCheck(
-  AstNode n, FunctionPosition pos, boolean hasReceiver, TypePath path
+  AstNode n, ContextTyping::FunctionPositionKind kind, TypePath path
 ) {
-  result = inferFunctionCallTypeNonSelf(n, pos, path) and
-  hasReceiver = false
+  exists(FunctionPosition pos |
+    result = inferFunctionCallTypeNonSelf(n, pos, path) and
+    if pos.isPosition()
+    then kind = ContextTyping::PositionalKind()
+    else kind = ContextTyping::ReturnKind()
+  )
   or
   exists(FunctionCallMatchingInput::Access a |
     result = inferFunctionCallTypeSelf(a, n, DerefChain::nil(), path) and
-    pos.asPosition() = 0 and
     if a.(AssocFunctionResolution::AssocFunctionCall).hasReceiver()
-    then hasReceiver = true
-    else hasReceiver = false
+    then kind = ContextTyping::SelfKind()
+    else kind = ContextTyping::PositionalKind()
   )
 }
 
@@ -2899,7 +2953,7 @@ private Type inferFunctionCallTypePreCheck(
  * argument/receiver of a function call.
  */
 private predicate inferFunctionCallType =
-  ContextTyping::CheckContextTyping<inferFunctionCallTypePreCheck/4>::check/2;
+  ContextTyping::CheckContextTyping<inferFunctionCallTypePreCheck/3>::check/2;
 
 abstract private class Constructor extends Addressable {
   final TypeParameter getTypeParameter(TypeParameterPosition ppos) {
@@ -3060,10 +3114,14 @@ private module ConstructionMatching = Matching<ConstructionMatchingInput>;
 
 pragma[nomagic]
 private Type inferConstructionTypePreCheck(
-  AstNode n, FunctionPosition pos, boolean hasReceiver, TypePath path
+  AstNode n, ContextTyping::FunctionPositionKind kind, TypePath path
 ) {
-  hasReceiver = false and
-  exists(ConstructionMatchingInput::Access a | n = a.getNodeAt(pos) |
+  exists(ConstructionMatchingInput::Access a, FunctionPosition pos |
+    n = a.getNodeAt(pos) and
+    if pos.isPosition()
+    then kind = ContextTyping::PositionalKind()
+    else kind = ContextTyping::ReturnKind()
+  |
     result = ConstructionMatching::inferAccessType(a, pos, path)
     or
     a.hasUnknownTypeAt(pos, path) and
@@ -3072,7 +3130,7 @@ private Type inferConstructionTypePreCheck(
 }
 
 private predicate inferConstructionType =
-  ContextTyping::CheckContextTyping<inferConstructionTypePreCheck/4>::check/2;
+  ContextTyping::CheckContextTyping<inferConstructionTypePreCheck/3>::check/2;
 
 /**
  * A matching configuration for resolving types of operations like `a + b`.
@@ -3138,17 +3196,22 @@ private module OperationMatching = Matching<OperationMatchingInput>;
 
 pragma[nomagic]
 private Type inferOperationTypePreCheck(
-  AstNode n, FunctionPosition pos, boolean hasReceiver, TypePath path
+  AstNode n, ContextTyping::FunctionPositionKind kind, TypePath path
 ) {
-  exists(OperationMatchingInput::Access a |
+  exists(OperationMatchingInput::Access a, FunctionPosition pos |
     n = a.getNodeAt(pos) and
     result = OperationMatching::inferAccessType(a, pos, path) and
-    hasReceiver = true
+    if pos.asPosition() = 0
+    then kind = ContextTyping::SelfKind()
+    else
+      if pos.isPosition()
+      then kind = ContextTyping::PositionalKind()
+      else kind = ContextTyping::ReturnKind()
   )
 }
 
 private predicate inferOperationType =
-  ContextTyping::CheckContextTyping<inferOperationTypePreCheck/4>::check/2;
+  ContextTyping::CheckContextTyping<inferOperationTypePreCheck/3>::check/2;
 
 pragma[nomagic]
 private Type getFieldExprLookupType(FieldExpr fe, string name, DerefChain derefChain) {
@@ -3468,7 +3531,7 @@ final private class AwaitTarget extends Expr {
   Type getTypeAt(TypePath path) { result = inferType(this, path) }
 }
 
-private module AwaitSatisfiesConstraintInput implements SatisfiesConstraintInputSig<AwaitTarget> {
+private module AwaitSatisfiesTypeInput implements SatisfiesTypeInputSig<AwaitTarget> {
   pragma[nomagic]
   predicate relevantConstraint(AwaitTarget term, Type constraint) {
     exists(term) and
@@ -3476,13 +3539,12 @@ private module AwaitSatisfiesConstraintInput implements SatisfiesConstraintInput
   }
 }
 
-private module AwaitSatisfiesConstraint =
-  SatisfiesConstraint<AwaitTarget, AwaitSatisfiesConstraintInput>;
+private module AwaitSatisfiesType = SatisfiesType<AwaitTarget, AwaitSatisfiesTypeInput>;
 
 pragma[nomagic]
 private Type inferAwaitExprType(AstNode n, TypePath path) {
   exists(TypePath exprPath |
-    AwaitSatisfiesConstraint::satisfiesConstraintType(n.(AwaitExpr).getExpr(), _, exprPath, result) and
+    AwaitSatisfiesType::satisfiesConstraintType(n.(AwaitExpr).getExpr(), _, exprPath, result) and
     exprPath.isCons(getFutureOutputTypeParameter(), path)
   )
 }
@@ -3620,9 +3682,7 @@ final private class ForIterableExpr extends Expr {
   Type getTypeAt(TypePath path) { result = inferType(this, path) }
 }
 
-private module ForIterableSatisfiesConstraintInput implements
-  SatisfiesConstraintInputSig<ForIterableExpr>
-{
+private module ForIterableSatisfiesTypeInput implements SatisfiesTypeInputSig<ForIterableExpr> {
   predicate relevantConstraint(ForIterableExpr term, Type constraint) {
     exists(term) and
     exists(Trait t | t = constraint.(TraitType).getTrait() |
@@ -3643,15 +3703,15 @@ private AssociatedTypeTypeParameter getIntoIteratorItemTypeParameter() {
   result = getAssociatedTypeTypeParameter(any(IntoIteratorTrait t).getItemType())
 }
 
-private module ForIterableSatisfiesConstraint =
-  SatisfiesConstraint<ForIterableExpr, ForIterableSatisfiesConstraintInput>;
+private module ForIterableSatisfiesType =
+  SatisfiesType<ForIterableExpr, ForIterableSatisfiesTypeInput>;
 
 pragma[nomagic]
 private Type inferForLoopExprType(AstNode n, TypePath path) {
   // type of iterable -> type of pattern (loop variable)
   exists(ForExpr fe, TypePath exprPath, AssociatedTypeTypeParameter tp |
     n = fe.getPat() and
-    ForIterableSatisfiesConstraint::satisfiesConstraintType(fe.getIterable(), _, exprPath, result) and
+    ForIterableSatisfiesType::satisfiesConstraintType(fe.getIterable(), _, exprPath, result) and
     exprPath.isCons(tp, path)
   |
     tp = getIntoIteratorItemTypeParameter()
@@ -3677,8 +3737,7 @@ final private class InvokedClosureExpr extends Expr {
   CallExpr getCall() { result = call }
 }
 
-private module InvokedClosureSatisfiesConstraintInput implements
-  SatisfiesConstraintInputSig<InvokedClosureExpr>
+private module InvokedClosureSatisfiesTypeInput implements SatisfiesTypeInputSig<InvokedClosureExpr>
 {
   predicate relevantConstraint(InvokedClosureExpr term, Type constraint) {
     exists(term) and
@@ -3686,12 +3745,12 @@ private module InvokedClosureSatisfiesConstraintInput implements
   }
 }
 
-private module InvokedClosureSatisfiesConstraint =
-  SatisfiesConstraint<InvokedClosureExpr, InvokedClosureSatisfiesConstraintInput>;
+private module InvokedClosureSatisfiesType =
+  SatisfiesType<InvokedClosureExpr, InvokedClosureSatisfiesTypeInput>;
 
 /** Gets the type of `ce` when viewed as an implementation of `FnOnce`. */
 private Type invokedClosureFnTypeAt(InvokedClosureExpr ce, TypePath path) {
-  InvokedClosureSatisfiesConstraint::satisfiesConstraintType(ce, _, path, result)
+  InvokedClosureSatisfiesType::satisfiesConstraintType(ce, _, path, result)
 }
 
 /**
@@ -3911,10 +3970,11 @@ private module Cached {
     or
     // Don't propagate type information into a node which conflicts with certain
     // type information.
-    (
-      if CertainTypeInference::hasInferredCertainType(n)
-      then not CertainTypeInference::certainTypeConflict(n, path, result)
-      else any()
+    forall(TypePath prefix |
+      CertainTypeInference::hasInferredCertainType(n, prefix) and
+      prefix.isPrefixOf(path)
+    |
+      not CertainTypeInference::certainTypeConflict(n, prefix, path, result)
     ) and
     (
       result = inferAssignmentOperationType(n, path)
@@ -3981,7 +4041,7 @@ private module Debug {
     TypeAbstraction abs, TypeMention condition, TypeMention constraint, boolean transitive
   ) {
     abs = getRelevantLocatable() and
-    Input::conditionSatisfiesConstraint(abs, condition, constraint, transitive)
+    Input2::conditionSatisfiesConstraint(abs, condition, constraint, transitive)
   }
 
   predicate debugInferShorthandSelfType(ShorthandSelfParameterMention self, TypePath path, Type t) {
