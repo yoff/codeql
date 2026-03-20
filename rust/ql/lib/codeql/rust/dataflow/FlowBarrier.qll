@@ -10,7 +10,7 @@
  *  v
  * barrierNode predicate | other QL defined barriers, for example using concepts
  *  v                    v
- * various Barrier classes for specific data flow configurations <- extending QueryBarrier
+ * various Barrier classes for specific data flow configurations
  * ```
  *
  * New barriers should be defined using models-as-data, QL extensions of
