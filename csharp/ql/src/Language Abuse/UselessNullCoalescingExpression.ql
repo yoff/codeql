@@ -17,20 +17,20 @@ import semmle.code.csharp.commons.StructuralComparison
 
 pragma[noinline]
 private predicate same(AssignableAccess x, AssignableAccess y) {
-  exists(NullCoalescingExpr nce |
-    x = nce.getLeftOperand() and
-    y = nce.getRightOperand().getAChildExpr*()
+  exists(NullCoalescingOperation nc |
+    x = nc.getLeftOperand() and
+    y = nc.getRightOperand().getAChildExpr*()
   ) and
   sameGvn(x, y)
 }
 
-private predicate uselessNullCoalescingExpr(NullCoalescingExpr nce) {
+private predicate uselessNullCoalescingOperation(NullCoalescingOperation nce) {
   exists(AssignableAccess x |
     nce.getLeftOperand() = x and
     forex(AssignableAccess y | same(x, y) | y instanceof AssignableRead and not y.isRefArgument())
   )
 }
 
-from NullCoalescingExpr nce
-where uselessNullCoalescingExpr(nce)
+from NullCoalescingOperation nce
+where uselessNullCoalescingOperation(nce)
 select nce, "Both operands of this null-coalescing expression access the same variable or property."
