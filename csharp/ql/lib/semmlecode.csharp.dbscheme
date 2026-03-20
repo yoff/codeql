@@ -1216,7 +1216,8 @@ case @expr.kind of
               | @string_literal_expr | @null_literal_expr;
 
 @assign_expr = @simple_assign_expr | @assign_op_expr | @local_var_decl_expr;
-@assign_op_expr =  @assign_arith_expr | @assign_bitwise_expr | @assign_event_expr | @assign_coalesce_expr;
+@assign_op_call_expr = @assign_arith_expr | @assign_bitwise_expr
+@assign_op_expr =  @assign_op_call_expr | @assign_event_expr | @assign_coalesce_expr;
 @assign_event_expr = @add_event_expr | @remove_event_expr;
 
 @assign_arith_expr = @assign_add_expr | @assign_sub_expr | @assign_mul_expr | @assign_div_expr
@@ -1270,14 +1271,15 @@ case @expr.kind of
 
 @anonymous_function_expr = @lambda_expr | @anonymous_method_expr;
 
-@call = @method_invocation_expr | @constructor_init_expr | @operator_invocation_expr
+@op_invoke_expr = @operator_invocation_expr | @assign_op_call_expr
+@call = @method_invocation_expr | @constructor_init_expr | @op_invoke_expr
       | @delegate_invocation_expr | @object_creation_expr | @call_access_expr
       | @local_function_invocation_expr | @function_pointer_invocation_expr;
 
 @call_access_expr = @property_access_expr | @event_access_expr | @indexer_access_expr;
 
 @late_bindable_expr = @dynamic_element_access_expr | @dynamic_member_access_expr
-                    | @object_creation_expr | @method_invocation_expr | @operator_invocation_expr;
+                    | @object_creation_expr | @method_invocation_expr | @op_invoke_expr;
 
 @throw_element = @throw_expr | @throw_stmt;
 
