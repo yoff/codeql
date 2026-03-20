@@ -493,12 +493,16 @@ class ConstructorInitializer extends Call, @constructor_init_expr {
  * }
  * ```
  */
-class OperatorCall extends Call, LateBindableExpr, @operator_invocation_expr {
+class OperatorCall extends Call, LateBindableExpr, @op_invoke_expr {
   override Operator getTarget() { expr_call(this, result) }
 
   override Operator getARuntimeTarget() { result = Call.super.getARuntimeTarget() }
 
-  override string toString() { result = "call to operator " + this.getTarget().getName() }
+  override string toString() {
+    if this instanceof DynamicOperatorCall
+    then result = "dynamic call to operator " + this.getLateBoundTargetName()
+    else result = "call to operator " + this.getTarget().getName()
+  }
 
   override string getAPrimaryQlClass() { result = "OperatorCall" }
 }
