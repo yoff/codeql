@@ -49,7 +49,7 @@ public class LogForgingHandler : IHttpHandler
     }
 }
 
-static class LoggerExtensions
+static class UserLoggerExtensions
 {
     public static void WarnSafe(this ILogger logger, string message)
     {
