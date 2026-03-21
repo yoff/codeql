@@ -10,7 +10,6 @@ private import semmle.code.csharp.frameworks.system.text.RegularExpressions
 private import semmle.code.csharp.security.Sanitizers
 private import semmle.code.csharp.security.dataflow.flowsinks.ExternalLocationSink
 private import semmle.code.csharp.dataflow.internal.ExternalFlow
-private import semmle.code.csharp.commons.Loggers
 
 /**
  * A data flow source for untrusted user input used in log entries.
@@ -54,13 +53,14 @@ private class HtmlSanitizer extends Sanitizer {
 
 /**
  * An argument to a call to a method on a logger class, excluding extension methods
- * which are analyzed interprocedurally.
+ * with source code which are analyzed interprocedurally.
  */
-private class LogForgingLogMessageSink extends Sink {
+private class LogForgingLogMessageSink extends Sink, LogMessageSink {
   LogForgingLogMessageSink() {
-    this.getExpr() = any(LoggerType i).getAMethod().getACall().getAnArgument() or
-    this.getExpr() =
-      any(MethodCall call | call.getQualifier().getType() instanceof LoggerType).getAnArgument()
+    not exists(ExtensionMethodCall mc |
+      this.getExpr() = mc.getAnArgument() and
+      mc.getTarget().fromSource()
+    )
   }
 }
 
