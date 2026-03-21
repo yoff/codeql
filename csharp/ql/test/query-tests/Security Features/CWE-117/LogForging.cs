@@ -53,7 +53,7 @@ static class UserLoggerExtensions
 {
     public static void WarnSafe(this ILogger logger, string message)
     {
-        logger.Warn(message.Replace(Environment.NewLine, ""));
+        logger.Warn(message.ReplaceLineEndings(""));
     }
 
     public static void WarnUnsafe(this ILogger logger, string message)
