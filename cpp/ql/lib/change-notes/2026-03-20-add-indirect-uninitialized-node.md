@@ -1,4 +1,4 @@
 ---
 category: feature
 ---
-* A new data flow class called `IndirectUninitializedNode` represents uninitialized data of a variable behind some level of indirection.
+* Added a new data flow node, `IndirectUninitializedNode`, that represents uninitialized local variables behind a number of indirections.
