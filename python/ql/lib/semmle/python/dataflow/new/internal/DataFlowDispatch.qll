@@ -2089,7 +2089,8 @@ module DuckTyping {
   /**
    * Holds if `cls` is a new-style class. In Python 3, all classes are new-style.
    * In Python 2, a class is new-style if it (transitively) inherits from `object`,
-   * or has a declared `__metaclass__`, or has an unresolved base class.
+   * or has a declared `__metaclass__`, or is in a module with a module-level
+   * `__metaclass__` declaration, or has an unresolved base class.
    */
   predicate isNewStyle(Class cls) {
     major_version() = 3
