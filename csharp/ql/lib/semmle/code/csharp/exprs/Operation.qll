@@ -4,119 +4,68 @@
 
 import Expr
 
-/** A binary operation that involves a null-coalescing operation. */
-abstract private class NullCoalescingOperationImpl extends BinaryOperation { }
+/**
+ * An addition operation, either `x + y` or `x += y`.
+ */
+class AddOperation extends BinaryOperation, @add_operation { }
 
-final class NullCoalescingOperation = NullCoalescingOperationImpl;
+/**
+ * A subtraction operation, either `x - y` or `x -= y`.
+ */
+class SubOperation extends BinaryOperation, @sub_operation { }
 
-private class AddNullCoalescingExpr extends NullCoalescingOperationImpl instanceof NullCoalescingExpr
-{ }
+/**
+ * A multiplication operation, either `x * y` or `x *= y`.
+ */
+class MulOperation extends BinaryOperation, @mul_operation { }
 
-private class AddAssignCoalesceExpr extends NullCoalescingOperationImpl instanceof AssignCoalesceExpr
-{ }
+/**
+ * A division operation, either `x / y` or `x /= y`.
+ */
+class DivOperation extends BinaryOperation, @div_operation {
+  /** Gets the numerator of this division operation. */
+  Expr getNumerator() { result = this.getLeftOperand() }
 
-/** A binary operations that involves an addition operation. */
-abstract private class AddOperationImpl extends BinaryOperation { }
-
-final class AddOperation = AddOperationImpl;
-
-private class AddAddExpr extends AddOperationImpl instanceof AddExpr { }
-
-private class AddAssignExpr extends AddOperationImpl instanceof AssignAddExpr { }
-
-/** A binary operation that involves a subtraction operation. */
-abstract private class SubOperationImpl extends BinaryOperation { }
-
-final class SubOperation = SubOperationImpl;
-
-private class AddSubExpr extends SubOperationImpl instanceof SubExpr { }
-
-private class AddSubAssignExpr extends SubOperationImpl instanceof AssignSubExpr { }
-
-/** A binary operation that involves a multiplication operation. */
-abstract private class MulOperationImpl extends BinaryOperation { }
-
-final class MulOperation = MulOperationImpl;
-
-private class AddMulExpr extends MulOperationImpl instanceof MulExpr { }
-
-private class AddMulAssignExpr extends MulOperationImpl instanceof AssignMulExpr { }
-
-/** A binary operation that involves a division operation. */
-abstract private class DivOperationImpl extends BinaryOperation {
   /** Gets the denominator of this division operation. */
   Expr getDenominator() { result = this.getRightOperand() }
 }
 
-final class DivOperation = DivOperationImpl;
+/**
+ * A remainder operation, either `x % y` or `x %= y`.
+ */
+class RemOperation extends BinaryOperation, @rem_operation { }
 
-private class AddDivExpr extends DivOperationImpl instanceof DivExpr { }
+/**
+ * A bitwise-and operation, either `x & y` or `x &= y`.
+ */
+class BitwiseAndOperation extends BinaryOperation, @and_operation { }
 
-private class AddDivAssignExpr extends DivOperationImpl instanceof AssignDivExpr { }
+/**
+ * A bitwise-or operation, either `x | y` or `x |= y`.
+ */
+class BitwiseOrOperation extends BinaryOperation, @or_operation { }
 
-/** A binary operation that involves a remainder operation. */
-abstract private class RemOperationImpl extends BinaryOperation { }
+/**
+ * A bitwise exclusive-or operation, either `x ^ y` or `x ^= y`.
+ */
+class BitwiseXorOperation extends BinaryOperation, @xor_operation { }
 
-final class RemOperation = RemOperationImpl;
+/**
+ * A left-shift operation, either `x << y` or `x <<= y`.
+ */
+class LeftShiftOperation extends BinaryOperation, @lshift_operation { }
 
-private class AddRemExpr extends RemOperationImpl instanceof RemExpr { }
+/**
+ * A right-shift operation, either `x >> y` or `x >>= y`.
+ */
+class RightShiftOperation extends BinaryOperation, @rshift_operation { }
 
-private class AddRemAssignExpr extends RemOperationImpl instanceof AssignRemExpr { }
+/**
+ * An unsigned right-shift operation, either `x >>> y` or `x >>>= y`.
+ */
+class UnsignedRightShiftOperation extends BinaryOperation, @urshift_operation { }
 
-/** A binary operation that involves a bitwise AND operation. */
-abstract private class BitwiseAndOperationImpl extends BinaryOperation { }
-
-final class BitwiseAndOperation = BitwiseAndOperationImpl;
-
-private class AddBitwiseAndExpr extends BitwiseAndOperationImpl instanceof BitwiseAndExpr { }
-
-private class AddAssignBitwiseAndExpr extends BitwiseAndOperationImpl instanceof AssignAndExpr { }
-
-/** A binary operation that involves a bitwise OR operation. */
-abstract private class BitwiseOrOperationImpl extends BinaryOperation { }
-
-final class BitwiseOrOperation = BitwiseOrOperationImpl;
-
-private class AddBitwiseOrExpr extends BitwiseOrOperationImpl instanceof BitwiseOrExpr { }
-
-private class AddAssignBitwiseOrExpr extends BitwiseOrOperationImpl instanceof AssignOrExpr { }
-
-/** A binary operation that involves a bitwise XOR operation. */
-abstract private class BitwiseXorOperationImpl extends BinaryOperation { }
-
-final class BitwiseXorOperation = BitwiseXorOperationImpl;
-
-private class AddBitwiseXorExpr extends BitwiseXorOperationImpl instanceof BitwiseXorExpr { }
-
-private class AddAssignBitwiseXorExpr extends BitwiseXorOperationImpl instanceof AssignXorExpr { }
-
-/** A binary operation that involves a left shift operation. */
-abstract private class LeftShiftOperationImpl extends BinaryOperation { }
-
-final class LeftShiftOperation = LeftShiftOperationImpl;
-
-private class AddLeftShiftExpr extends LeftShiftOperationImpl instanceof LeftShiftExpr { }
-
-private class AddAssignLeftShiftExpr extends LeftShiftOperationImpl instanceof AssignLeftShiftExpr {
-}
-
-/** A binary operation that involves a right shift operation. */
-abstract private class RightShiftOperationImpl extends BinaryOperation { }
-
-final class RightShiftOperation = RightShiftOperationImpl;
-
-private class AddRightShiftExpr extends RightShiftOperationImpl instanceof RightShiftExpr { }
-
-private class AddAssignRightShiftExpr extends RightShiftOperationImpl instanceof AssignRightShiftExpr
-{ }
-
-/** A binary operation that involves a unsigned right shift operation. */
-abstract private class UnsignedRightShiftOperationImpl extends BinaryOperation { }
-
-final class UnsignedRightShiftOperation = UnsignedRightShiftOperationImpl;
-
-private class AddUnsignedRightShiftExpr extends UnsignedRightShiftOperationImpl instanceof UnsignedRightShiftExpr
-{ }
-
-private class AddAssignUnsignedRightShiftExpr extends UnsignedRightShiftOperationImpl instanceof AssignUnsignedRightShiftExpr
-{ }
+/**
+ * A null-coalescing operation, either `x ?? y` or `x ??= y`.
+ */
+class NullCoalescingOperation extends BinaryOperation, @null_coalescing_operation { }
