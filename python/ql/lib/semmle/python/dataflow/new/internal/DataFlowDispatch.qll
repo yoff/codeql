@@ -2108,7 +2108,8 @@ module DuckTyping {
       // Module-level __metaclass__ = type makes all classes in the module new-style
       exists(Assign a |
         a.getScope() = cls.getEnclosingModule() and
-        a.getATarget().(Name).getId() = "__metaclass__"
+        a.getATarget().(Name).getId() = "__metaclass__" and
+        a.getValue() = API::builtin("type").getAValueReachableFromSource().asExpr()
       )
     )
   }
