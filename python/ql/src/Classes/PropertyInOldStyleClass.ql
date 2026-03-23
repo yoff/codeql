@@ -13,11 +13,12 @@
 import python
 private import semmle.python.dataflow.new.internal.DataFlowDispatch
 
-from Function prop, Class cls
+from Function prop, Class cls, Name decorator
 where
   prop.getScope() = cls and
-  prop.getADecorator().(Name).getId() = "property" and
+  decorator = prop.getADecorator() and
+  decorator.getId() = "property" and
   not DuckTyping::isNewStyle(cls)
-select prop,
+select decorator,
   "Property " + prop.getName() + " will not work properly, as class " + cls.getName() +
     " is an old-style class."
