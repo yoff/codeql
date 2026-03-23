@@ -118,12 +118,6 @@ private module Cached {
     i = 0
   }
 
-  /**
-   * Use `expr_parent` instead.
-   */
-  cached
-  deprecated predicate expr_parent_adjusted(Expr child, int i, ControlFlowElement parent) { none() }
-
   private Expr getAChildExpr(ExprOrStmtParent parent) {
     result = parent.getAChildExpr() and
     not result = parent.(DeclarationWithGetSetAccessors).getExpressionBody()
