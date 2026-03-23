@@ -53,7 +53,7 @@ predicate call_to_range(DataFlow::Node node) {
   call_to_range(node.(DataFlow::CallCfgNode).getArg(0))
 }
 
-/** Whether n is a use of a variable that is a not effectively a constant. */
+/** Whether n is a use of a variable that is not effectively a constant. */
 predicate use_of_non_constant(Name n) {
   exists(Variable var |
     n.uses(var) and
