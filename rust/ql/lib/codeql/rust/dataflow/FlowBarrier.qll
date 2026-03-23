@@ -1,7 +1,7 @@
 /**
- * Provides classes and predicates for defining barriers.
+ * Provides classes and predicates for defining barriers and barrier guards.
  *
- * Flow barriers defined here feed into data flow configurations as follows:
+ * Flow barriers and barrier guards defined here feed into data flow configurations as follows:
  *
  * ```text
  * data from *.model.yml | QL extensions of FlowBarrier::Range
@@ -11,10 +11,18 @@
  * barrierNode predicate | other QL defined barriers, for example using concepts
  *  v                    v
  * various Barrier classes for specific data flow configurations
+ *
+ * data from *.model.yml | QL extensions of FlowBarrierGuard::Range
+ *  v                       v
+ * FlowBarrierGuard (associated with a models-as-data kind string)
+ *  v
+ * barrierNode predicate | other QL defined barrier guards, for example using concepts
+ *  v                          v
+ * various Barrier classes for specific data flow configurations
  * ```
  *
- * New barriers should be defined using models-as-data, QL extensions of
- * `FlowBarrier::Range`, or concepts. Data flow configurations should use the
+ * New barriers and barrier guards should be defined using models-as-data, QL extensions of
+ * `FlowBarrier::Range`/`FlowBarrierGuard::Range`, or concepts. Data flow configurations should use the
  * `barrierNode` predicate and/or concepts to define their barriers.
  */
 
