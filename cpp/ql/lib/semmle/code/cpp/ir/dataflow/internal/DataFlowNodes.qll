@@ -322,6 +322,12 @@ module Public {
     Operand asIndirectOperand(int index) { hasOperandAndIndex(this, result, index) }
 
     /**
+     * Gets the instruction that is indirectly tracked by this node behind
+     * `index` number of indirections.
+     */
+    Instruction asIndirectInstruction(int index) { hasInstructionAndIndex(this, result, index) }
+
+    /**
      * Holds if this node is at index `i` in basic block `block`.
      *
      * Note: Phi nodes are considered to be at index `-1`.
