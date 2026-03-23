@@ -5,6 +5,7 @@
 
 import rust
 private import codeql.rust.dataflow.DataFlow
+private import codeql.rust.dataflow.FlowBarrier
 private import codeql.rust.dataflow.FlowSource
 private import codeql.rust.dataflow.FlowSink
 private import codeql.rust.Concepts
@@ -128,6 +129,15 @@ module HardcodedCryptographicValue {
     }
 
     override CryptographicValueKind getKind() { result = kind }
+  }
+
+  /**
+   * An externally modeled barrier for hard-coded cryptographic value vulnerabilities.
+   */
+  private class ModelsAsDataBarrier extends Barrier {
+    CryptographicValueKind kind;
+
+    ModelsAsDataBarrier() { barrierNode(this, "credentials-" + kind) }
   }
 
   /**
