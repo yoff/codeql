@@ -2145,8 +2145,7 @@ module DuckTyping {
     exists(Class cls |
       f.getScope() = cls and
       superclass = getADirectSuperclass+(cls) and
-      overridden = superclass.getAMethod() and
-      overridden.getName() = f.getName()
+      overridden = superclass.getMethod(f.getName())
     )
   }
 
