@@ -795,6 +795,12 @@ module Public {
   /** An explicit positional parameter, including `this`, but not `...`. */
   final class DirectParameterNode = AbstractDirectParameterNode;
 
+  /**
+   * A node representing an indirection of a positional parameter,
+   * including `*this`, but not `*...`.
+   */
+  final class IndirectParameterNode = AbstractIndirectParameterNode;
+
   final class ExplicitParameterNode = AbstractExplicitParameterNode;
 
   /** An implicit `this` parameter. */
@@ -953,11 +959,6 @@ module Public {
 }
 
 private import Public
-
-/**
- * A node representing an indirection of a parameter.
- */
-final class IndirectParameterNode = AbstractIndirectParameterNode;
 
 /**
  * A class that lifts pre-SSA dataflow nodes to regular dataflow nodes.
