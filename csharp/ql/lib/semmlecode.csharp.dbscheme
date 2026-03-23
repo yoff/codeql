@@ -1220,6 +1220,19 @@ case @expr.kind of
 @assign_op_expr =  @assign_op_call_expr | @assign_event_expr | @assign_coalesce_expr;
 @assign_event_expr = @add_event_expr | @remove_event_expr;
 
+@add_operation = @add_expr | @assign_add_expr;
+@sub_operation = @sub_expr | @assign_sub_expr;
+@mul_operation = @mul_expr | @assign_mul_expr;
+@div_operation = @div_expr | @assign_div_expr;
+@rem_operation = @rem_expr | @assign_rem_expr;
+@and_operation = @bit_and_expr | @assign_and_expr;
+@xor_operation = @bit_xor_expr | @assign_xor_expr;
+@or_operation = @bit_or_expr | @assign_or_expr;
+@lshift_operation = @lshift_expr | @assign_lshift_expr;
+@rshift_operation = @rshift_expr | @assign_rshift_expr;
+@urshift_operation = @urshift_expr | @assign_urshift_expr;
+@null_coalescing_operation = @null_coalescing_expr | @assign_coalesce_expr;
+
 @assign_arith_expr = @assign_add_expr | @assign_sub_expr | @assign_mul_expr | @assign_div_expr
                    | @assign_rem_expr
 @assign_bitwise_expr = @assign_and_expr | @assign_or_expr | @assign_xor_expr
