@@ -113,9 +113,9 @@ extensible predicate barrierModel(
  * to by `input` is a barrier guard of the given `kind` and `madId` is the data
  * extension row number.
  *
- * The value referred to by `input` is assumed to lead to a parameter of a call
- * (possibly `self`), and the call is guarding the parameter. `branch` is either `true`
- * or `false`, indicating which branch of the guard is protecting the parameter.
+ * The value referred to by `input` is assumed to lead to an argument of a call
+ * (possibly `self`), and the call is guarding the argument. `branch` is either `true`
+ * or `false`, indicating which branch of the guard is protecting the argument.
  */
 extensible predicate barrierGuardModel(
   string path, string input, string branch, string kind, string provenance,
