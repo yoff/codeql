@@ -60,7 +60,7 @@ class AssignExpr extends Assignment, @simple_assign_expr {
 
 /**
  * An assignment operation. Either an arithmetic assignment operation
- * (`AssignArithmeticOperation`), a bitwise assignment operation or
+ * (`AssignArithmeticOperation`), a bitwise assignment operation
  * (`AssignBitwiseOperation`), an event assignment (`AddOrRemoveEventExpr`), or
  * a null-coalescing assignment (`AssignCoalesceExpr`).
  */
@@ -81,10 +81,14 @@ class AssignOperation extends Assignment, @assign_op_expr {
 }
 
 /**
- * An assignment operation that corresponds to an operator call, for example `x += y` corresponds to `x = x + y`.
+ * A compound assignment operation that implicitly invokes an operator.
+ * For example, `x += y` assigns the result of `x + y` to `x`.
+ *
+ * Either an arithmetic assignment operation (`AssignArithmeticOperation`) or a bitwise
+ * assignment operation (`AssignBitwiseOperation`).
  */
 class AssignCallOperation extends AssignOperation, OperatorCall, @assign_op_call_expr {
-  override string toString() { result = "... " + this.getOperator() + " ..." }
+  override string toString() { result = AssignOperation.super.toString() }
 }
 
 /**

@@ -478,7 +478,7 @@ class ConstructorInitializer extends Call, @constructor_init_expr {
 }
 
 /**
- * A call to a user-defined operator, for example `this + other`
+ * A call to an operator, for example `this + other`
  * on line 7 in
  *
  * ```csharp
