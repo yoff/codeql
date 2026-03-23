@@ -2135,8 +2135,18 @@ module DuckTyping {
   /**
    * Holds if `f` overrides a method in a superclass with the same name.
    */
-  predicate overridesMethod(Function f) {
-    exists(Class cls | f.getScope() = cls | hasMethod(getADirectSuperclass(cls), f.getName()))
+  predicate overridesMethod(Function f) { overridesMethod(f, _, _) }
+
+  /**
+   * Holds if `f` overrides `overridden` declared in `superclass`.
+   */
+  predicate overridesMethod(Function f, Class superclass, Function overridden) {
+    exists(Class cls |
+      f.getScope() = cls and
+      superclass = getADirectSuperclass+(cls) and
+      overridden = superclass.getAMethod() and
+      overridden.getName() = f.getName()
+    )
   }
 
   /**

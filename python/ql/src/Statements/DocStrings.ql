@@ -30,9 +30,7 @@ predicate needs_docstring(Scope s) {
 
 predicate function_needs_docstring(FunctionMetrics f) {
   not exists(Function base |
-    DuckTyping::overridesMethod(f) and
-    base.getScope() = getADirectSuperclass+(f.getScope()) and
-    base.getName() = f.getName() and
+    DuckTyping::overridesMethod(f, _, base) and
     not function_needs_docstring(base)
   ) and
   f.getName() != "lambda" and
