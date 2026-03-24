@@ -659,7 +659,7 @@ class TranslatedArgumentExprSideEffect extends TranslatedArgumentSideEffect,
  * The IR translation of an argument side effect for `*this` on a call, where there is no `Expr`
  * object that represents the `this` argument.
  *
- * The applies to constructor calls and default field initializations, as the AST has explicit
+ * This applies to constructor calls and default field initializations, as the AST has explicit
  * qualifier `Expr`s for all other calls to non-static member functions.
  */
 class TranslatedImplicitThisQualifierSideEffect extends TranslatedArgumentSideEffect,
