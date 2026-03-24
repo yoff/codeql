@@ -135,8 +135,8 @@ private predicate hasDefaultSideEffect(Call call, ParameterIndex i, boolean buff
  * All kinds of expressions invoke a function as part of their evaluation. This class provides a
  * way to treat those expressions similarly, and to get the invoked `Declaration`.
  */
-class ExprWithCallSizeEffects extends Expr {
-  ExprWithCallSizeEffects() {
+class ExprWithCallSideEffects extends Expr {
+  ExprWithCallSideEffects() {
     this instanceof Call
     or
     this instanceof NewOrNewArrayExpr
@@ -162,7 +162,7 @@ class ExprWithCallSizeEffects extends Expr {
  * Returns the side effect opcode, if any, that represents any side effects not specifically modeled
  * by an argument side effect.
  */
-Opcode getCallSideEffectOpcode(ExprWithCallSizeEffects expr) {
+Opcode getCallSideEffectOpcode(ExprWithCallSideEffects expr) {
   not exists(expr.getTarget().(SideEffectFunction)) and result instanceof Opcode::CallSideEffect
   or
   exists(SideEffectFunction sideEffectFunction |

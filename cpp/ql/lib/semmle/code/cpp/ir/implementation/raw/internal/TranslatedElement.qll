@@ -879,7 +879,7 @@ newtype TTranslatedElement =
   // The declaration/initialization part of a `ConditionDeclExpr`
   TTranslatedConditionDecl(ConditionDeclExpr expr) { not ignoreExpr(expr) } or
   // The side effects of a `Call`
-  TTranslatedCallSideEffects(ExprWithCallSizeEffects expr) {
+  TTranslatedCallSideEffects(ExprWithCallSideEffects expr) {
     not ignoreExpr(expr) and
     not ignoreSideEffects(expr)
   } or
@@ -918,7 +918,7 @@ newtype TTranslatedElement =
   } or
   // Constructor calls lack a qualifier (`this`) expression, so we need to handle the side effects
   // on `*this` without an `Expr`.
-  TTranslatedImplicitThisQualifierSideEffect(ExprWithCallSizeEffects call, SideEffectOpcode opcode) {
+  TTranslatedImplicitThisQualifierSideEffect(ExprWithCallSideEffects call, SideEffectOpcode opcode) {
     not ignoreExpr(call) and
     not ignoreSideEffects(call) and
     (
