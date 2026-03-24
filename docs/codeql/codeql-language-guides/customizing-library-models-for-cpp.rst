@@ -59,7 +59,7 @@ The CodeQL library for CPP analysis exposes the following extensible predicates:
 - ``sinkModel(namespace, type, subtypes, name, signature, ext, input, kind, provenance)``. This is used to model sinks where tainted data may be used in a way that makes the code vulnerable.
 - ``summaryModel(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance)``. This is used to model flow through elements.
 - ``barrierModel(namespace, type, subtypes, name, signature, ext, output, kind, provenance)``. This is used to model barriers, which are elements that stop the flow of taint.
-- ``barrierGuardModel(namespace, type, boolean subtypes, name, signature, ext, input, acceptingvalue, kind, provenance)``. This is used to model barrier guards, which are elements that can stop the flow of taint depending on a conditional check.
+- ``barrierGuardModel(namespace, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance)``. This is used to model barrier guards, which are elements that can stop the flow of taint depending on a conditional check.
 
 The extensible predicates are populated using the models defined in data extension files.
 
