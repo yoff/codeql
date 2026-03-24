@@ -126,7 +126,7 @@ mod regression4 {
             T: MyTrait,
         {
             let S(s) = self;
-            s.m(); // $ MISSING: target=MyTrait::m $ SPURIOUS: target=RefAsMyTrait::m
+            s.m(); // $ target=MyTrait::m
         }
     }
 }
