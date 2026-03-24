@@ -19,7 +19,7 @@ private import semmle.python.dataflow.new.internal.DataFlowDispatch
 from Class c
 where
   not DuckTyping::isContextManager(c) and
-  DuckTyping::hasMethod(c, "__del__")
+  exists(c.getMethod("__del__"))
 select c,
   "Class " + c.getName() +
     " implements __del__ (presumably to release some resource). Consider making it a context manager."
