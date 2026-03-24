@@ -130,13 +130,13 @@ private predicate hasDefaultSideEffect(Call call, ParameterIndex i, boolean buff
 }
 
 /**
- * A `Call` or `NewOrNewArrayExpr` or `DeleteOrDeleteArrayExpr`.
+ * An expression that can have call side effects.
  *
- * All kinds of expression invoke a function as part of their evaluation. This class provides a
- * way to treat both kinds of function similarly, and to get the invoked `Function`.
+ * All kinds of expressions invoke a function as part of their evaluation. This class provides a
+ * way to treat those functions similarly, and to get the invoked `Function`.
  */
-class CallOrAllocationExpr extends Expr {
-  CallOrAllocationExpr() {
+class ExprWithCallSizeEffects extends Expr {
+  ExprWithCallSizeEffects() {
     this instanceof Call
     or
     this instanceof NewOrNewArrayExpr
@@ -158,7 +158,7 @@ class CallOrAllocationExpr extends Expr {
  * Returns the side effect opcode, if any, that represents any side effects not specifically modeled
  * by an argument side effect.
  */
-Opcode getCallSideEffectOpcode(CallOrAllocationExpr expr) {
+Opcode getCallSideEffectOpcode(ExprWithCallSizeEffects expr) {
   not exists(expr.getTarget().(SideEffectFunction)) and result instanceof Opcode::CallSideEffect
   or
   exists(SideEffectFunction sideEffectFunction |

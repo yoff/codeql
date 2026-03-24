@@ -871,7 +871,7 @@ newtype TTranslatedElement =
   // The declaration/initialization part of a `ConditionDeclExpr`
   TTranslatedConditionDecl(ConditionDeclExpr expr) { not ignoreExpr(expr) } or
   // The side effects of a `Call`
-  TTranslatedCallSideEffects(CallOrAllocationExpr expr) {
+  TTranslatedCallSideEffects(ExprWithCallSizeEffects expr) {
     not ignoreExpr(expr) and
     not ignoreSideEffects(expr)
   } or
