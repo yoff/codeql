@@ -134,11 +134,12 @@ module HardcodedCryptographicValue {
   /**
    * An externally modeled barrier for hard-coded cryptographic value vulnerabilities.
    *
-   * Note that a sanitizer with kind `credentials-key` will sanitize flow to
-   * all sinks, not just sinks with the same kind.
+   * Note that a barrier will block flow to all hard-coded cryptographic value
+   * sinks, regardless of the `kind` that is specified. For example a barrier of
+   * kind `credentials-key` will block flow to a sink of kind `credentials-iv`.
    */
   private class ModelsAsDataBarrier extends Barrier {
-    ModelsAsDataBarrier() { exists(string kind | barrierNode(this, "credentials-" + kind)) }
+    ModelsAsDataBarrier() { exists(CryptographicValueKind kind | barrierNode(this, "credentials-" + kind)) }
   }
 
   /**
