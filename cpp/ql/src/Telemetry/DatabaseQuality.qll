@@ -31,8 +31,6 @@ private class SourceExpr extends Expr {
   SourceExpr() { this.getFile() instanceof RelevantFile }
 }
 
-predicate find(SourceExpr e) { not hasGoodType(e) }
-
 private predicate hasGoodType(Expr e) { not e.getType() instanceof ErroneousType }
 
 module ExprTypeStats implements StatsSig {
