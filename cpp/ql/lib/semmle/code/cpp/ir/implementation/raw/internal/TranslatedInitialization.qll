@@ -515,8 +515,8 @@ TranslatedFieldInitialization getTranslatedConstructorFieldInitialization(Constr
 }
 
 /**
- * Represents the IR translation of the initialization of a field from an
- * element of an initializer list.
+ * The IR translation of the initialization of a field from an element of
+ * an initializer list.
  */
 abstract class TranslatedFieldInitialization extends TranslatedElement {
   Expr ast;
@@ -546,8 +546,8 @@ abstract class TranslatedFieldInitialization extends TranslatedElement {
 }
 
 /**
- * Represents the IR translation of the initialization of a field from an
- * element of an initializer list where default initialization is not used.
+ * The IR translation of the initialization of a field from an element of an initializer
+ * list where default initialization is not used.
  */
 abstract class TranslatedNonDefaultFieldInitialization extends TranslatedFieldInitialization {
   final override Instruction getFirstInstruction(EdgeKind kind) {
@@ -575,8 +575,8 @@ abstract class TranslatedNonDefaultFieldInitialization extends TranslatedFieldIn
 }
 
 /**
- * Represents the IR translation of the initialization of a field from an
- * explicit element in an initializer list.
+ * The IR translation of the initialization of a field from an explicit element in
+ * an initializer list.
  */
 class TranslatedExplicitFieldInitialization extends TranslatedNonDefaultFieldInitialization,
   InitializationContext, TTranslatedExplicitFieldInitialization
@@ -619,8 +619,8 @@ class TranslatedExplicitFieldInitialization extends TranslatedNonDefaultFieldIni
 }
 
 /**
- * Represents the IR translation of the initialization of a field from an
- * element of an initializer list where default initialization is used.
+ * The IR translation of the initialization of a field from an element of an initializer
+ * list where default initialization is used.
  */
 class TranslatedDefaultFieldInitialization extends TranslatedFieldInitialization,
   TTranslatedDefaultFieldInitialization
@@ -689,8 +689,8 @@ private string getZeroValue(Type type) {
 }
 
 /**
- * Represents the IR translation of the initialization of a field without a
- * corresponding element in the initializer list.
+ * The IR translation of the initialization of a field without a corresponding
+ * element in the initializer list.
  */
 class TranslatedFieldValueInitialization extends TranslatedNonDefaultFieldInitialization,
   TTranslatedFieldValueInitialization
@@ -758,8 +758,8 @@ class TranslatedFieldValueInitialization extends TranslatedNonDefaultFieldInitia
 }
 
 /**
- * Represents the IR translation of the initialization of an array element from
- * an element of an initializer list.
+ * The IR translation of the initialization of an array element from an element
+ * of an initializer list.
  */
 abstract class TranslatedElementInitialization extends TranslatedElement {
   ArrayOrVectorAggregateLiteral initList;
@@ -836,8 +836,8 @@ abstract class TranslatedElementInitialization extends TranslatedElement {
 }
 
 /**
- * Represents the IR translation of the initialization of an array element from
- * an explicit element in an initializer list.
+ * The IR translation of the initialization of an array element from an explicit
+ * element in an initializer list.
  */
 class TranslatedExplicitElementInitialization extends TranslatedElementInitialization,
   TTranslatedExplicitElementInitialization, InitializationContext
@@ -885,8 +885,8 @@ class TranslatedExplicitElementInitialization extends TranslatedElementInitializ
 }
 
 /**
- * Represents the IR translation of the initialization of a range of array
- * elements without corresponding elements in the initializer list.
+ * The IR translation of the initialization of a range of array elements without
+ * corresponding elements in the initializer list.
  */
 class TranslatedElementValueInitialization extends TranslatedElementInitialization,
   TTranslatedElementValueInitialization
