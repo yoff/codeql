@@ -138,9 +138,7 @@ module HardcodedCryptographicValue {
    * all sinks, not just sinks with the same kind.
    */
   private class ModelsAsDataBarrier extends Barrier {
-    CryptographicValueKind kind;
-
-    ModelsAsDataBarrier() { barrierNode(this, "credentials-" + kind) }
+    ModelsAsDataBarrier() { exists(string kind | barrierNode(this, "credentials-" + kind)) }
   }
 
   /**
