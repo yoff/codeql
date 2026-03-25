@@ -1124,7 +1124,7 @@ class IndirectArgumentOutNode extends PostUpdateNodeImpl {
   /**
    * Gets the `Function` that the call targets, if this is statically known.
    */
-  Function getStaticCallTarget() { result = this.getCallInstruction().getStaticCallTarget() }
+  Declaration getStaticCallTarget() { result = this.getCallInstruction().getStaticCallTarget() }
 
   override string toStringImpl() {
     exists(string prefix | if indirectionIndex > 0 then prefix = "" else prefix = "pointer to " |
@@ -1628,7 +1628,7 @@ abstract private class AbstractParameterNode extends Node {
    * implicit `this` parameter is considered to have position `-1`, and
    * pointer-indirection parameters are at further negative positions.
    */
-  predicate isSourceParameterOf(Function f, ParameterPosition pos) { none() }
+  predicate isSourceParameterOf(Declaration f, ParameterPosition pos) { none() }
 
   /**
    * Holds if this node is the parameter of `sc` at the specified position. The
@@ -1711,7 +1711,7 @@ private class IndirectInstructionParameterNode extends AbstractIndirectParameter
 
   override Declaration getFunction() { result = init.getEnclosingFunction() }
 
-  override predicate isSourceParameterOf(Function f, ParameterPosition pos) {
+  override predicate isSourceParameterOf(Declaration f, ParameterPosition pos) {
     this.getFunction() = f and
     exists(int argumentIndex, int indirectionIndex |
       indirectPositionHasArgumentIndexAndIndex(pos, argumentIndex, indirectionIndex) and
@@ -1744,7 +1744,7 @@ abstract class InstructionDirectParameterNode extends InstructionNode, AbstractD
 
   override Parameter getParameter() { result = instr.getParameter() }
 
-  override predicate isSourceParameterOf(Function f, ParameterPosition pos) {
+  override predicate isSourceParameterOf(Declaration f, ParameterPosition pos) {
     this.getFunction() = f and
     exists(int argumentIndex |
       pos.(DirectPosition).getArgumentIndex() = argumentIndex and
@@ -1789,9 +1789,9 @@ private class DirectBodyLessParameterNode extends AbstractExplicitParameterNode,
 {
   DirectBodyLessParameterNode() { indirectionIndex = 0 }
 
-  override predicate isSourceParameterOf(Function f, ParameterPosition pos) {
+  override predicate isSourceParameterOf(Declaration f, ParameterPosition pos) {
     this.getFunction() = f and
-    f.getParameter(pos.(DirectPosition).getArgumentIndex()) = p
+    f.(Function).getParameter(pos.(DirectPosition).getArgumentIndex()) = p
   }
 
   override Parameter getParameter() { result = p }
@@ -1802,10 +1802,10 @@ private class IndirectBodyLessParameterNode extends AbstractIndirectParameterNod
 {
   IndirectBodyLessParameterNode() { not this instanceof DirectBodyLessParameterNode }
 
-  override predicate isSourceParameterOf(Function f, ParameterPosition pos) {
+  override predicate isSourceParameterOf(Declaration f, ParameterPosition pos) {
     exists(int argumentPosition |
       this.getFunction() = f and
-      f.getParameter(argumentPosition) = p and
+      f.(Function).getParameter(argumentPosition) = p and
       indirectPositionHasArgumentIndexAndIndex(pos, argumentPosition, indirectionIndex)
     )
   }
