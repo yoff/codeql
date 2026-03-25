@@ -850,11 +850,6 @@ module Public {
   {
     ThisParameterInstructionNode() { instr.getIRVariable() instanceof IRThisVariable }
 
-    override predicate isSourceParameterOf(Function f, ParameterPosition pos) {
-      pos.(DirectPosition).getArgumentIndex() = -1 and
-      instr.getEnclosingFunction() = f
-    }
-
     override string toStringImpl() { result = "this" }
   }
 
@@ -1659,6 +1654,11 @@ abstract private class AbstractParameterNode extends Node {
 
   /** Gets the `Parameter` associated with this node, if it exists. */
   Parameter getParameter() { none() } // overridden by subclasses
+
+  /**
+   * Holds if this node represents an implicit `this` parameter, if it exists.
+   */
+  predicate isThis() { none() } // overridden by subclasses
 }
 
 abstract private class AbstractIndirectParameterNode extends AbstractParameterNode {
@@ -1701,8 +1701,9 @@ private class IndirectInstructionParameterNode extends AbstractIndirectParameter
     )
   }
 
-  /** Gets the parameter whose indirection is initialized. */
   override Parameter getParameter() { result = init.getParameter() }
+
+  override predicate isThis() { init.hasIndex(-1) }
 
   override DataFlowCallable getEnclosingCallable() {
     result.asSourceCallable() = this.getFunction()
@@ -1738,6 +1739,18 @@ abstract class InstructionDirectParameterNode extends InstructionNode, AbstractD
    * Gets the `IRVariable` that this parameter references.
    */
   final IRVariable getIRVariable() { result = instr.getIRVariable() }
+
+  override predicate isThis() { instr.hasIndex(-1) }
+
+  override Parameter getParameter() { result = instr.getParameter() }
+
+  override predicate isSourceParameterOf(Function f, ParameterPosition pos) {
+    this.getFunction() = f and
+    exists(int argumentIndex |
+      pos.(DirectPosition).getArgumentIndex() = argumentIndex and
+      instr.hasIndex(argumentIndex)
+    )
+  }
 }
 
 abstract private class AbstractExplicitParameterNode extends AbstractDirectParameterNode { }
@@ -1748,13 +1761,7 @@ private class ExplicitParameterInstructionNode extends AbstractExplicitParameter
 {
   ExplicitParameterInstructionNode() { exists(instr.getParameter()) }
 
-  override predicate isSourceParameterOf(Function f, ParameterPosition pos) {
-    f.getParameter(pos.(DirectPosition).getArgumentIndex()) = instr.getParameter()
-  }
-
   override string toStringImpl() { result = instr.getParameter().toString() }
-
-  override Parameter getParameter() { result = instr.getParameter() }
 }
 
 /**
