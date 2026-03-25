@@ -29,4 +29,6 @@ module CsharpDataFlow implements InputSig<Location> {
   predicate neverSkipInPathGraph(Node n) {
     exists(n.(AssignableDefinitionNode).getDefinition().getTargetAccess())
   }
+
+  DataFlowType getSourceContextParameterNodeType() { result.isSourceContextParameterType() }
 }
