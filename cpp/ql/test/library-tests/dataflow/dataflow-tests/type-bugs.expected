@@ -36,12 +36,6 @@ irTypeBugs
 | ../../../include/iterator.h:31:16:31:25 | ../../../include/iterator.h:31:16:31:25 | ../../../include/iterator.h:31:16:31:25 | [summary] read: Argument[this].Element[*] in operator-> |
 | ../../../include/iterator.h:31:16:31:25 | ../../../include/iterator.h:31:16:31:25 | ../../../include/iterator.h:31:16:31:25 | [summary] to write: ReturnValue[**] in operator-> |
 | ../../../include/iterator.h:31:16:31:25 | ../../../include/iterator.h:31:16:31:25 | ../../../include/iterator.h:31:16:31:25 | [summary] to write: ReturnValue[*] in operator-> |
-| ../../../include/iterator.h:50:14:50:22 | ../../../include/iterator.h:50:14:50:22 | ../../../include/iterator.h:50:14:50:22 | container |
-| ../../../include/iterator.h:50:14:50:22 | ../../../include/iterator.h:50:14:50:22 | ../../../include/iterator.h:50:14:50:22 | container |
-| ../../../include/iterator.h:50:14:50:22 | ../../../include/iterator.h:50:14:50:22 | ../../../include/iterator.h:50:14:50:22 | container |
-| ../../../include/iterator.h:75:14:75:22 | ../../../include/iterator.h:75:14:75:22 | ../../../include/iterator.h:75:14:75:22 | container |
-| ../../../include/iterator.h:75:14:75:22 | ../../../include/iterator.h:75:14:75:22 | ../../../include/iterator.h:75:14:75:22 | container |
-| ../../../include/iterator.h:75:14:75:22 | ../../../include/iterator.h:75:14:75:22 | ../../../include/iterator.h:75:14:75:22 | container |
 | test.cpp:356:7:356:11 | test.cpp:356:7:356:11 | test.cpp:356:7:356:11 | field |
 | test.cpp:356:7:356:11 | test.cpp:356:7:356:11 | test.cpp:356:7:356:11 | field |
 | test.cpp:356:7:356:11 | test.cpp:356:7:356:11 | test.cpp:356:7:356:11 | field |

@@ -19697,23 +19697,6 @@ ir.cpp:
 # 2905|     v2905_16(void)                               = AliasedUse                      : ~m?
 # 2905|     v2905_17(void)                               = ExitFunction                    : 
 
-# 2906| T StructInitFromTemplate<T>::t
-# 2906|   Block 0
-# 2906|     v2906_1(void)                              = EnterFunction                : 
-# 2906|     mu2906_2(unknown)                          = AliasedDefinition            : 
-# 2906|     mu2906_3(unknown)                          = InitializeNonLocal           : 
-# 2906|     r2906_4(glval<unknown>)                    = VariableAddress[#this]       : 
-# 2906|     mu2906_5(glval<StructInitFromTemplate<T>>) = InitializeParameter[#this]   : &:r2906_4
-# 2906|     r2906_6(glval<StructInitFromTemplate<T>>)  = Load[#this]                  : &:r2906_4, ~m?
-# 2906|     mu2906_7(StructInitFromTemplate<T>)        = InitializeIndirection[#this] : &:r2906_6
-# 2906|     r2906_8(glval<T>)                          = FieldAddress[t]              : r2906_6
-# 2906|     r2906_9(glval<T>)                          = VariableAddress              : 
-
-# 2906|   Block 1
-# 2906|     v2906_10(void) = ReturnVoid   : 
-# 2906|     v2906_11(void) = AliasedUse   : ~m?
-# 2906|     v2906_12(void) = ExitFunction : 
-
 # 2906| int StructInitFromTemplate<int>::t
 # 2906|   Block 0
 # 2906|     v2906_1(void)                                = EnterFunction                 : 

@@ -6,7 +6,6 @@ missingOperandType
 duplicateChiOperand
 sideEffectWithoutPrimary
 instructionWithoutSuccessor
-| ir.cpp:2906:11:2906:13 | VariableAddress: temporary object | Instruction 'VariableAddress: temporary object' has no successors in function '$@'. | ir.cpp:2906:7:2906:7 | T StructInitFromTemplate<T>::t | T StructInitFromTemplate<T>::t |
 ambiguousSuccessors
 unexplainedLoop
 unnecessaryPhiInstruction
@@ -30,6 +29,5 @@ fieldAddressOnNonPointer
 thisArgumentIsNonPointer
 | ir.cpp:2548:34:2548:34 | Call: call to operator bool | Call instruction 'Call: call to operator bool' has a `this` argument operand that is not an address, in function '$@'. | ir.cpp:2547:6:2547:23 | void this_inconsistency(bool) | void this_inconsistency(bool) |
 nonUniqueIRVariable
-| ir.cpp:2906:11:2906:13 | VariableAddress: temporary object | Variable address instruction 'VariableAddress: temporary object' has no associated variable, in function '$@'. | ir.cpp:2906:7:2906:7 | T StructInitFromTemplate<T>::t | T StructInitFromTemplate<T>::t |
 nonBooleanOperand
 missingCppType
