@@ -245,7 +245,7 @@ private Type substituteLookupTraits0(ItemNode i, Type t) {
 
 /**
  * Gets the type obtained by substituting in relevant traits in which to do function
- * lookup, or `t` itself when no such trait exist, in the context of AST node `n`.
+ * lookup, or `t` itself when no such trait exists, in the context of AST node `n`.
  */
 bindingset[n, t]
 pragma[inline_late]
