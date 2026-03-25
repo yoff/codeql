@@ -2901,4 +2901,21 @@ struct StructInit {
     int get_val() { return k; }
 };
 
+template<typename T>
+struct StructInitFromTemplate {
+    T t = T();
+};
+
+StructInitFromTemplate<int> StructInitFromTemplateVar;
+
+template<class T>
+constexpr T VariableTemplate = T(42);
+ 
+template<class T>
+T VariableTemplateFunc(T x) {
+    return VariableTemplate<T> + x;
+}
+
+int VariableTemplateFuncUse = VariableTemplateFunc(2.3);
+
 // semmle-extractor-options: -std=c++20 --clang

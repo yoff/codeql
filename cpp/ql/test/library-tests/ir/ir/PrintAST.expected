@@ -25733,6 +25733,77 @@ ir.cpp:
 # 2901|         getQualifier(): [ThisExpr] this
 # 2901|             Type = [PointerType] StructInit *
 # 2901|             ValueCategory = prvalue(load)
+# 2905| [Constructor] void StructInitFromTemplate<int>::StructInitFromTemplate()
+# 2905|   <params>: 
+# 2905|   <initializations>: 
+# 2905|     getInitializer(0): [ConstructorDefaultFieldInit] constructor init of field t
+# 2905|         Type = [IntType] int
+# 2905|         ValueCategory = prvalue
+# 2905|   getEntryPoint(): [BlockStmt] { ... }
+# 2905|     getStmt(0): [ReturnStmt] return ...
+# 2909| [GlobalVariable] StructInitFromTemplate<int> StructInitFromTemplateVar
+#-----|   getInitializer(): [Initializer] initializer for StructInitFromTemplateVar
+#-----|     getExpr(): [ConstructorCall] call to StructInitFromTemplate
+#-----|         Type = [VoidType] void
+#-----|         ValueCategory = prvalue
+#-----|     getExpr().getFullyConverted(): [TemporaryObjectExpr] temporary object
+#-----|         Type = [ClassTemplateInstantiation,Struct] StructInitFromTemplate<int>
+#-----|         ValueCategory = prvalue(load)
+# 2912| [GlobalVariable,VariableTemplateInstantiation] double VariableTemplate<double>
+# 2912|   getInitializer(): [Initializer] initializer for VariableTemplate
+# 2912|     getExpr(): [Literal] 42
+# 2912|         Type = [IntType] int
+# 2912|         Value = [Literal] 42
+# 2912|         ValueCategory = prvalue
+# 2912|     getExpr().getFullyConverted(): [CStyleCast] (double)...
+# 2912|         Conversion = [IntegralToFloatingPointConversion] integral to floating point conversion
+# 2912|         Type = [DoubleType] double
+# 2912|         Value = [CStyleCast] 42.0
+# 2912|         ValueCategory = prvalue
+# 2915| [TemplateFunction,TopLevelFunction] T VariableTemplateFunc<T>(T)
+# 2915|   <params>: 
+# 2915|     getParameter(0): [Parameter] x
+# 2915|         Type = [TypeTemplateParameter] T
+# 2915|   getEntryPoint(): [BlockStmt] { ... }
+# 2916|     getStmt(0): [ReturnStmt] return ...
+# 2916|       getExpr(): [AddExpr] ... + ...
+# 2916|           Type = [UnknownType] unknown
+# 2916|           ValueCategory = prvalue
+# 2916|         getLeftOperand(): [VariableAccess] VariableTemplate
+# 2916|             Type = [UnknownType] unknown
+# 2916|             ValueCategory = lvalue
+# 2916|         getRightOperand(): [VariableAccess] x
+# 2916|             Type = [TypeTemplateParameter] T
+# 2916|             ValueCategory = lvalue
+# 2915| [FunctionTemplateInstantiation,TopLevelFunction] double VariableTemplateFunc<double>(double)
+# 2915|   <params>: 
+# 2915|     getParameter(0): [Parameter] x
+# 2915|         Type = [DoubleType] double
+# 2915|   getEntryPoint(): [BlockStmt] { ... }
+# 2916|     getStmt(0): [ReturnStmt] return ...
+# 2916|       getExpr(): [AddExpr] ... + ...
+# 2916|           Type = [DoubleType] double
+# 2916|           ValueCategory = prvalue
+# 2916|         getLeftOperand(): [VariableAccess] VariableTemplate
+# 2916|             Type = [DoubleType] double
+# 2916|             Value = [VariableAccess] 42.0
+# 2916|             ValueCategory = prvalue(load)
+# 2916|         getRightOperand(): [VariableAccess] x
+# 2916|             Type = [DoubleType] double
+# 2916|             ValueCategory = prvalue(load)
+# 2919| [GlobalVariable] int VariableTemplateFuncUse
+# 2919|   getInitializer(): [Initializer] initializer for VariableTemplateFuncUse
+# 2919|     getExpr(): [FunctionCall] call to VariableTemplateFunc
+# 2919|         Type = [DoubleType] double
+# 2919|         ValueCategory = prvalue
+# 2919|       getArgument(0): [Literal] 2.299999999999999822
+# 2919|           Type = [DoubleType] double
+# 2919|           Value = [Literal] 2.299999999999999822
+# 2919|           ValueCategory = prvalue
+# 2919|     getExpr().getFullyConverted(): [CStyleCast] (int)...
+# 2919|         Conversion = [FloatingPointToIntegralConversion] floating point to integral conversion
+# 2919|         Type = [IntType] int
+# 2919|         ValueCategory = prvalue
 ir23.cpp:
 #    1| [TopLevelFunction] bool consteval_1()
 #    1|   <params>: 

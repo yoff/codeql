@@ -19677,6 +19677,123 @@ ir.cpp:
 # 2901|     v2901_17(void)              = AliasedUse                   : ~m?
 # 2901|     v2901_18(void)              = ExitFunction                 : 
 
+# 2905| void StructInitFromTemplate<int>::StructInitFromTemplate()
+# 2905|   Block 0
+# 2905|     v2905_1(void)                                = EnterFunction                   : 
+# 2905|     mu2905_2(unknown)                            = AliasedDefinition               : 
+# 2905|     mu2905_3(unknown)                            = InitializeNonLocal              : 
+# 2905|     r2905_4(glval<unknown>)                      = VariableAddress[#this]          : 
+# 2905|     mu2905_5(glval<StructInitFromTemplate<int>>) = InitializeParameter[#this]      : &:r2905_4
+# 2905|     r2905_6(glval<StructInitFromTemplate<int>>)  = Load[#this]                     : &:r2905_4, ~m?
+# 2905|     mu2905_7(StructInitFromTemplate<int>)        = InitializeIndirection[#this]    : &:r2905_6
+# 2905|     r2905_8(glval<unknown>)                      = FunctionAddress[t]              : 
+# 2905|     v2905_9(void)                                = Call[t]                         : func:r2905_8, this:r2905_6
+# 2905|     mu2905_10(unknown)                           = ^CallSideEffect                 : ~m?
+# 2905|     v2905_11(void)                               = ^IndirectReadSideEffect[-1]     : &:r2905_6, ~m?
+# 2905|     mu2905_12(StructInitFromTemplate<int>)       = ^IndirectMayWriteSideEffect[-1] : &:r2905_6
+# 2905|     v2905_13(void)                               = NoOp                            : 
+# 2905|     v2905_14(void)                               = ReturnIndirection[#this]        : &:r2905_6, ~m?
+# 2905|     v2905_15(void)                               = ReturnVoid                      : 
+# 2905|     v2905_16(void)                               = AliasedUse                      : ~m?
+# 2905|     v2905_17(void)                               = ExitFunction                    : 
+
+# 2906| T StructInitFromTemplate<T>::t
+# 2906|   Block 0
+# 2906|     v2906_1(void)                              = EnterFunction                : 
+# 2906|     mu2906_2(unknown)                          = AliasedDefinition            : 
+# 2906|     mu2906_3(unknown)                          = InitializeNonLocal           : 
+# 2906|     r2906_4(glval<unknown>)                    = VariableAddress[#this]       : 
+# 2906|     mu2906_5(glval<StructInitFromTemplate<T>>) = InitializeParameter[#this]   : &:r2906_4
+# 2906|     r2906_6(glval<StructInitFromTemplate<T>>)  = Load[#this]                  : &:r2906_4, ~m?
+# 2906|     mu2906_7(StructInitFromTemplate<T>)        = InitializeIndirection[#this] : &:r2906_6
+# 2906|     r2906_8(glval<T>)                          = FieldAddress[t]              : r2906_6
+# 2906|     r2906_9(glval<T>)                          = VariableAddress              : 
+
+# 2906|   Block 1
+# 2906|     v2906_10(void) = ReturnVoid   : 
+# 2906|     v2906_11(void) = AliasedUse   : ~m?
+# 2906|     v2906_12(void) = ExitFunction : 
+
+# 2906| int StructInitFromTemplate<int>::t
+# 2906|   Block 0
+# 2906|     v2906_1(void)                                = EnterFunction                 : 
+# 2906|     mu2906_2(unknown)                            = AliasedDefinition             : 
+# 2906|     mu2906_3(unknown)                            = InitializeNonLocal            : 
+# 2906|     r2906_4(glval<unknown>)                      = VariableAddress[#this]        : 
+# 2906|     mu2906_5(glval<StructInitFromTemplate<int>>) = InitializeParameter[#this]    : &:r2906_4
+# 2906|     r2906_6(glval<StructInitFromTemplate<int>>)  = Load[#this]                   : &:r2906_4, ~m?
+# 2906|     mu2906_7(StructInitFromTemplate<int>)        = InitializeIndirection[#this]  : &:r2906_6
+# 2906|     r2906_8(glval<int>)                          = FieldAddress[t]               : r2906_6
+# 2906|     r2906_9(glval<int>)                          = VariableAddress[#temp2906:11] : 
+# 2906|     r2906_10(int)                                = Constant[0]                   : 
+# 2906|     mu2906_11(int)                               = Store[#temp2906:11]           : &:r2906_9, r2906_10
+# 2906|     r2906_12(int)                                = Load[#temp2906:11]            : &:r2906_9, ~m?
+# 2906|     mu2906_13(int)                               = Store[?]                      : &:r2906_8, r2906_12
+# 2906|     v2906_14(void)                               = ReturnVoid                    : 
+# 2906|     v2906_15(void)                               = AliasedUse                    : ~m?
+# 2906|     v2906_16(void)                               = ExitFunction                  : 
+
+# 2909| StructInitFromTemplate<int> StructInitFromTemplateVar
+# 2909|   Block 0
+# 2909|     v2909_1(void)                               = EnterFunction                              : 
+# 2909|     mu2909_2(unknown)                           = AliasedDefinition                          : 
+# 2909|     r2909_3(glval<StructInitFromTemplate<int>>) = VariableAddress[StructInitFromTemplateVar] : 
+#-----|     r0_1(glval<StructInitFromTemplate<int>>)    = VariableAddress[#temp0:0]                  : 
+#-----|     mu0_2(StructInitFromTemplate<int>)          = Uninitialized[#temp0:0]                    : &:r0_1
+#-----|     r0_3(glval<unknown>)                        = FunctionAddress[StructInitFromTemplate]    : 
+#-----|     v0_4(void)                                  = Call[StructInitFromTemplate]               : func:r0_3, this:r0_1
+#-----|     mu0_5(unknown)                              = ^CallSideEffect                            : ~m?
+#-----|     mu0_6(StructInitFromTemplate<int>)          = ^IndirectMayWriteSideEffect[-1]            : &:r0_1
+#-----|     r0_7(StructInitFromTemplate<int>)           = Load[#temp0:0]                             : &:r0_1, ~m?
+#-----|     mu0_8(StructInitFromTemplate<int>)          = Store[StructInitFromTemplateVar]           : &:r2909_3, r0_7
+# 2909|     v2909_4(void)                               = ReturnVoid                                 : 
+# 2909|     v2909_5(void)                               = AliasedUse                                 : ~m?
+# 2909|     v2909_6(void)                               = ExitFunction                               : 
+
+# 2912| double VariableTemplate<double>
+# 2912|   Block 0
+# 2912|     v2912_1(void)          = EnterFunction                     : 
+# 2912|     mu2912_2(unknown)      = AliasedDefinition                 : 
+# 2912|     r2912_3(glval<double>) = VariableAddress[VariableTemplate] : 
+# 2912|     r2912_4(double)        = Constant[42.0]                    : 
+# 2912|     mu2912_5(double)       = Store[VariableTemplate]           : &:r2912_3, r2912_4
+# 2912|     v2912_6(void)          = ReturnVoid                        : 
+# 2912|     v2912_7(void)          = AliasedUse                        : ~m?
+# 2912|     v2912_8(void)          = ExitFunction                      : 
+
+# 2915| double VariableTemplateFunc<double>(double)
+# 2915|   Block 0
+# 2915|     v2915_1(void)          = EnterFunction            : 
+# 2915|     mu2915_2(unknown)      = AliasedDefinition        : 
+# 2915|     mu2915_3(unknown)      = InitializeNonLocal       : 
+# 2915|     r2915_4(glval<double>) = VariableAddress[x]       : 
+# 2915|     mu2915_5(double)       = InitializeParameter[x]   : &:r2915_4
+# 2916|     r2916_1(glval<double>) = VariableAddress[#return] : 
+# 2916|     r2916_2(double)        = Constant[42.0]           : 
+# 2916|     r2916_3(glval<double>) = VariableAddress[x]       : 
+# 2916|     r2916_4(double)        = Load[x]                  : &:r2916_3, ~m?
+# 2916|     r2916_5(double)        = Add                      : r2916_2, r2916_4
+# 2916|     mu2916_6(double)       = Store[#return]           : &:r2916_1, r2916_5
+# 2915|     r2915_6(glval<double>) = VariableAddress[#return] : 
+# 2915|     v2915_7(void)          = ReturnValue              : &:r2915_6, ~m?
+# 2915|     v2915_8(void)          = AliasedUse               : ~m?
+# 2915|     v2915_9(void)          = ExitFunction             : 
+
+# 2919| int VariableTemplateFuncUse
+# 2919|   Block 0
+# 2919|     v2919_1(void)           = EnterFunction                            : 
+# 2919|     mu2919_2(unknown)       = AliasedDefinition                        : 
+# 2919|     r2919_3(glval<int>)     = VariableAddress[VariableTemplateFuncUse] : 
+# 2919|     r2919_4(glval<unknown>) = FunctionAddress[VariableTemplateFunc]    : 
+# 2919|     r2919_5(double)         = Constant[2.299999999999999822]           : 
+# 2919|     r2919_6(double)         = Call[VariableTemplateFunc]               : func:r2919_4, 0:r2919_5
+# 2919|     mu2919_7(unknown)       = ^CallSideEffect                          : ~m?
+# 2919|     r2919_8(int)            = Convert                                  : r2919_6
+# 2919|     mu2919_9(int)           = Store[VariableTemplateFuncUse]           : &:r2919_3, r2919_8
+# 2919|     v2919_10(void)          = ReturnVoid                               : 
+# 2919|     v2919_11(void)          = AliasedUse                               : ~m?
+# 2919|     v2919_12(void)          = ExitFunction                             : 
+
 ir23.cpp:
 #    1| bool consteval_1()
 #    1|   Block 0
