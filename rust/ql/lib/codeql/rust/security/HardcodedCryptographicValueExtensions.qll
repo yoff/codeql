@@ -139,7 +139,9 @@ module HardcodedCryptographicValue {
    * kind `credentials-key` will block flow to a sink of kind `credentials-iv`.
    */
   private class ModelsAsDataBarrier extends Barrier {
-    ModelsAsDataBarrier() { exists(CryptographicValueKind kind | barrierNode(this, "credentials-" + kind)) }
+    ModelsAsDataBarrier() {
+      exists(CryptographicValueKind kind | barrierNode(this, "credentials-" + kind))
+    }
   }
 
   /**
