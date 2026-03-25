@@ -47,6 +47,7 @@ module Raw {
       not var.isFromUninstantiatedTemplate(_) and
       var instanceof StaticInitializedStaticLocalVariable
       or
+      not var.isFromUninstantiatedTemplate(_) and
       var instanceof Field
     ) and
     var.hasInitializer() and
