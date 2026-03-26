@@ -112,4 +112,3 @@ private class GetsFunction extends DataFlowFunction, ArrayFunction, AliasFunctio
 
   override predicate hasArrayOutput(int bufParam) { bufParam = 0 }
 }
-
