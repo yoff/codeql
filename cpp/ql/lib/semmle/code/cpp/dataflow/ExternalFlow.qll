@@ -5,11 +5,11 @@
  *
  * The extensible relations have the following columns:
  * - Sources:
- *   `namespace; type; subtypes; name; signature; ext; output; kind`
+ *   `namespace; type; subtypes; name; signature; ext; output; kind; provenance`
  * - Sinks:
- *   `namespace; type; subtypes; name; signature; ext; input; kind`
+ *   `namespace; type; subtypes; name; signature; ext; input; kind; provenance`
  * - Summaries:
- *   `namespace; type; subtypes; name; signature; ext; input; output; kind`
+ *   `namespace; type; subtypes; name; signature; ext; input; output; kind; provenance`
  * - Barriers:
  *   `namespace; type; subtypes; name; signature; ext; output; kind; provenance`
  * - BarrierGuards:
