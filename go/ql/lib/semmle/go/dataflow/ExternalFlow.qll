@@ -4,7 +4,7 @@
  * Provides classes and predicates for dealing with flow models specified
  * in data extensions and CSV format.
  *
- * The CSV specification has the following columns:
+ * The extensible relations have the following columns:
  * - Sources:
  *   `package; type; subtypes; name; signature; ext; output; kind; provenance`
  * - Sinks:
