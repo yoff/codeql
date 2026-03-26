@@ -15,13 +15,21 @@
 import csharp
 import semmle.code.csharp.commons.StructuralComparison
 
+pragma[nomagic]
+private predicate relevant(Expr left, Expr right) {
+  exists(NullCoalescingOperation nce |
+    left = nce.getLeftOperand() and
+    right = nce.getRightOperand()
+  )
+}
+
 pragma[noinline]
 private predicate same(AssignableAccess x, AssignableAccess y) {
-  exists(NullCoalescingOperation nc |
-    x = nc.getLeftOperand() and
-    y = nc.getRightOperand().getAChildExpr*()
-  ) and
-  sameGvn(x, y)
+  exists(Expr e |
+    relevant(x, e) and
+    y = e.getAChildExpr*() and
+    sameGvn(x, y)
+  )
 }
 
 private predicate uselessNullCoalescingOperation(NullCoalescingOperation nce) {
