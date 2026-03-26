@@ -9,6 +9,10 @@
  *   `path; input; kind; provenance`
  * - Summaries:
  *   `path; input; output; kind; provenance`
+ * - Barriers:
+ *   `path; output; kind; provenance`
+ * - BarrierGuards:
+ *   `path; input; branch; kind; provenance`
  *
  * The interpretation of a row is similar to API-graphs with a left-to-right
  * reading.
@@ -34,12 +38,15 @@
  *     - `Field[i]`: the `i`th element of a tuple.
  *     - `Reference`: the referenced value.
  *     - `Future`: the value being computed asynchronously.
- * 3. The `kind` column is a tag that can be referenced from QL to determine to
+ * 3. The `branch` column of barrier guard models specifies which branch of the
+ *    guard is blocking flow. It can be "true" or "false". In the future
+ *    "no-exception", "not-zero", "null", "not-null" may be supported.
+ * 4. The `kind` column is a tag that can be referenced from QL to determine to
  *    which classes the interpreted elements should be added. For example, for
  *    sources `"remote"` indicates a default remote flow source, and for summaries
  *    `"taint"` indicates a default additional taint step and `"value"` indicates a
  *    globally applicable value-preserving step.
- * 4. The `provenance` column is mainly used internally, and should be set to `"manual"` for
+ * 5. The `provenance` column is mainly used internally, and should be set to `"manual"` for
  *    all custom models.
  */
 

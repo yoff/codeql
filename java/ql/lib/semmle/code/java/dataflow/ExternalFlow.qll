@@ -11,6 +11,10 @@
  *   `package; type; subtypes; name; signature; ext; input; kind; provenance`
  * - Summaries:
  *   `package; type; subtypes; name; signature; ext; input; output; kind; provenance`
+ * - Barriers:
+ *   `package; type; subtypes; name; signature; ext; output; kind; provenance`
+ * - BarrierGuards:
+ *   `package; type; subtypes; name; signature; ext; input; acceptingvalue; kind; provenance`
  * - Neutrals:
  *   `package; type; name; signature; kind; provenance`
  *   A neutral is used to indicate that a callable is neutral with respect to flow (no summary), source (is not a source) or sink (is not a sink).
@@ -69,14 +73,17 @@
  *      in the given range. The range is inclusive at both ends.
  *    - "ReturnValue": Selects the return value of a call to the selected element.
  *    - "Element": Selects the collection elements of the selected element.
- * 8. The `kind` column is a tag that can be referenced from QL to determine to
+ * 8. The `acceptingvalue` column of barrier guard models specifies the condition
+ *    under which the guard accepts or blocks flow. It can be one of "true" or
+ *    "false", "no-exception", "not-zero", "null", "not-null".
+ * 9. The `kind` column is a tag that can be referenced from QL to determine to
  *    which classes the interpreted elements should be added. For example, for
  *    sources "remote" indicates a default remote flow source, and for summaries
  *    "taint" indicates a default additional taint step and "value" indicates a
  *    globally applicable value-preserving step. For neutrals the kind can be `summary`,
  *    `source` or `sink` to indicate that the neutral is neutral with respect to
  *    flow (no summary), source (is not a source) or sink (is not a sink).
- * 9. The `provenance` column is a tag to indicate the origin and verification of a model.
+ * 10. The `provenance` column is a tag to indicate the origin and verification of a model.
  *    The format is {origin}-{verification} or just "manual" where the origin describes
  *    the origin of the model and verification describes how the model has been verified.
  *    Some examples are:

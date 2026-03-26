@@ -10,6 +10,10 @@
  *   `type, path, kind`
  * - Summaries:
  *   `type, path, input, output, kind`
+ * - Barriers:
+ *   `type, path, kind`
+ * - BarrierGuards:
+ *   `type, path, branch, kind`
  * - Types:
  *   `type1, type2, path`
  *
@@ -42,7 +46,8 @@
  * 3. The `input` and `output` columns specify how data enters and leaves the element selected by the
  *    first `(type, path)` tuple. Both strings are `.`-separated access paths
  *    of the same syntax as the `path` column.
- * 4. The `kind` column is a tag that can be referenced from QL to determine to
+ * 4. The `branch` column of barrier guard models specifies which branch of the guard is blocking flow. It can be "true" or "false".
+ * 5. The `kind` column is a tag that can be referenced from QL to determine to
  *    which classes the interpreted elements should be added. For example, for
  *    sources `"remote"` indicates a default remote flow source, and for summaries
  *    `"taint"` indicates a default additional taint step and `"value"` indicates a

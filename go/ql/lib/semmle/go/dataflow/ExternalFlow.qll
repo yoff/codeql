@@ -11,6 +11,10 @@
  *   `package; type; subtypes; name; signature; ext; input; kind; provenance`
  * - Summaries:
  *   `package; type; subtypes; name; signature; ext; input; output; kind; provenance`
+ * - Barriers:
+ *   `package; type; subtypes; name; signature; ext; output; kind; provenance`
+ * - BarrierGuards:
+ *   `package; type; subtypes; name; signature; ext; input; acceptingvalue; kind; provenance`
  * - Neutrals:
  *   `package; type; name; signature; kind; provenance`
  *   A neutral is used to indicate that a callable is neutral with respect to flow (no summary), source (is not a source) or sink (is not a sink).
@@ -78,7 +82,11 @@
  *    - "MapValue": Selects a value in a map.
  *    - "Dereference": Selects the value referenced by a pointer.
  *
- * 8. The `kind` column is a tag that can be referenced from QL to determine to
+ * 8. The `acceptingvalue` column of barrier guard models specifies the condition
+ *    under which the guard accepts or blocks flow. It can be one of "true" or
+ *    "false". In the future "no-exception", "not-zero", "null", "not-null" may be
+ *    supported.
+ * 9. The `kind` column is a tag that can be referenced from QL to determine to
  *    which classes the interpreted elements should be added. For example, for
  *    sources "remote" indicates a default remote flow source, and for summaries
  *    "taint" indicates a default additional taint step and "value" indicates a
