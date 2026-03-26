@@ -7,9 +7,9 @@ class Location extends @location {
 }
 
 newtype TAddedElement =
-  TAssignment(Expr e) or
-  TLhs(Expr e) or
-  TRhs(Expr e)
+  TAssignment(CompoundAssignmentExpr e) or
+  TLhs(CompoundAssignmentExpr e) or
+  TRhs(CompoundAssignmentExpr e)
 
 module Fresh = QlBuiltins::NewEntity<TAddedElement>;
 
@@ -103,7 +103,6 @@ query predicate new_expressions(NewExpr e, int kind, TypeOrRef t) {
   // Introduce expanded expression nodes.
   exists(CompoundAssignmentExpr compound, int kind0, Expr e1, int kind1 |
     expressions(compound, kind0, t) and
-    compoundAssignmentKind(kind0) and
     expressions(e1, kind1, _) and
     expr_parent(e1, 0, compound)
   |
