@@ -270,15 +270,17 @@ private module CallGraph {
    *
    * the constructor call `new Lazy<int>(M2)` includes `M2` as a target.
    */
-  Callable getARuntimeTarget(Call c, boolean libraryDelegateCall) {
+  Callable getARuntimeTarget(Call c, ControlFlowNode n, boolean libraryDelegateCall) {
     // Non-delegate call: use dispatch library
     exists(DispatchCall dc | dc.getCall() = c |
+      n = dc.getControlFlowNode() and
       result = dc.getADynamicTarget().getUnboundDeclaration() and
       libraryDelegateCall = false
     )
     or
     // Delegate call: use simple analysis
-    result = SimpleDelegateAnalysis::getARuntimeDelegateTarget(c, libraryDelegateCall)
+    result = SimpleDelegateAnalysis::getARuntimeDelegateTarget(c, libraryDelegateCall) and
+    n = c.getControlFlowNode()
   }
 
   private module SimpleDelegateAnalysis {
@@ -465,7 +467,7 @@ private module CallGraph {
 
   /** Holds if `(c1,c2)` is an edge in the call graph. */
   predicate callEdge(Callable c1, Callable c2) {
-    exists(Call c | c.getEnclosingCallable() = c1 and c2 = getARuntimeTarget(c, _))
+    exists(Call c | c.getEnclosingCallable() = c1 and c2 = getARuntimeTarget(c, _, _))
   }
 }
 
@@ -599,7 +601,7 @@ private module FieldOrPropsImpl {
   private predicate intraInstanceCallEdge(Callable c1, InstanceCallable c2) {
     exists(Call c |
       c.getEnclosingCallable() = c1 and
-      c2 = getARuntimeTarget(c, _) and
+      c2 = getARuntimeTarget(c, _, _) and
       c.(QualifiableExpr).targetIsLocalInstance()
     )
   }
@@ -615,8 +617,7 @@ private module FieldOrPropsImpl {
 
   pragma[noinline]
   predicate callAt(BasicBlock bb, int i, Call call) {
-    bb.getNode(i) = call.getAControlFlowNode() and
-    getARuntimeTarget(call, _).hasBody()
+    getARuntimeTarget(call, bb.getNode(i), _).hasBody()
   }
 
   /**
@@ -635,7 +636,7 @@ private module FieldOrPropsImpl {
     Call call, FieldOrPropSourceVariable fps, FieldOrProp fp, Callable c, boolean fresh
   ) {
     updateCandidate(_, _, fps, call) and
-    c = getARuntimeTarget(call, _) and
+    c = getARuntimeTarget(call, _, _) and
     fp = fps.getAssignable() and
     if c instanceof Constructor then fresh = true else fresh = false
   }
