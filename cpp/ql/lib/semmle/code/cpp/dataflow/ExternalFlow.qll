@@ -4,7 +4,7 @@
  * Provides classes and predicates for dealing with flow models specified
  * in data extension files.
  *
- * The specification has the following columns:
+ * The extensible relations have the following columns:
  * - Sources:
  *   `namespace; type; subtypes; name; signature; ext; output; kind`
  * - Sinks:
@@ -144,7 +144,7 @@ predicate summaryModel(
 }
 
 /** Provides a query predicate to check the data for validation errors. */
-module CsvValidation {
+module ModelValidation {
   private string getInvalidModelInput() {
     exists(string pred, AccessPath input, string part |
       sinkModel(_, _, _, _, _, _, input, _, _, _) and pred = "sink"
