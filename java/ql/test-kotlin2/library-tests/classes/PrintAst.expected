@@ -24,7 +24,7 @@ classes.kt:
 #  162|             0: [BlockStmt] { ... }
 #  162|               0: [LocalTypeDeclStmt] class ...
 #  162|                 0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#  162|                   1: [Constructor]
+#  162|                   1: [Constructor] 
 #  162|                     5: [BlockStmt] { ... }
 #  162|                       0: [SuperConstructorInvocationStmt] super(...)
 #  162|                       1: [BlockStmt] { ... }
@@ -272,7 +272,7 @@ classes.kt:
 #   66|                   0: [BlockStmt] { ... }
 #   66|                     0: [LocalTypeDeclStmt] class ...
 #   66|                       0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#   66|                         1: [Constructor]
+#   66|                         1: [Constructor] 
 #   66|                           5: [BlockStmt] { ... }
 #   66|                             0: [SuperConstructorInvocationStmt] super(...)
 #   66|                             1: [BlockStmt] { ... }
@@ -286,7 +286,7 @@ classes.kt:
 #   68|                   0: [BlockStmt] { ... }
 #   68|                     0: [LocalTypeDeclStmt] class ...
 #   68|                       0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#   68|                         1: [Constructor]
+#   68|                         1: [Constructor] 
 #   68|                           5: [BlockStmt] { ... }
 #   68|                             0: [SuperConstructorInvocationStmt] super(...)
 #   68|                             1: [BlockStmt] { ... }
@@ -301,7 +301,7 @@ classes.kt:
 #   72|             0: [BlockStmt] { ... }
 #   72|               0: [LocalTypeDeclStmt] class ...
 #   72|                 0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#   72|                   1: [Constructor]
+#   72|                   1: [Constructor] 
 #   72|                     5: [BlockStmt] { ... }
 #   72|                       0: [SuperConstructorInvocationStmt] super(...)
 #   72|                       1: [BlockStmt] { ... }
@@ -325,7 +325,7 @@ classes.kt:
 #   75|                           0: [BlockStmt] { ... }
 #   75|                             0: [LocalTypeDeclStmt] class ...
 #   75|                               0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#   75|                                 1: [Constructor]
+#   75|                                 1: [Constructor] 
 #   75|                                   5: [BlockStmt] { ... }
 #   75|                                     0: [SuperConstructorInvocationStmt] super(...)
 #   75|                                     1: [BlockStmt] { ... }
@@ -343,7 +343,7 @@ classes.kt:
 #   81|             0: [BlockStmt] { ... }
 #   81|               0: [LocalTypeDeclStmt] class ...
 #   81|                 0: [AnonymousClass,LocalClass] new Interface1(...) { ... }
-#   81|                   1: [Constructor]
+#   81|                   1: [Constructor] 
 #   81|                     5: [BlockStmt] { ... }
 #   81|                       0: [SuperConstructorInvocationStmt] super(...)
 #   81|                       1: [BlockStmt] { ... }
@@ -358,7 +358,7 @@ classes.kt:
 #   85|             0: [BlockStmt] { ... }
 #   85|               0: [LocalTypeDeclStmt] class ...
 #   85|                 0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#   85|                   1: [Constructor]
+#   85|                   1: [Constructor] 
 #   85|                     5: [BlockStmt] { ... }
 #   85|                       0: [SuperConstructorInvocationStmt] super(...)
 #   85|                       1: [BlockStmt] { ... }
@@ -373,7 +373,7 @@ classes.kt:
 #   89|             0: [BlockStmt] { ... }
 #   89|               0: [LocalTypeDeclStmt] class ...
 #   89|                 0: [AnonymousClass,LocalClass] new Interface3<Integer>(...) { ... }
-#   89|                   1: [Constructor]
+#   89|                   1: [Constructor] 
 #   89|                     5: [BlockStmt] { ... }
 #   89|                       0: [SuperConstructorInvocationStmt] super(...)
 #   89|                       1: [BlockStmt] { ... }
@@ -478,8 +478,8 @@ classes.kt:
 #  117|           0: [TypeAccess] int
 #  117|       5: [BlockStmt] { ... }
 #  118|         0: [LocalTypeDeclStmt] class ...
-#  118|           0: [LocalClass]
-#  118|             1: [Constructor]
+#  118|           0: [LocalClass] 
+#  118|             1: [Constructor] 
 #  118|               5: [BlockStmt] { ... }
 #  118|                 0: [SuperConstructorInvocationStmt] super(...)
 #  118|             2: [Method] localFn
@@ -516,7 +516,7 @@ classes.kt:
 #  127|             0: [BlockStmt] { ... }
 #  127|               0: [LocalTypeDeclStmt] class ...
 #  127|                 0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#  127|                   1: [Constructor]
+#  127|                   1: [Constructor] 
 #  127|                     5: [BlockStmt] { ... }
 #  127|                       0: [SuperConstructorInvocationStmt] super(...)
 #  127|                       1: [BlockStmt] { ... }
@@ -559,8 +559,8 @@ classes.kt:
 #  139|       3: [TypeAccess] Unit
 #  139|       5: [BlockStmt] { ... }
 #  140|         0: [LocalTypeDeclStmt] class ...
-#  140|           0: [LocalClass]
-#  140|             1: [Constructor]
+#  140|           0: [LocalClass] 
+#  140|             1: [Constructor] 
 #  140|               5: [BlockStmt] { ... }
 #  140|                 0: [SuperConstructorInvocationStmt] super(...)
 #  140|             2: [Method] func2
@@ -665,7 +665,7 @@ generic_anonymous.kt:
 #    3|         0: [BlockStmt] { ... }
 #    3|           0: [LocalTypeDeclStmt] class ...
 #    3|             0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#    3|               1: [Constructor]
+#    3|               1: [Constructor] 
 #    3|                 5: [BlockStmt] { ... }
 #    3|                   0: [SuperConstructorInvocationStmt] super(...)
 #    3|                   1: [BlockStmt] { ... }
@@ -729,8 +729,8 @@ generic_anonymous.kt:
 #   24|       3: [TypeAccess] Unit
 #   24|       5: [BlockStmt] { ... }
 #   25|         0: [LocalTypeDeclStmt] class ...
-#   25|           0: [LocalClass]
-#   25|             1: [Constructor]
+#   25|           0: [LocalClass] 
+#   25|             1: [Constructor] 
 #   25|               5: [BlockStmt] { ... }
 #   25|                 0: [SuperConstructorInvocationStmt] super(...)
 #   25|             2: [Method] func2
@@ -745,7 +745,7 @@ generic_anonymous.kt:
 #   26|                       0: [BlockStmt] { ... }
 #   26|                         0: [LocalTypeDeclStmt] class ...
 #   26|                           0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#   26|                             1: [Constructor]
+#   26|                             1: [Constructor] 
 #   26|                               5: [BlockStmt] { ... }
 #   26|                                 0: [SuperConstructorInvocationStmt] super(...)
 #   26|                                 1: [BlockStmt] { ... }
@@ -773,7 +773,7 @@ generic_anonymous.kt:
 #   27|                       0: [BlockStmt] { ... }
 #   27|                         0: [LocalTypeDeclStmt] class ...
 #   27|                           0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#   27|                             1: [Constructor]
+#   27|                             1: [Constructor] 
 #   27|                               5: [BlockStmt] { ... }
 #   27|                                 0: [SuperConstructorInvocationStmt] super(...)
 #   27|                                 1: [BlockStmt] { ... }
@@ -801,7 +801,7 @@ generic_anonymous.kt:
 #   28|                       0: [BlockStmt] { ... }
 #   28|                         0: [LocalTypeDeclStmt] class ...
 #   28|                           0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#   28|                             1: [Constructor]
+#   28|                             1: [Constructor] 
 #   28|                               5: [BlockStmt] { ... }
 #   28|                                 0: [SuperConstructorInvocationStmt] super(...)
 #   28|                                 1: [BlockStmt] { ... }
@@ -829,7 +829,7 @@ generic_anonymous.kt:
 #   29|                       0: [BlockStmt] { ... }
 #   29|                         0: [LocalTypeDeclStmt] class ...
 #   29|                           0: [AnonymousClass,LocalClass] new C0<U2>(...) { ... }
-#   29|                             1: [Constructor]
+#   29|                             1: [Constructor] 
 #   29|                               5: [BlockStmt] { ... }
 #   29|                                 0: [SuperConstructorInvocationStmt] super(...)
 #   29|                                 1: [BlockStmt] { ... }
@@ -850,7 +850,7 @@ generic_anonymous.kt:
 #   30|                       0: [BlockStmt] { ... }
 #   30|                         0: [LocalTypeDeclStmt] class ...
 #   30|                           0: [AnonymousClass,LocalClass] new C0<String>(...) { ... }
-#   30|                             1: [Constructor]
+#   30|                             1: [Constructor] 
 #   30|                               5: [BlockStmt] { ... }
 #   30|                                 0: [SuperConstructorInvocationStmt] super(...)
 #   30|                                 1: [BlockStmt] { ... }
@@ -940,7 +940,7 @@ local_anonymous.kt:
 #    5|             0: [BlockStmt] { ... }
 #    5|               0: [LocalTypeDeclStmt] class ...
 #    5|                 0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#    5|                   1: [Constructor]
+#    5|                   1: [Constructor] 
 #    5|                     5: [BlockStmt] { ... }
 #    5|                       0: [SuperConstructorInvocationStmt] super(...)
 #    5|                       1: [BlockStmt] { ... }
@@ -954,8 +954,8 @@ local_anonymous.kt:
 #   10|       3: [TypeAccess] Unit
 #   10|       5: [BlockStmt] { ... }
 #   11|         0: [LocalTypeDeclStmt] class ...
-#   11|           0: [LocalClass]
-#   11|             1: [Constructor]
+#   11|           0: [LocalClass] 
+#   11|             1: [Constructor] 
 #   11|               5: [BlockStmt] { ... }
 #   11|                 0: [SuperConstructorInvocationStmt] super(...)
 #   11|             2: [Method] fnLocal
@@ -972,7 +972,7 @@ local_anonymous.kt:
 #   16|           1: [LocalVariableDeclExpr] lambda1
 #   16|             0: [LambdaExpr] ...->...
 #   16|               -4: [AnonymousClass] new Function2<Integer,Integer,Integer>(...) { ... }
-#   16|                 1: [Constructor]
+#   16|                 1: [Constructor] 
 #   16|                   5: [BlockStmt] { ... }
 #   16|                     0: [SuperConstructorInvocationStmt] super(...)
 #   16|                 2: [Method] invoke
@@ -995,7 +995,7 @@ local_anonymous.kt:
 #   17|           1: [LocalVariableDeclExpr] lambda2
 #   17|             0: [LambdaExpr] ...->...
 #   17|               -4: [AnonymousClass] new Function2<Integer,Integer,Integer>(...) { ... }
-#   17|                 1: [Constructor]
+#   17|                 1: [Constructor] 
 #   17|                   5: [BlockStmt] { ... }
 #   17|                     0: [SuperConstructorInvocationStmt] super(...)
 #   17|                 2: [Method] invoke
@@ -1021,7 +1021,7 @@ local_anonymous.kt:
 #   21|           1: [LocalVariableDeclExpr] fnRef
 #   21|             0: [MemberRefExpr] ...::...
 #   21|               -4: [AnonymousClass] new Function1<Class1,Unit>(...) { ... }
-#   21|                 1: [Constructor]
+#   21|                 1: [Constructor] 
 #   21|                   5: [BlockStmt] { ... }
 #   21|                     0: [SuperConstructorInvocationStmt] super(...)
 #   21|                       0: [IntegerLiteral] 1
@@ -1057,7 +1057,7 @@ local_anonymous.kt:
 #   29|             0: [BlockStmt] { ... }
 #   29|               0: [LocalTypeDeclStmt] class ...
 #   29|                 0: [AnonymousClass,LocalClass] new Object(...) { ... }
-#   29|                   1: [Constructor]
+#   29|                   1: [Constructor] 
 #   29|                     5: [BlockStmt] { ... }
 #   29|                       0: [SuperConstructorInvocationStmt] super(...)
 #   29|                       1: [BlockStmt] { ... }
@@ -1119,7 +1119,7 @@ local_anonymous.kt:
 #   40|         0: [BlockStmt] { ... }
 #   40|           0: [LocalTypeDeclStmt] class ...
 #   40|             0: [AnonymousClass,LocalClass] new Interface2(...) { ... }
-#   40|               1: [Constructor]
+#   40|               1: [Constructor] 
 #   40|                 5: [BlockStmt] { ... }
 #   40|                   0: [SuperConstructorInvocationStmt] super(...)
 #   40|                   1: [BlockStmt] { ... }

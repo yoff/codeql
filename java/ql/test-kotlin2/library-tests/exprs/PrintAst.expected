@@ -26,7 +26,7 @@ delegatedProperties.kt:
 #   87|         0: [TypeAccess] Integer
 #   87|       0: [PropertyRefExpr] ...::...
 #   87|         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   87|           1: [Constructor]
+#   87|           1: [Constructor] 
 #   87|             5: [BlockStmt] { ... }
 #   87|               0: [SuperConstructorInvocationStmt] super(...)
 #   87|           2: [Method] get
@@ -64,7 +64,7 @@ delegatedProperties.kt:
 #    1|             1: [ExtensionReceiverAccess] this
 #   87|             2: [PropertyRefExpr] ...::...
 #   87|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   87|                 1: [Constructor]
+#   87|                 1: [Constructor] 
 #   87|                   5: [BlockStmt] { ... }
 #   87|                     0: [SuperConstructorInvocationStmt] super(...)
 #   87|                 2: [Method] get
@@ -113,7 +113,7 @@ delegatedProperties.kt:
 #    1|             1: [ExtensionReceiverAccess] this
 #   87|             2: [PropertyRefExpr] ...::...
 #   87|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   87|                 1: [Constructor]
+#   87|                 1: [Constructor] 
 #   87|                   5: [BlockStmt] { ... }
 #   87|                     0: [SuperConstructorInvocationStmt] super(...)
 #   87|                 2: [Method] get
@@ -162,7 +162,7 @@ delegatedProperties.kt:
 #    6|                 -1: [TypeAccess] LazyKt
 #    6|                 0: [LambdaExpr] ...->...
 #    6|                   -4: [AnonymousClass] new Function0<Integer>(...) { ... }
-#    6|                     1: [Constructor]
+#    6|                     1: [Constructor] 
 #    6|                       5: [BlockStmt] { ... }
 #    6|                         0: [SuperConstructorInvocationStmt] super(...)
 #    6|                     2: [Method] invoke
@@ -177,8 +177,8 @@ delegatedProperties.kt:
 #    6|                   -3: [TypeAccess] Function0<Integer>
 #    6|                     0: [TypeAccess] Integer
 #    6|           1: [LocalTypeDeclStmt] class ...
-#    6|             0: [LocalClass]
-#    6|               1: [Constructor]
+#    6|             0: [LocalClass] 
+#    6|               1: [Constructor] 
 #    6|                 5: [BlockStmt] { ... }
 #    6|                   0: [SuperConstructorInvocationStmt] super(...)
 #    6|               2: [Method] <get-prop1>
@@ -192,7 +192,7 @@ delegatedProperties.kt:
 #    0|                       1: [NullLiteral] null
 #    6|                       2: [PropertyRefExpr] ...::...
 #    6|                         -4: [AnonymousClass] new KProperty0<Integer>(...) { ... }
-#    6|                           1: [Constructor]
+#    6|                           1: [Constructor] 
 #    6|                             5: [BlockStmt] { ... }
 #    6|                               0: [SuperConstructorInvocationStmt] super(...)
 #    6|                           2: [Method] get
@@ -248,8 +248,8 @@ delegatedProperties.kt:
 #   19|               0: [ClassInstanceExpr] new ResourceDelegate(...)
 #   19|                 -3: [TypeAccess] ResourceDelegate
 #   19|           1: [LocalTypeDeclStmt] class ...
-#   19|             0: [LocalClass]
-#   19|               1: [Constructor]
+#   19|             0: [LocalClass] 
+#   19|               1: [Constructor] 
 #   19|                 5: [BlockStmt] { ... }
 #   19|                   0: [SuperConstructorInvocationStmt] super(...)
 #   19|               2: [Method] <get-varResource1>
@@ -261,7 +261,7 @@ delegatedProperties.kt:
 #    0|                       0: [NullLiteral] null
 #   19|                       1: [PropertyRefExpr] ...::...
 #   19|                         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   19|                           1: [Constructor]
+#   19|                           1: [Constructor] 
 #   19|                             5: [BlockStmt] { ... }
 #   19|                               0: [SuperConstructorInvocationStmt] super(...)
 #   19|                           2: [Method] get
@@ -287,8 +287,8 @@ delegatedProperties.kt:
 #   19|                         -3: [TypeAccess] KMutableProperty0<Integer>
 #   19|                           0: [TypeAccess] Integer
 #   19|           2: [LocalTypeDeclStmt] class ...
-#   19|             0: [LocalClass]
-#   19|               1: [Constructor]
+#   19|             0: [LocalClass] 
+#   19|               1: [Constructor] 
 #   19|                 5: [BlockStmt] { ... }
 #   19|                   0: [SuperConstructorInvocationStmt] super(...)
 #   19|               2: [Method] <set-varResource1>
@@ -303,7 +303,7 @@ delegatedProperties.kt:
 #    0|                       0: [NullLiteral] null
 #   19|                       1: [PropertyRefExpr] ...::...
 #   19|                         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   19|                           1: [Constructor]
+#   19|                           1: [Constructor] 
 #   19|                             5: [BlockStmt] { ... }
 #   19|                               0: [SuperConstructorInvocationStmt] super(...)
 #   19|                           2: [Method] get
@@ -345,8 +345,8 @@ delegatedProperties.kt:
 #   23|             1: [LocalVariableDeclExpr] name$delegate
 #   23|               0: [VarAccess] map
 #   23|           1: [LocalTypeDeclStmt] class ...
-#   23|             0: [LocalClass]
-#   23|               1: [Constructor]
+#   23|             0: [LocalClass] 
+#   23|               1: [Constructor] 
 #   23|                 5: [BlockStmt] { ... }
 #   23|                   0: [SuperConstructorInvocationStmt] super(...)
 #   23|               2: [Method] <get-name>
@@ -361,7 +361,7 @@ delegatedProperties.kt:
 #    0|                       1: [NullLiteral] null
 #   23|                       2: [PropertyRefExpr] ...::...
 #   23|                         -4: [AnonymousClass] new KProperty0<String>(...) { ... }
-#   23|                           1: [Constructor]
+#   23|                           1: [Constructor] 
 #   23|                             5: [BlockStmt] { ... }
 #   23|                               0: [SuperConstructorInvocationStmt] super(...)
 #   23|                           2: [Method] get
@@ -378,8 +378,8 @@ delegatedProperties.kt:
 #   23|                         -3: [TypeAccess] KProperty0<String>
 #   23|                           0: [TypeAccess] String
 #   25|         4: [LocalTypeDeclStmt] class ...
-#   25|           0: [LocalClass]
-#   25|             1: [Constructor]
+#   25|           0: [LocalClass] 
+#   25|             1: [Constructor] 
 #   25|               5: [BlockStmt] { ... }
 #   25|                 0: [SuperConstructorInvocationStmt] super(...)
 #   25|             2: [Method] resourceDelegate
@@ -392,7 +392,7 @@ delegatedProperties.kt:
 #   25|                     0: [BlockStmt] { ... }
 #   25|                       0: [LocalTypeDeclStmt] class ...
 #   25|                         0: [AnonymousClass,LocalClass] new ReadWriteProperty<Object,Integer>(...) { ... }
-#   25|                           1: [Constructor]
+#   25|                           1: [Constructor] 
 #   25|                             5: [BlockStmt] { ... }
 #   25|                               0: [SuperConstructorInvocationStmt] super(...)
 #   25|                               1: [BlockStmt] { ... }
@@ -456,8 +456,8 @@ delegatedProperties.kt:
 #   33|                 -1: [ClassInstanceExpr] new (...)
 #   33|                   -3: [TypeAccess] Object
 #   33|           1: [LocalTypeDeclStmt] class ...
-#   33|             0: [LocalClass]
-#   33|               1: [Constructor]
+#   33|             0: [LocalClass] 
+#   33|               1: [Constructor] 
 #   33|                 5: [BlockStmt] { ... }
 #   33|                   0: [SuperConstructorInvocationStmt] super(...)
 #   33|               2: [Method] <get-readOnly>
@@ -469,7 +469,7 @@ delegatedProperties.kt:
 #    0|                       0: [NullLiteral] null
 #   33|                       1: [PropertyRefExpr] ...::...
 #   33|                         -4: [AnonymousClass] new KProperty0<Integer>(...) { ... }
-#   33|                           1: [Constructor]
+#   33|                           1: [Constructor] 
 #   33|                             5: [BlockStmt] { ... }
 #   33|                               0: [SuperConstructorInvocationStmt] super(...)
 #   33|                           2: [Method] get
@@ -492,8 +492,8 @@ delegatedProperties.kt:
 #   34|                 -1: [ClassInstanceExpr] new (...)
 #   34|                   -3: [TypeAccess] Object
 #   34|           1: [LocalTypeDeclStmt] class ...
-#   34|             0: [LocalClass]
-#   34|               1: [Constructor]
+#   34|             0: [LocalClass] 
+#   34|               1: [Constructor] 
 #   34|                 5: [BlockStmt] { ... }
 #   34|                   0: [SuperConstructorInvocationStmt] super(...)
 #   34|               2: [Method] <get-readWrite>
@@ -505,7 +505,7 @@ delegatedProperties.kt:
 #    0|                       0: [NullLiteral] null
 #   34|                       1: [PropertyRefExpr] ...::...
 #   34|                         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   34|                           1: [Constructor]
+#   34|                           1: [Constructor] 
 #   34|                             5: [BlockStmt] { ... }
 #   34|                               0: [SuperConstructorInvocationStmt] super(...)
 #   34|                           2: [Method] get
@@ -531,8 +531,8 @@ delegatedProperties.kt:
 #   34|                         -3: [TypeAccess] KMutableProperty0<Integer>
 #   34|                           0: [TypeAccess] Integer
 #   34|           2: [LocalTypeDeclStmt] class ...
-#   34|             0: [LocalClass]
-#   34|               1: [Constructor]
+#   34|             0: [LocalClass] 
+#   34|               1: [Constructor] 
 #   34|                 5: [BlockStmt] { ... }
 #   34|                   0: [SuperConstructorInvocationStmt] super(...)
 #   34|               2: [Method] <set-readWrite>
@@ -547,7 +547,7 @@ delegatedProperties.kt:
 #    0|                       0: [NullLiteral] null
 #   34|                       1: [PropertyRefExpr] ...::...
 #   34|                         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   34|                           1: [Constructor]
+#   34|                           1: [Constructor] 
 #   34|                             5: [BlockStmt] { ... }
 #   34|                               0: [SuperConstructorInvocationStmt] super(...)
 #   34|                           2: [Method] get
@@ -591,7 +591,7 @@ delegatedProperties.kt:
 #    1|                 0: [NullLiteral] null
 #   39|                 1: [PropertyRefExpr] ...::...
 #   39|                   -4: [AnonymousClass] new KProperty0<Integer>(...) { ... }
-#   39|                     1: [Constructor]
+#   39|                     1: [Constructor] 
 #   39|                       5: [BlockStmt] { ... }
 #   39|                         0: [SuperConstructorInvocationStmt] super(...)
 #   39|                     2: [Method] get
@@ -608,8 +608,8 @@ delegatedProperties.kt:
 #   39|                   -3: [TypeAccess] KProperty0<Integer>
 #   39|                     0: [TypeAccess] Integer
 #   39|           1: [LocalTypeDeclStmt] class ...
-#   39|             0: [LocalClass]
-#   39|               1: [Constructor]
+#   39|             0: [LocalClass] 
+#   39|               1: [Constructor] 
 #   39|                 5: [BlockStmt] { ... }
 #   39|                   0: [SuperConstructorInvocationStmt] super(...)
 #   39|               2: [Method] <get-varResource2>
@@ -621,7 +621,7 @@ delegatedProperties.kt:
 #    0|                       0: [NullLiteral] null
 #   39|                       1: [PropertyRefExpr] ...::...
 #   39|                         -4: [AnonymousClass] new KProperty0<Integer>(...) { ... }
-#   39|                           1: [Constructor]
+#   39|                           1: [Constructor] 
 #   39|                             5: [BlockStmt] { ... }
 #   39|                               0: [SuperConstructorInvocationStmt] super(...)
 #   39|                           2: [Method] get
@@ -651,7 +651,7 @@ delegatedProperties.kt:
 #    1|             0: [ThisAccess] this
 #   42|             1: [PropertyRefExpr] ...::...
 #   42|               -4: [AnonymousClass] new KMutableProperty1<Owner,Integer>(...) { ... }
-#   42|                 1: [Constructor]
+#   42|                 1: [Constructor] 
 #   42|                   5: [BlockStmt] { ... }
 #   42|                     0: [SuperConstructorInvocationStmt] super(...)
 #   42|                 2: [Method] get
@@ -694,7 +694,7 @@ delegatedProperties.kt:
 #    1|             0: [ThisAccess] this
 #   42|             1: [PropertyRefExpr] ...::...
 #   42|               -4: [AnonymousClass] new KMutableProperty1<Owner,Integer>(...) { ... }
-#   42|                 1: [Constructor]
+#   42|                 1: [Constructor] 
 #   42|                   5: [BlockStmt] { ... }
 #   42|                     0: [SuperConstructorInvocationStmt] super(...)
 #   42|                 2: [Method] get
@@ -887,7 +887,7 @@ delegatedProperties.kt:
 #   66|         0: [TypeAccess] Integer
 #   66|       0: [PropertyRefExpr] ...::...
 #   66|         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   66|           1: [Constructor]
+#   66|           1: [Constructor] 
 #-----|             4: (Parameters)
 #   66|               0: [Parameter] <dispatchReceiver>
 #   66|             5: [BlockStmt] { ... }
@@ -935,7 +935,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   66|             2: [PropertyRefExpr] ...::...
 #   66|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   66|                 1: [Constructor]
+#   66|                 1: [Constructor] 
 #   66|                   5: [BlockStmt] { ... }
 #   66|                     0: [SuperConstructorInvocationStmt] super(...)
 #   66|                 2: [Method] get
@@ -980,7 +980,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   66|             2: [PropertyRefExpr] ...::...
 #   66|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   66|                 1: [Constructor]
+#   66|                 1: [Constructor] 
 #   66|                   5: [BlockStmt] { ... }
 #   66|                     0: [SuperConstructorInvocationStmt] super(...)
 #   66|                 2: [Method] get
@@ -1017,7 +1017,7 @@ delegatedProperties.kt:
 #   67|         1: [TypeAccess] Integer
 #   67|       0: [PropertyRefExpr] ...::...
 #   67|         -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   67|           1: [Constructor]
+#   67|           1: [Constructor] 
 #   67|             5: [BlockStmt] { ... }
 #   67|               0: [SuperConstructorInvocationStmt] super(...)
 #   67|           2: [Method] get
@@ -1060,7 +1060,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   67|             2: [PropertyRefExpr] ...::...
 #   67|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   67|                 1: [Constructor]
+#   67|                 1: [Constructor] 
 #   67|                   5: [BlockStmt] { ... }
 #   67|                     0: [SuperConstructorInvocationStmt] super(...)
 #   67|                 2: [Method] get
@@ -1106,7 +1106,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   67|             2: [PropertyRefExpr] ...::...
 #   67|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   67|                 1: [Constructor]
+#   67|                 1: [Constructor] 
 #   67|                   5: [BlockStmt] { ... }
 #   67|                     0: [SuperConstructorInvocationStmt] super(...)
 #   67|                 2: [Method] get
@@ -1142,7 +1142,7 @@ delegatedProperties.kt:
 #   69|         0: [TypeAccess] Integer
 #   69|       0: [PropertyRefExpr] ...::...
 #   69|         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   69|           1: [Constructor]
+#   69|           1: [Constructor] 
 #-----|             4: (Parameters)
 #   69|               0: [Parameter] <extensionReceiver>
 #   69|             5: [BlockStmt] { ... }
@@ -1192,7 +1192,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   69|             2: [PropertyRefExpr] ...::...
 #   69|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   69|                 1: [Constructor]
+#   69|                 1: [Constructor] 
 #   69|                   5: [BlockStmt] { ... }
 #   69|                     0: [SuperConstructorInvocationStmt] super(...)
 #   69|                 2: [Method] get
@@ -1237,7 +1237,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   69|             2: [PropertyRefExpr] ...::...
 #   69|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   69|                 1: [Constructor]
+#   69|                 1: [Constructor] 
 #   69|                   5: [BlockStmt] { ... }
 #   69|                     0: [SuperConstructorInvocationStmt] super(...)
 #   69|                 2: [Method] get
@@ -1274,7 +1274,7 @@ delegatedProperties.kt:
 #   70|         1: [TypeAccess] Integer
 #   70|       0: [PropertyRefExpr] ...::...
 #   70|         -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   70|           1: [Constructor]
+#   70|           1: [Constructor] 
 #   70|             5: [BlockStmt] { ... }
 #   70|               0: [SuperConstructorInvocationStmt] super(...)
 #   70|           2: [Method] get
@@ -1319,7 +1319,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   70|             2: [PropertyRefExpr] ...::...
 #   70|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   70|                 1: [Constructor]
+#   70|                 1: [Constructor] 
 #   70|                   5: [BlockStmt] { ... }
 #   70|                     0: [SuperConstructorInvocationStmt] super(...)
 #   70|                 2: [Method] get
@@ -1365,7 +1365,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   70|             2: [PropertyRefExpr] ...::...
 #   70|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   70|                 1: [Constructor]
+#   70|                 1: [Constructor] 
 #   70|                   5: [BlockStmt] { ... }
 #   70|                     0: [SuperConstructorInvocationStmt] super(...)
 #   70|                 2: [Method] get
@@ -1401,7 +1401,7 @@ delegatedProperties.kt:
 #   72|         0: [TypeAccess] Integer
 #   72|       0: [PropertyRefExpr] ...::...
 #   72|         -4: [AnonymousClass] new KProperty0<Integer>(...) { ... }
-#   72|           1: [Constructor]
+#   72|           1: [Constructor] 
 #-----|             4: (Parameters)
 #   72|               0: [Parameter] <dispatchReceiver>
 #   72|             5: [BlockStmt] { ... }
@@ -1440,7 +1440,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   72|             2: [PropertyRefExpr] ...::...
 #   72|               -4: [AnonymousClass] new KProperty1<MyClass,Integer>(...) { ... }
-#   72|                 1: [Constructor]
+#   72|                 1: [Constructor] 
 #   72|                   5: [BlockStmt] { ... }
 #   72|                     0: [SuperConstructorInvocationStmt] super(...)
 #   72|                 2: [Method] get
@@ -1467,7 +1467,7 @@ delegatedProperties.kt:
 #   73|         1: [TypeAccess] Integer
 #   73|       0: [PropertyRefExpr] ...::...
 #   73|         -4: [AnonymousClass] new KProperty1<Base,Integer>(...) { ... }
-#   73|           1: [Constructor]
+#   73|           1: [Constructor] 
 #   73|             5: [BlockStmt] { ... }
 #   73|               0: [SuperConstructorInvocationStmt] super(...)
 #   73|           2: [Method] get
@@ -1501,7 +1501,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   73|             2: [PropertyRefExpr] ...::...
 #   73|               -4: [AnonymousClass] new KProperty1<MyClass,Integer>(...) { ... }
-#   73|                 1: [Constructor]
+#   73|                 1: [Constructor] 
 #   73|                   5: [BlockStmt] { ... }
 #   73|                     0: [SuperConstructorInvocationStmt] super(...)
 #   73|                 2: [Method] get
@@ -1527,7 +1527,7 @@ delegatedProperties.kt:
 #   75|         0: [TypeAccess] Integer
 #   75|       0: [PropertyRefExpr] ...::...
 #   75|         -4: [AnonymousClass] new KProperty0<Integer>(...) { ... }
-#   75|           1: [Constructor]
+#   75|           1: [Constructor] 
 #-----|             4: (Parameters)
 #   75|               0: [Parameter] <dispatchReceiver>
 #   75|             5: [BlockStmt] { ... }
@@ -1567,7 +1567,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   75|             2: [PropertyRefExpr] ...::...
 #   75|               -4: [AnonymousClass] new KProperty1<MyClass,Integer>(...) { ... }
-#   75|                 1: [Constructor]
+#   75|                 1: [Constructor] 
 #   75|                   5: [BlockStmt] { ... }
 #   75|                     0: [SuperConstructorInvocationStmt] super(...)
 #   75|                 2: [Method] get
@@ -1593,7 +1593,7 @@ delegatedProperties.kt:
 #   77|         0: [TypeAccess] Integer
 #   77|       0: [PropertyRefExpr] ...::...
 #   77|         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   77|           1: [Constructor]
+#   77|           1: [Constructor] 
 #   77|             5: [BlockStmt] { ... }
 #   77|               0: [SuperConstructorInvocationStmt] super(...)
 #   77|           2: [Method] get
@@ -1628,7 +1628,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   77|             2: [PropertyRefExpr] ...::...
 #   77|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   77|                 1: [Constructor]
+#   77|                 1: [Constructor] 
 #   77|                   5: [BlockStmt] { ... }
 #   77|                     0: [SuperConstructorInvocationStmt] super(...)
 #   77|                 2: [Method] get
@@ -1673,7 +1673,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   77|             2: [PropertyRefExpr] ...::...
 #   77|               -4: [AnonymousClass] new KMutableProperty1<MyClass,Integer>(...) { ... }
-#   77|                 1: [Constructor]
+#   77|                 1: [Constructor] 
 #   77|                   5: [BlockStmt] { ... }
 #   77|                     0: [SuperConstructorInvocationStmt] super(...)
 #   77|                 2: [Method] get
@@ -1709,7 +1709,7 @@ delegatedProperties.kt:
 #   79|         0: [TypeAccess] Integer
 #   79|       0: [PropertyRefExpr] ...::...
 #   79|         -4: [AnonymousClass] new KProperty0<Integer>(...) { ... }
-#   79|           1: [Constructor]
+#   79|           1: [Constructor] 
 #   79|             5: [BlockStmt] { ... }
 #   79|               0: [SuperConstructorInvocationStmt] super(...)
 #   79|           2: [Method] get
@@ -1735,7 +1735,7 @@ delegatedProperties.kt:
 #    1|             1: [ThisAccess] this
 #   79|             2: [PropertyRefExpr] ...::...
 #   79|               -4: [AnonymousClass] new KProperty1<MyClass,Integer>(...) { ... }
-#   79|                 1: [Constructor]
+#   79|                 1: [Constructor] 
 #   79|                   5: [BlockStmt] { ... }
 #   79|                     0: [SuperConstructorInvocationStmt] super(...)
 #   79|                 2: [Method] get
@@ -1764,7 +1764,7 @@ delegatedProperties.kt:
 #   82|             1: [LocalVariableDeclExpr] delegatedToMember3$delegate
 #   82|               0: [PropertyRefExpr] ...::...
 #   82|                 -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   82|                   1: [Constructor]
+#   82|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #   82|                       0: [Parameter] <dispatchReceiver>
 #   82|                     5: [BlockStmt] { ... }
@@ -1800,8 +1800,8 @@ delegatedProperties.kt:
 #   82|                   0: [TypeAccess] Integer
 #   82|                 0: [ThisAccess] this
 #   82|           1: [LocalTypeDeclStmt] class ...
-#   82|             0: [LocalClass]
-#   82|               1: [Constructor]
+#   82|             0: [LocalClass] 
+#   82|               1: [Constructor] 
 #   82|                 5: [BlockStmt] { ... }
 #   82|                   0: [SuperConstructorInvocationStmt] super(...)
 #   82|               2: [Method] <get-delegatedToMember3>
@@ -1815,7 +1815,7 @@ delegatedProperties.kt:
 #    0|                       1: [NullLiteral] null
 #   82|                       2: [PropertyRefExpr] ...::...
 #   82|                         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   82|                           1: [Constructor]
+#   82|                           1: [Constructor] 
 #   82|                             5: [BlockStmt] { ... }
 #   82|                               0: [SuperConstructorInvocationStmt] super(...)
 #   82|                           2: [Method] get
@@ -1841,8 +1841,8 @@ delegatedProperties.kt:
 #   82|                         -3: [TypeAccess] KMutableProperty0<Integer>
 #   82|                           0: [TypeAccess] Integer
 #   82|           2: [LocalTypeDeclStmt] class ...
-#   82|             0: [LocalClass]
-#   82|               1: [Constructor]
+#   82|             0: [LocalClass] 
+#   82|               1: [Constructor] 
 #   82|                 5: [BlockStmt] { ... }
 #   82|                   0: [SuperConstructorInvocationStmt] super(...)
 #   82|               2: [Method] <set-delegatedToMember3>
@@ -1859,7 +1859,7 @@ delegatedProperties.kt:
 #    0|                       1: [NullLiteral] null
 #   82|                       2: [PropertyRefExpr] ...::...
 #   82|                         -4: [AnonymousClass] new KMutableProperty0<Integer>(...) { ... }
-#   82|                           1: [Constructor]
+#   82|                           1: [Constructor] 
 #   82|                             5: [BlockStmt] { ... }
 #   82|                               0: [SuperConstructorInvocationStmt] super(...)
 #   82|                           2: [Method] get
@@ -3460,7 +3460,7 @@ exprs.kt:
 #  195|             0: [BlockStmt] { ... }
 #  195|               0: [LocalTypeDeclStmt] class ...
 #  195|                 0: [AnonymousClass,LocalClass] new Interface1(...) { ... }
-#  195|                   1: [Constructor]
+#  195|                   1: [Constructor] 
 #  195|                     5: [BlockStmt] { ... }
 #  195|                       0: [SuperConstructorInvocationStmt] super(...)
 #  195|                       1: [BlockStmt] { ... }
@@ -3971,7 +3971,7 @@ funcExprs.kt:
 #   22|             -1: [TypeAccess] FuncExprsKt
 #   22|             0: [LambdaExpr] ...->...
 #   22|               -4: [AnonymousClass] new Function0<Integer>(...) { ... }
-#   22|                 1: [Constructor]
+#   22|                 1: [Constructor] 
 #   22|                   5: [BlockStmt] { ... }
 #   22|                     0: [SuperConstructorInvocationStmt] super(...)
 #   22|                 2: [Method] invoke
@@ -3986,7 +3986,7 @@ funcExprs.kt:
 #   23|             -1: [TypeAccess] FuncExprsKt
 #   23|             0: [LambdaExpr] ...->...
 #   23|               -4: [AnonymousClass] new Function0<Object>(...) { ... }
-#   23|                 1: [Constructor]
+#   23|                 1: [Constructor] 
 #   23|                   5: [BlockStmt] { ... }
 #   23|                     0: [SuperConstructorInvocationStmt] super(...)
 #   23|                 2: [Method] invoke
@@ -4001,7 +4001,7 @@ funcExprs.kt:
 #   24|             -1: [TypeAccess] FuncExprsKt
 #   24|             0: [LambdaExpr] ...->...
 #   24|               -4: [AnonymousClass] new Function0<Object>(...) { ... }
-#   24|                 1: [Constructor]
+#   24|                 1: [Constructor] 
 #   24|                   5: [BlockStmt] { ... }
 #   24|                     0: [SuperConstructorInvocationStmt] super(...)
 #   24|                 2: [Method] invoke
@@ -4017,7 +4017,7 @@ funcExprs.kt:
 #   25|             0: [IntegerLiteral] 5
 #   25|             1: [LambdaExpr] ...->...
 #   25|               -4: [AnonymousClass] new Function1<Integer,Integer>(...) { ... }
-#   25|                 1: [Constructor]
+#   25|                 1: [Constructor] 
 #   25|                   5: [BlockStmt] { ... }
 #   25|                     0: [SuperConstructorInvocationStmt] super(...)
 #   25|                 2: [Method] invoke
@@ -4037,7 +4037,7 @@ funcExprs.kt:
 #   26|             0: [IntegerLiteral] 5
 #   26|             1: [LambdaExpr] ...->...
 #   26|               -4: [AnonymousClass] new Function1<Integer,Integer>(...) { ... }
-#   26|                 1: [Constructor]
+#   26|                 1: [Constructor] 
 #   26|                   5: [BlockStmt] { ... }
 #   26|                     0: [SuperConstructorInvocationStmt] super(...)
 #   26|                 2: [Method] invoke
@@ -4057,7 +4057,7 @@ funcExprs.kt:
 #   27|             0: [IntegerLiteral] 5
 #   27|             1: [LambdaExpr] ...->...
 #   27|               -4: [AnonymousClass] new Function1<Integer,Integer>(...) { ... }
-#   27|                 1: [Constructor]
+#   27|                 1: [Constructor] 
 #   27|                   5: [BlockStmt] { ... }
 #   27|                     0: [SuperConstructorInvocationStmt] super(...)
 #   27|                 2: [Method] invoke
@@ -4083,7 +4083,7 @@ funcExprs.kt:
 #   29|             0: [IntegerLiteral] 5
 #   29|             1: [LambdaExpr] ...->...
 #   29|               -4: [AnonymousClass] new Function1<Object,Object>(...) { ... }
-#   29|                 1: [Constructor]
+#   29|                 1: [Constructor] 
 #   29|                   5: [BlockStmt] { ... }
 #   29|                     0: [SuperConstructorInvocationStmt] super(...)
 #   29|                 2: [Method] invoke
@@ -4103,7 +4103,7 @@ funcExprs.kt:
 #   30|             0: [IntegerLiteral] 5
 #   30|             1: [LambdaExpr] ...->...
 #   30|               -4: [AnonymousClass] new Function2<Integer,Integer,Integer>(...) { ... }
-#   30|                 1: [Constructor]
+#   30|                 1: [Constructor] 
 #   30|                   5: [BlockStmt] { ... }
 #   30|                     0: [SuperConstructorInvocationStmt] super(...)
 #   30|                 2: [Method] invoke
@@ -4126,7 +4126,7 @@ funcExprs.kt:
 #   31|             0: [IntegerLiteral] 5
 #   31|             1: [LambdaExpr] ...->...
 #   31|               -4: [AnonymousClass] new Function2<Integer,Integer,Integer>(...) { ... }
-#   31|                 1: [Constructor]
+#   31|                 1: [Constructor] 
 #   31|                   5: [BlockStmt] { ... }
 #   31|                     0: [SuperConstructorInvocationStmt] super(...)
 #   31|                 2: [Method] invoke
@@ -4149,7 +4149,7 @@ funcExprs.kt:
 #   32|             0: [IntegerLiteral] 5
 #   32|             1: [LambdaExpr] ...->...
 #   32|               -4: [AnonymousClass] new Function2<Integer,Integer,Integer>(...) { ... }
-#   32|                 1: [Constructor]
+#   32|                 1: [Constructor] 
 #   32|                   5: [BlockStmt] { ... }
 #   32|                     0: [SuperConstructorInvocationStmt] super(...)
 #   32|                 2: [ExtensionMethod] invoke
@@ -4174,7 +4174,7 @@ funcExprs.kt:
 #   33|             0: [IntegerLiteral] 5
 #   33|             1: [LambdaExpr] ...->...
 #   33|               -4: [AnonymousClass] new Function1<Integer,Function1<Integer,Double>>(...) { ... }
-#   33|                 1: [Constructor]
+#   33|                 1: [Constructor] 
 #   33|                   5: [BlockStmt] { ... }
 #   33|                     0: [SuperConstructorInvocationStmt] super(...)
 #   33|                 2: [Method] invoke
@@ -4188,7 +4188,7 @@ funcExprs.kt:
 #   33|                     0: [ReturnStmt] return ...
 #   33|                       0: [LambdaExpr] ...->...
 #   33|                         -4: [AnonymousClass] new Function1<Integer,Double>(...) { ... }
-#   33|                           1: [Constructor]
+#   33|                           1: [Constructor] 
 #   33|                             5: [BlockStmt] { ... }
 #   33|                               0: [SuperConstructorInvocationStmt] super(...)
 #   33|                           2: [Method] invoke
@@ -4213,7 +4213,7 @@ funcExprs.kt:
 #   35|             0: [IntegerLiteral] 5
 #   35|             1: [LambdaExpr] ...->...
 #   35|               -4: [AnonymousClass] new Function22<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Unit>(...) { ... }
-#   35|                 1: [Constructor]
+#   35|                 1: [Constructor] 
 #   35|                   5: [BlockStmt] { ... }
 #   35|                     0: [SuperConstructorInvocationStmt] super(...)
 #   35|                 2: [Method] invoke
@@ -4298,7 +4298,7 @@ funcExprs.kt:
 #   36|             0: [IntegerLiteral] 5
 #   36|             1: [LambdaExpr] ...->...
 #   36|               -4: [AnonymousClass] new FunctionN<String>(...) { ... }
-#   36|                 1: [Constructor]
+#   36|                 1: [Constructor] 
 #   36|                   5: [BlockStmt] { ... }
 #   36|                     0: [SuperConstructorInvocationStmt] super(...)
 #   36|                 2: [Method] invoke
@@ -4482,7 +4482,7 @@ funcExprs.kt:
 #   38|             -1: [TypeAccess] FuncExprsKt
 #   38|             0: [MemberRefExpr] ...::...
 #   38|               -4: [AnonymousClass] new Function0<Integer>(...) { ... }
-#   38|                 1: [Constructor]
+#   38|                 1: [Constructor] 
 #-----|                   4: (Parameters)
 #   38|                     0: [Parameter] <dispatchReceiver>
 #   38|                   5: [BlockStmt] { ... }
@@ -4510,7 +4510,7 @@ funcExprs.kt:
 #   39|             -1: [TypeAccess] FuncExprsKt
 #   39|             0: [MemberRefExpr] ...::...
 #   39|               -4: [AnonymousClass] new Function0<Integer>(...) { ... }
-#   39|                 1: [Constructor]
+#   39|                 1: [Constructor] 
 #-----|                   4: (Parameters)
 #   39|                     0: [Parameter] <dispatchReceiver>
 #   39|                   5: [BlockStmt] { ... }
@@ -4538,7 +4538,7 @@ funcExprs.kt:
 #   40|             0: [IntegerLiteral] 5
 #   40|             1: [MemberRefExpr] ...::...
 #   40|               -4: [AnonymousClass] new Function1<Integer,Integer>(...) { ... }
-#   40|                 1: [Constructor]
+#   40|                 1: [Constructor] 
 #-----|                   4: (Parameters)
 #   40|                     0: [Parameter] <dispatchReceiver>
 #   40|                   5: [BlockStmt] { ... }
@@ -4571,7 +4571,7 @@ funcExprs.kt:
 #   41|             0: [IntegerLiteral] 5
 #   41|             1: [MemberRefExpr] ...::...
 #   41|               -4: [AnonymousClass] new Function2<FuncRef,Integer,Integer>(...) { ... }
-#   41|                 1: [Constructor]
+#   41|                 1: [Constructor] 
 #   41|                   5: [BlockStmt] { ... }
 #   41|                     0: [SuperConstructorInvocationStmt] super(...)
 #   41|                       0: [IntegerLiteral] 2
@@ -4594,7 +4594,7 @@ funcExprs.kt:
 #   42|             0: [IntegerLiteral] 5
 #   42|             1: [MemberRefExpr] ...::...
 #   42|               -4: [AnonymousClass] new Function1<Integer,Integer>(...) { ... }
-#   42|                 1: [Constructor]
+#   42|                 1: [Constructor] 
 #-----|                   4: (Parameters)
 #   42|                     0: [Parameter] <extensionReceiver>
 #   42|                   5: [BlockStmt] { ... }
@@ -4627,7 +4627,7 @@ funcExprs.kt:
 #   43|             0: [IntegerLiteral] 5
 #   43|             1: [MemberRefExpr] ...::...
 #   43|               -4: [AnonymousClass] new Function2<Integer,Integer,Integer>(...) { ... }
-#   43|                 1: [Constructor]
+#   43|                 1: [Constructor] 
 #   43|                   5: [BlockStmt] { ... }
 #   43|                     0: [SuperConstructorInvocationStmt] super(...)
 #   43|                       0: [IntegerLiteral] 2
@@ -4651,7 +4651,7 @@ funcExprs.kt:
 #   44|             0: [IntegerLiteral] 5
 #   44|             1: [MemberRefExpr] ...::...
 #   44|               -4: [AnonymousClass] new Function22<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Unit>(...) { ... }
-#   44|                 1: [Constructor]
+#   44|                 1: [Constructor] 
 #-----|                   4: (Parameters)
 #   44|                     0: [Parameter] <dispatchReceiver>
 #   44|                   5: [BlockStmt] { ... }
@@ -4747,7 +4747,7 @@ funcExprs.kt:
 #   45|             0: [IntegerLiteral] 5
 #   45|             1: [MemberRefExpr] ...::...
 #   45|               -4: [AnonymousClass] new FunctionN<String>(...) { ... }
-#   45|                 1: [Constructor]
+#   45|                 1: [Constructor] 
 #-----|                   4: (Parameters)
 #   45|                     0: [Parameter] <dispatchReceiver>
 #   45|                   5: [BlockStmt] { ... }
@@ -4893,7 +4893,7 @@ funcExprs.kt:
 #   46|             0: [IntegerLiteral] 5
 #   46|             1: [MemberRefExpr] ...::...
 #   46|               -4: [AnonymousClass] new FunctionN<String>(...) { ... }
-#   46|                 1: [Constructor]
+#   46|                 1: [Constructor] 
 #   46|                   5: [BlockStmt] { ... }
 #   46|                     0: [SuperConstructorInvocationStmt] super(...)
 #   46|                       0: [IntegerLiteral] 24
@@ -5026,8 +5026,8 @@ funcExprs.kt:
 #   46|               -3: [TypeAccess] FunctionN<String>
 #   46|                 0: [TypeAccess] String
 #   48|         23: [LocalTypeDeclStmt] class ...
-#   48|           0: [LocalClass]
-#   48|             1: [Constructor]
+#   48|           0: [LocalClass] 
+#   48|             1: [Constructor] 
 #   48|               5: [BlockStmt] { ... }
 #   48|                 0: [SuperConstructorInvocationStmt] super(...)
 #   48|             2: [Method] local
@@ -5040,7 +5040,7 @@ funcExprs.kt:
 #   49|             -1: [TypeAccess] FuncExprsKt
 #   49|             0: [MemberRefExpr] ...::...
 #   49|               -4: [AnonymousClass] new Function0<Integer>(...) { ... }
-#   49|                 1: [Constructor]
+#   49|                 1: [Constructor] 
 #   49|                   5: [BlockStmt] { ... }
 #   49|                     0: [SuperConstructorInvocationStmt] super(...)
 #   49|                       0: [IntegerLiteral] 0
@@ -5058,7 +5058,7 @@ funcExprs.kt:
 #   51|             -1: [TypeAccess] FuncExprsKt
 #   51|             0: [MemberRefExpr] ...::...
 #   51|               -4: [AnonymousClass] new Function0<FuncRef>(...) { ... }
-#   51|                 1: [Constructor]
+#   51|                 1: [Constructor] 
 #   51|                   5: [BlockStmt] { ... }
 #   51|                     0: [SuperConstructorInvocationStmt] super(...)
 #   51|                       0: [IntegerLiteral] 0
@@ -5096,7 +5096,7 @@ funcExprs.kt:
 #   83|           1: [LocalVariableDeclExpr] l1
 #   83|             0: [LambdaExpr] ...->...
 #   83|               -4: [AnonymousClass] new Function1<Integer,String>(...) { ... }
-#   83|                 1: [Constructor]
+#   83|                 1: [Constructor] 
 #   83|                   5: [BlockStmt] { ... }
 #   83|                     0: [SuperConstructorInvocationStmt] super(...)
 #   83|                 2: [Method] invoke
@@ -5121,7 +5121,7 @@ funcExprs.kt:
 #   86|           1: [LocalVariableDeclExpr] l2
 #   86|             0: [LambdaExpr] ...->...
 #   86|               -4: [AnonymousClass] new Function1<Integer,String>(...) { ... }
-#   86|                 1: [Constructor]
+#   86|                 1: [Constructor] 
 #   86|                   5: [BlockStmt] { ... }
 #   86|                     0: [SuperConstructorInvocationStmt] super(...)
 #   86|                 2: [Method] invoke
@@ -5146,7 +5146,7 @@ funcExprs.kt:
 #   89|           1: [LocalVariableDeclExpr] l3
 #   90|             0: [LambdaExpr] ...->...
 #   90|               -4: [AnonymousClass] new FunctionN<String>(...) { ... }
-#   90|                 1: [Constructor]
+#   90|                 1: [Constructor] 
 #   90|                   5: [BlockStmt] { ... }
 #   90|                     0: [SuperConstructorInvocationStmt] super(...)
 #   90|                 2: [Method] invoke
@@ -5361,7 +5361,7 @@ funcExprs.kt:
 #   93|           1: [LocalVariableDeclExpr] l4
 #   94|             0: [LambdaExpr] ...->...
 #   94|               -4: [AnonymousClass] new Function22<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer,String>(...) { ... }
-#   94|                 1: [Constructor]
+#   94|                 1: [Constructor] 
 #   94|                   5: [BlockStmt] { ... }
 #   94|                     0: [SuperConstructorInvocationStmt] super(...)
 #   94|                 2: [Method] invoke
@@ -5619,7 +5619,7 @@ funcExprs.kt:
 #   75|             -1: [ThisAccess] this
 #   75|             0: [LambdaExpr] ...->...
 #   75|               -4: [AnonymousClass] new Function1<Generic<Generic<Integer>>,String>(...) { ... }
-#   75|                 1: [Constructor]
+#   75|                 1: [Constructor] 
 #   75|                   5: [BlockStmt] { ... }
 #   75|                     0: [SuperConstructorInvocationStmt] super(...)
 #   75|                 2: [Method] invoke
@@ -5670,7 +5670,7 @@ kFunctionInvoke.kt:
 #    8|           1: [LocalVariableDeclExpr] toCall
 #    8|             0: [MemberRefExpr] ...::...
 #    8|               -4: [AnonymousClass] new Function1<String,Unit>(...) { ... }
-#    8|                 1: [Constructor]
+#    8|                 1: [Constructor] 
 #-----|                   4: (Parameters)
 #    8|                     0: [Parameter] <dispatchReceiver>
 #    8|                   5: [BlockStmt] { ... }
@@ -5721,8 +5721,8 @@ localFunctionCalls.kt:
 #    4|           1: [LocalVariableDeclExpr] x
 #    4|             0: [IntegerLiteral] 5
 #    5|         1: [LocalTypeDeclStmt] class ...
-#    5|           0: [LocalClass]
-#    5|             1: [Constructor]
+#    5|           0: [LocalClass] 
+#    5|             1: [Constructor] 
 #    5|               5: [BlockStmt] { ... }
 #    5|                 0: [SuperConstructorInvocationStmt] super(...)
 #    5|             2: [Method] a
@@ -5754,8 +5754,8 @@ localFunctionCalls.kt:
 #    8|             0: [VarAccess] x
 #    8|             1: [IntegerLiteral] 7
 #    9|         5: [LocalTypeDeclStmt] class ...
-#    9|           0: [LocalClass]
-#    9|             1: [Constructor]
+#    9|           0: [LocalClass] 
+#    9|             1: [Constructor] 
 #    9|               5: [BlockStmt] { ... }
 #    9|                 0: [SuperConstructorInvocationStmt] super(...)
 #    9|             2: [ExtensionMethod] f1
@@ -5815,7 +5815,7 @@ samConversion.kt:
 #    2|               0: [TypeAccess] IntPredicate
 #    2|               1: [ClassInstanceExpr] new (...)
 #    2|                 -4: [AnonymousClass] new IntPredicate(...) { ... }
-#    2|                   1: [Constructor]
+#    2|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #    2|                       0: [Parameter] <fn>
 #    2|                     5: [BlockStmt] { ... }
@@ -5842,7 +5842,7 @@ samConversion.kt:
 #    2|                 -3: [TypeAccess] IntPredicate
 #    2|                 0: [LambdaExpr] ...->...
 #    2|                   -4: [AnonymousClass] new Function1<Integer,Boolean>(...) { ... }
-#    2|                     1: [Constructor]
+#    2|                     1: [Constructor] 
 #    2|                       5: [BlockStmt] { ... }
 #    2|                         0: [SuperConstructorInvocationStmt] super(...)
 #    2|                     2: [Method] invoke
@@ -5866,7 +5866,7 @@ samConversion.kt:
 #    4|               0: [TypeAccess] InterfaceFn1
 #    4|               1: [ClassInstanceExpr] new (...)
 #    4|                 -4: [AnonymousClass] new InterfaceFn1(...) { ... }
-#    4|                   1: [Constructor]
+#    4|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #    4|                       0: [Parameter] <fn>
 #    4|                     5: [BlockStmt] { ... }
@@ -5897,7 +5897,7 @@ samConversion.kt:
 #    4|                 -3: [TypeAccess] InterfaceFn1
 #    4|                 0: [LambdaExpr] ...->...
 #    4|                   -4: [AnonymousClass] new Function2<Integer,Integer,Unit>(...) { ... }
-#    4|                     1: [Constructor]
+#    4|                     1: [Constructor] 
 #    4|                       5: [BlockStmt] { ... }
 #    4|                         0: [SuperConstructorInvocationStmt] super(...)
 #    4|                     2: [Method] invoke
@@ -5920,7 +5920,7 @@ samConversion.kt:
 #    5|               0: [TypeAccess] InterfaceFn1
 #    5|               1: [ClassInstanceExpr] new (...)
 #    5|                 -4: [AnonymousClass] new InterfaceFn1(...) { ... }
-#    5|                   1: [Constructor]
+#    5|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #    5|                       0: [Parameter] <fn>
 #    5|                     5: [BlockStmt] { ... }
@@ -5951,7 +5951,7 @@ samConversion.kt:
 #    5|                 -3: [TypeAccess] InterfaceFn1
 #    5|                 0: [MemberRefExpr] ...::...
 #    5|                   -4: [AnonymousClass] new Function2<Integer,Integer,Unit>(...) { ... }
-#    5|                     1: [Constructor]
+#    5|                     1: [Constructor] 
 #    5|                       5: [BlockStmt] { ... }
 #    5|                         0: [SuperConstructorInvocationStmt] super(...)
 #    5|                           0: [IntegerLiteral] 2
@@ -5975,7 +5975,7 @@ samConversion.kt:
 #    7|               0: [TypeAccess] InterfaceFnExt1
 #    7|               1: [ClassInstanceExpr] new (...)
 #    7|                 -4: [AnonymousClass] new InterfaceFnExt1(...) { ... }
-#    7|                   1: [Constructor]
+#    7|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #    7|                       0: [Parameter] <fn>
 #    7|                     5: [BlockStmt] { ... }
@@ -6006,7 +6006,7 @@ samConversion.kt:
 #    7|                 -3: [TypeAccess] InterfaceFnExt1
 #    7|                 0: [LambdaExpr] ...->...
 #    7|                   -4: [AnonymousClass] new Function2<String,Integer,Boolean>(...) { ... }
-#    7|                     1: [Constructor]
+#    7|                     1: [Constructor] 
 #    7|                       5: [BlockStmt] { ... }
 #    7|                         0: [SuperConstructorInvocationStmt] super(...)
 #    7|                     2: [ExtensionMethod] invoke
@@ -6031,7 +6031,7 @@ samConversion.kt:
 #    9|               0: [TypeAccess] IntPredicate
 #    9|               1: [ClassInstanceExpr] new (...)
 #    9|                 -4: [AnonymousClass] new IntPredicate(...) { ... }
-#    9|                   1: [Constructor]
+#    9|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #    9|                       0: [Parameter] <fn>
 #    9|                     5: [BlockStmt] { ... }
@@ -6062,7 +6062,7 @@ samConversion.kt:
 #    9|                     1: [ExprStmt] <Expr>;
 #    9|                       0: [LambdaExpr] ...->...
 #    9|                         -4: [AnonymousClass] new Function1<Integer,Boolean>(...) { ... }
-#    9|                           1: [Constructor]
+#    9|                           1: [Constructor] 
 #    9|                             5: [BlockStmt] { ... }
 #    9|                               0: [SuperConstructorInvocationStmt] super(...)
 #    9|                           2: [Method] invoke
@@ -6085,7 +6085,7 @@ samConversion.kt:
 #   11|                     1: [ExprStmt] <Expr>;
 #   11|                       0: [LambdaExpr] ...->...
 #   11|                         -4: [AnonymousClass] new Function1<Integer,Boolean>(...) { ... }
-#   11|                           1: [Constructor]
+#   11|                           1: [Constructor] 
 #   11|                             5: [BlockStmt] { ... }
 #   11|                               0: [SuperConstructorInvocationStmt] super(...)
 #   11|                           2: [Method] invoke
@@ -6173,7 +6173,7 @@ samConversion.kt:
 #   41|           1: [LocalVariableDeclExpr] a
 #   41|             0: [MemberRefExpr] ...::...
 #   41|               -4: [AnonymousClass] new FunctionN<Boolean>(...) { ... }
-#   41|                 1: [Constructor]
+#   41|                 1: [Constructor] 
 #   41|                   5: [BlockStmt] { ... }
 #   41|                     0: [SuperConstructorInvocationStmt] super(...)
 #   41|                       0: [IntegerLiteral] 23
@@ -6307,7 +6307,7 @@ samConversion.kt:
 #   42|               0: [TypeAccess] BigArityPredicate
 #   42|               1: [ClassInstanceExpr] new (...)
 #   42|                 -4: [AnonymousClass] new BigArityPredicate(...) { ... }
-#   42|                   1: [Constructor]
+#   42|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #   42|                       0: [Parameter] <fn>
 #   42|                     5: [BlockStmt] { ... }
@@ -6408,7 +6408,7 @@ samConversion.kt:
 #   43|               0: [TypeAccess] BigArityPredicate
 #   43|               1: [ClassInstanceExpr] new (...)
 #   43|                 -4: [AnonymousClass] new BigArityPredicate(...) { ... }
-#   43|                   1: [Constructor]
+#   43|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #   43|                       0: [Parameter] <fn>
 #   43|                     5: [BlockStmt] { ... }
@@ -6504,7 +6504,7 @@ samConversion.kt:
 #   43|                 -3: [TypeAccess] BigArityPredicate
 #   43|                 0: [LambdaExpr] ...->...
 #   43|                   -4: [AnonymousClass] new FunctionN<Boolean>(...) { ... }
-#   43|                     1: [Constructor]
+#   43|                     1: [Constructor] 
 #   43|                       5: [BlockStmt] { ... }
 #   43|                         0: [SuperConstructorInvocationStmt] super(...)
 #   43|                     2: [Method] invoke
@@ -6690,7 +6690,7 @@ samConversion.kt:
 #   46|                 0: [TypeAccess] Integer
 #   46|               1: [ClassInstanceExpr] new (...)
 #   46|                 -4: [AnonymousClass] new SomePredicate<Integer>(...) { ... }
-#   46|                   1: [Constructor]
+#   46|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #   46|                       0: [Parameter] <fn>
 #   46|                     5: [BlockStmt] { ... }
@@ -6718,7 +6718,7 @@ samConversion.kt:
 #   46|                   0: [TypeAccess] Integer
 #   46|                 0: [LambdaExpr] ...->...
 #   46|                   -4: [AnonymousClass] new Function1<Integer,Boolean>(...) { ... }
-#   46|                     1: [Constructor]
+#   46|                     1: [Constructor] 
 #   46|                       5: [BlockStmt] { ... }
 #   46|                         0: [SuperConstructorInvocationStmt] super(...)
 #   46|                     2: [Method] invoke
@@ -6741,7 +6741,7 @@ samConversion.kt:
 #   58|               0: [TypeAccess] InterfaceFn1Sus
 #   58|               1: [ClassInstanceExpr] new (...)
 #   58|                 -4: [AnonymousClass] new InterfaceFn1Sus(...) { ... }
-#   58|                   1: [Constructor]
+#   58|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #   58|                       0: [Parameter] <fn>
 #   58|                     5: [BlockStmt] { ... }
@@ -6772,7 +6772,7 @@ samConversion.kt:
 #   58|                 -3: [TypeAccess] InterfaceFn1Sus
 #   58|                 0: [LambdaExpr] ...->...
 #   58|                   -4: [AnonymousClass] new Function2<Integer,Integer,Unit>(...) { ... }
-#   58|                     1: [Constructor]
+#   58|                     1: [Constructor] 
 #   58|                       5: [BlockStmt] { ... }
 #   58|                         0: [SuperConstructorInvocationStmt] super(...)
 #   58|                     2: [Method] invoke
@@ -6806,7 +6806,7 @@ samConversion.kt:
 #   75|               0: [TypeAccess] IntGetter
 #   75|               1: [ClassInstanceExpr] new (...)
 #   75|                 -4: [AnonymousClass] new IntGetter(...) { ... }
-#   75|                   1: [Constructor]
+#   75|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #   75|                       0: [Parameter] <fn>
 #   75|                     5: [BlockStmt] { ... }
@@ -6828,7 +6828,7 @@ samConversion.kt:
 #   75|                 -3: [TypeAccess] IntGetter
 #   75|                 0: [PropertyRefExpr] ...::...
 #   75|                   -4: [AnonymousClass] new KProperty0<Integer>(...) { ... }
-#   75|                     1: [Constructor]
+#   75|                     1: [Constructor] 
 #-----|                       4: (Parameters)
 #   75|                         0: [Parameter] <dispatchReceiver>
 #   75|                       5: [BlockStmt] { ... }
@@ -6860,7 +6860,7 @@ samConversion.kt:
 #   76|               0: [TypeAccess] PropertyRefsGetter
 #   76|               1: [ClassInstanceExpr] new (...)
 #   76|                 -4: [AnonymousClass] new PropertyRefsGetter(...) { ... }
-#   76|                   1: [Constructor]
+#   76|                   1: [Constructor] 
 #-----|                     4: (Parameters)
 #   76|                       0: [Parameter] <fn>
 #   76|                     5: [BlockStmt] { ... }
@@ -6887,7 +6887,7 @@ samConversion.kt:
 #   76|                 -3: [TypeAccess] PropertyRefsGetter
 #   76|                 0: [PropertyRefExpr] ...::...
 #   76|                   -4: [AnonymousClass] new KProperty1<PropertyRefsTest,Integer>(...) { ... }
-#   76|                     1: [Constructor]
+#   76|                     1: [Constructor] 
 #   76|                       5: [BlockStmt] { ... }
 #   76|                         0: [SuperConstructorInvocationStmt] super(...)
 #   76|                     2: [Method] get
