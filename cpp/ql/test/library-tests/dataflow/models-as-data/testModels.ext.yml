@@ -70,7 +70,7 @@ extensions:
       - ["", "", False, "madArg0ToReturnFieldIndirect", "", "", "Argument[0]", "ReturnValue.Field[*ptr]", "taint", "manual"]
       - ["", "", False, "madFieldToFieldVar", "", "", "Field[value]", "Field[value2]", "taint", "manual"]
       - ["", "", False, "madFieldToIndirectFieldVar", "", "", "Field[value]", "Field[*ptr]", "taint", "manual"]
-      - ["", "", False, "madIndirectFieldToFieldVar", "", "", "", "Field[value]", "Field[value2]", "manual"]
+      - ["", "", False, "madIndirectFieldToFieldVar", "", "", "Field[value]", "Field[value2]", "taint", "manual"]
       - ["", "MyClass", True, "madArg0ToSelf", "", "", "Argument[0]", "Argument[-1]", "taint", "manual"]
       - ["", "MyClass", True, "madSelfToReturn", "", "", "Argument[-1]", "ReturnValue", "taint", "manual"]
       - ["", "MyClass", True, "madArg0ToField", "", "", "Argument[0]", "Argument[-1].Field[val]", "taint", "manual"]
