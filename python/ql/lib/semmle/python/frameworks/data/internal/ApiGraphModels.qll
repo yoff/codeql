@@ -13,7 +13,7 @@
  * - Barriers:
  *   `type, path, kind`
  * - BarrierGuards:
- *   `type, path, branch, kind`
+ *   `type, path, acceptingValue, kind`
  * - Types:
  *   `type1, type2, path`
  *
@@ -46,7 +46,7 @@
  * 3. The `input` and `output` columns specify how data enters and leaves the element selected by the
  *    first `(type, path)` tuple. Both strings are `.`-separated access paths
  *    of the same syntax as the `path` column.
- * 4. The `branch` column of barrier guard models specifies which branch of the guard is blocking flow. It can be "true" or "false".
+ * 4. The `acceptingValue` column of barrier guard models specifies which branch of the guard is blocking flow. It can be "true" or "false".
  * 5. The `kind` column is a tag that can be referenced from QL to determine to
  *    which classes the interpreted elements should be added. For example, for
  *    sources `"remote"` indicates a default remote flow source, and for summaries
@@ -360,11 +360,11 @@ private predicate barrierModel(string type, string path, string kind, string mod
 
 /** Holds if a barrier guard model exists for the given parameters. */
 private predicate barrierGuardModel(
-  string type, string path, string branch, string kind, string model
+  string type, string path, string acceptingValue, string kind, string model
 ) {
   // No deprecation adapter for barrier models, they were not around back then.
   exists(QlBuiltins::ExtensionId madId |
-    Extensions::barrierGuardModel(type, path, branch, kind, madId) and
+    Extensions::barrierGuardModel(type, path, acceptingValue, kind, madId) and
     model = "MaD:" + madId.toString()
   )
 }
@@ -788,16 +788,16 @@ module ModelOutput {
     }
 
     /**
-     * Holds if a barrier model contributed `barrier` with the given `kind` for the given `branch`.
+     * Holds if a barrier model contributed `barrier` with the given `kind` for the given `acceptingValue`.
      */
     cached
-    API::Node getABarrierGuardNode(string kind, boolean branch, string model) {
-      exists(string type, string path, string branch_str |
-        branch = true and branch_str = "true"
+    API::Node getABarrierGuardNode(string kind, boolean acceptingValue, string model) {
+      exists(string type, string path, string acceptingValue_str |
+        acceptingValue = true and acceptingValue_str = "true"
         or
-        branch = false and branch_str = "false"
+        acceptingValue = false and acceptingValue_str = "false"
       |
-        barrierGuardModel(type, path, branch_str, kind, model) and
+        barrierGuardModel(type, path, acceptingValue_str, kind, model) and
         result = getNodeFromPath(type, path)
       )
     }
@@ -861,12 +861,12 @@ module ModelOutput {
   API::Node getABarrierNode(string kind) { result = getABarrierNode(kind, _) }
 
   /**
-   * Holds if an external model contributed `barrier-guard` with the given `kind` and `branch`.
+   * Holds if an external model contributed `barrier-guard` with the given `kind` and `acceptingValue`.
    *
    * INTERNAL: Do not use.
    */
-  API::Node getABarrierGuardNode(string kind, boolean branch) {
-    result = getABarrierGuardNode(kind, branch, _)
+  API::Node getABarrierGuardNode(string kind, boolean acceptingValue) {
+    result = getABarrierGuardNode(kind, acceptingValue, _)
   }
 
   /**

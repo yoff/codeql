@@ -12,7 +12,7 @@
  * - Barriers:
  *   `path; output; kind; provenance`
  * - BarrierGuards:
- *   `path; input; branch; kind; provenance`
+ *   `path; input; acceptingValue; kind; provenance`
  * - Neutrals:
  *   `path; kind; provenance`
  *   A neutral is used to indicate that a callable is neutral with respect to flow (no summary), source (is not a source) or sink (is not a sink).
@@ -41,7 +41,7 @@
  *     - `Field[i]`: the `i`th element of a tuple.
  *     - `Reference`: the referenced value.
  *     - `Future`: the value being computed asynchronously.
- * 3. The `branch` column of barrier guard models specifies which branch of the
+ * 3. The `acceptingValue` column of barrier guard models specifies which branch of the
  *    guard is blocking flow. It can be "true" or "false". In the future
  *    "no-exception", "not-zero", "null", "not-null" may be supported.
  * 4. The `kind` column is a tag that can be referenced from QL to determine to
@@ -124,11 +124,12 @@ extensible predicate barrierModel(
  * extension row number.
  *
  * The value referred to by `input` is assumed to lead to an argument of a call
- * (possibly `self`), and the call is guarding the argument. `branch` is either `true`
- * or `false`, indicating which branch of the guard is protecting the argument.
+ * (possibly `self`), and the call is guarding the argument.
+ * `acceptingValue` is either `true` or `false`, indicating which branch of
+ * the guard is protecting the parameter.
  */
 extensible predicate barrierGuardModel(
-  string path, string input, string branch, string kind, string provenance,
+  string path, string input, string acceptingValue, string kind, string provenance,
   QlBuiltins::ExtensionId madId
 );
 
@@ -163,9 +164,9 @@ predicate interpretModelForTest(QlBuiltins::ExtensionId madId, string model) {
     model = "Barrier: " + path + "; " + output + "; " + kind
   )
   or
-  exists(string path, string input, string branch, string kind |
-    barrierGuardModel(path, input, branch, kind, _, madId) and
-    model = "Barrier guard: " + path + "; " + input + "; " + branch + "; " + kind
+  exists(string path, string input, string acceptingValue, string kind |
+    barrierGuardModel(path, input, acceptingValue, kind, _, madId) and
+    model = "Barrier guard: " + path + "; " + input + "; " + acceptingValue + "; " + kind
   )
 }
 
@@ -275,10 +276,10 @@ private class FlowBarrierGuardFromModel extends FlowBarrierGuard::Range {
   }
 
   override predicate isBarrierGuard(
-    string input, string branch, string kind, Provenance provenance, string model
+    string input, string acceptingValue, string kind, Provenance provenance, string model
   ) {
     exists(QlBuiltins::ExtensionId madId |
-      barrierGuardModel(path, input, branch, kind, provenance, madId) and
+      barrierGuardModel(path, input, acceptingValue, kind, provenance, madId) and
       model = "MaD:" + madId.toString()
     )
   }

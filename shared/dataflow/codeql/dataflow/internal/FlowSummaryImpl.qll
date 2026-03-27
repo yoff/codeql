@@ -388,11 +388,11 @@ module Make<
 
       /**
        * Holds if this element is a flow barrier guard of kind `kind`, for data
-       * flowing in as described by `input`, when `this` evaluates to `branch`.
+       * flowing in as described by `input`, when `this` evaluates to `acceptingValue`.
        */
       pragma[nomagic]
       abstract predicate isBarrierGuard(
-        string input, string branch, string kind, Provenance provenance, string model
+        string input, string acceptingValue, string kind, Provenance provenance, string model
       );
     }
 
@@ -764,10 +764,10 @@ module Make<
     }
 
     private predicate isRelevantBarrierGuard(
-      BarrierGuardElement e, string input, string branch, string kind, Provenance provenance,
-      string model
+      BarrierGuardElement e, string input, string acceptingValue, string kind,
+      Provenance provenance, string model
     ) {
-      e.isBarrierGuard(input, branch, kind, provenance, model) and
+      e.isBarrierGuard(input, acceptingValue, kind, provenance, model) and
       (
         provenance.isManual()
         or
@@ -1588,11 +1588,11 @@ module Make<
      * Holds if `barrierGuard` is a relevant barrier guard element with input specification `inSpec`.
      */
     predicate barrierGuardSpec(
-      BarrierGuardElement barrierGuard, SummaryComponentStack inSpec, string branch, string kind,
-      string model
+      BarrierGuardElement barrierGuard, SummaryComponentStack inSpec, string acceptingValue,
+      string kind, string model
     ) {
       exists(string input |
-        isRelevantBarrierGuard(barrierGuard, input, branch, kind, _, model) and
+        isRelevantBarrierGuard(barrierGuard, input, acceptingValue, kind, _, model) and
         External::interpretSpec(input, inSpec)
       )
     }
