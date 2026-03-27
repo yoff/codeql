@@ -259,7 +259,11 @@ string getASecureAlgorithmName() {
   result =
     [
       "RSA", "SHA-?(256|384|512)", "CCM", "GCM", "AES(?![^a-zA-Z](ECB|CBC/PKCS[57]Padding))",
-      "Blowfish", "ECIES", "SHA3-(256|384|512)"
+      "Blowfish", "ECIES", "SHA3-(256|384|512)",
+      // Elliptic Curve algorithms: EC (key generation), ECDSA (signatures), ECDH (key agreement),
+      // EdDSA/Ed25519/Ed448 (Edwards-curve signatures), XDH/X25519/X448 (key agreement).
+      // These are modern, secure algorithms recommended by NIST and other standards bodies.
+      "EC", "ECDSA", "ECDH", "EdDSA", "Ed25519", "Ed448", "XDH", "X25519", "X448"
     ]
 }
 
