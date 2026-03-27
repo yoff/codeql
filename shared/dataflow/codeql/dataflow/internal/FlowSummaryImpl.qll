@@ -2189,10 +2189,10 @@ module Make<
         not exists(interpretComponent(c))
       }
 
-      /** Holds if `acceptingvalue` is not a valid barrier guard accepting-value. */
-      bindingset[acceptingvalue]
-      predicate invalidAcceptingValue(string acceptingvalue) {
-        not acceptingvalue instanceof AcceptingValue
+      /** Holds if `acceptingValue` is not a valid barrier guard accepting-value. */
+      bindingset[acceptingValue]
+      predicate invalidAcceptingValue(string acceptingValue) {
+        not acceptingValue instanceof AcceptingValue
       }
 
       /** Holds if `provenance` is not a valid provenance value. */
@@ -2242,10 +2242,10 @@ module Make<
 
         /**
          * Holds if an external barrier guard specification exists for `n` with input
-         * specification `input`, accepting value `acceptingvalue`, and kind `kind`.
+         * specification `input`, accepting value `acceptingValue`, and kind `kind`.
          */
         predicate barrierGuardElement(
-          Element n, string input, AcceptingValue acceptingvalue, string kind,
+          Element n, string input, AcceptingValue acceptingValue, string kind,
           Provenance provenance, string model
         );
 
@@ -2371,11 +2371,11 @@ module Make<
         }
 
         private predicate barrierGuardElementRef(
-          InterpretNode ref, SourceSinkAccessPath input, AcceptingValue acceptingvalue, string kind,
+          InterpretNode ref, SourceSinkAccessPath input, AcceptingValue acceptingValue, string kind,
           string model
         ) {
           exists(SourceOrSinkElement e |
-            barrierGuardElement(e, input, acceptingvalue, kind, _, model) and
+            barrierGuardElement(e, input, acceptingValue, kind, _, model) and
             if inputNeedsReferenceExt(input.getToken(0))
             then e = ref.getCallTarget()
             else e = ref.asElement()
@@ -2518,10 +2518,10 @@ module Make<
          * given kind in a MaD flow model.
          */
         predicate isBarrierGuardNode(
-          InterpretNode node, AcceptingValue acceptingvalue, string kind, string model
+          InterpretNode node, AcceptingValue acceptingValue, string kind, string model
         ) {
           exists(InterpretNode ref, SourceSinkAccessPath input |
-            barrierGuardElementRef(ref, input, acceptingvalue, kind, model) and
+            barrierGuardElementRef(ref, input, acceptingValue, kind, model) and
             interpretInput(input, input.getNumToken(), ref, node)
           )
         }

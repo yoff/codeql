@@ -14,7 +14,7 @@
  * - Barriers:
  *   `package; type; subtypes; name; signature; ext; output; kind; provenance`
  * - BarrierGuards:
- *   `package; type; subtypes; name; signature; ext; input; acceptingvalue; kind; provenance`
+ *   `package; type; subtypes; name; signature; ext; input; acceptingValue; kind; provenance`
  * - Neutrals:
  *   `package; type; name; signature; kind; provenance`
  *   A neutral is used to indicate that a callable is neutral with respect to flow (no summary), source (is not a source) or sink (is not a sink).
@@ -82,7 +82,7 @@
  *    - "MapValue": Selects a value in a map.
  *    - "Dereference": Selects the value referenced by a pointer.
  *
- * 8. The `acceptingvalue` column of barrier guard models specifies the condition
+ * 8. The `acceptingValue` column of barrier guard models specifies the condition
  *    under which the guard blocks flow. It can be one of "true" or "false". In
  *    the future "no-exception", "not-zero", "null", "not-null" may be supported.
  * 9. The `kind` column is a tag that can be referenced from QL to determine to
@@ -266,11 +266,11 @@ module ModelValidation {
       result = "Unrecognized provenance description \"" + provenance + "\" in " + pred + " model."
     )
     or
-    exists(string acceptingvalue |
-      barrierGuardModel(_, _, _, _, _, _, _, acceptingvalue, _, _, _) and
-      invalidAcceptingValue(acceptingvalue) and
+    exists(string acceptingValue |
+      barrierGuardModel(_, _, _, _, _, _, _, acceptingValue, _, _, _) and
+      invalidAcceptingValue(acceptingValue) and
       result =
-        "Unrecognized accepting value description \"" + acceptingvalue +
+        "Unrecognized accepting value description \"" + acceptingValue +
           "\" in barrier guard model."
     )
   }
@@ -478,13 +478,13 @@ private module Cached {
 
   private predicate barrierGuardChecks(DataFlow::Node g, Expr e, boolean gv, TKindModelPair kmp) {
     exists(
-      SourceSinkInterpretationInput::InterpretNode n, Public::AcceptingValue acceptingvalue,
+      SourceSinkInterpretationInput::InterpretNode n, Public::AcceptingValue acceptingValue,
       string kind, string model
     |
-      isBarrierGuardNode(n, acceptingvalue, kind, model) and
+      isBarrierGuardNode(n, acceptingValue, kind, model) and
       n.asNode().asExpr() = e and
       kmp = TMkPair(kind, model) and
-      gv = convertAcceptingValue(acceptingvalue)
+      gv = convertAcceptingValue(acceptingValue)
     |
       g.asExpr().(CallExpr).getAnArgument() = e // TODO: qualifier?
     )

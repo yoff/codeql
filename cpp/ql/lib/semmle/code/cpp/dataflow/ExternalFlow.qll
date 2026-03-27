@@ -13,7 +13,7 @@
  * - Barriers:
  *   `namespace; type; subtypes; name; signature; ext; output; kind; provenance`
  * - BarrierGuards:
- *   `namespace; type; subtypes; name; signature; ext; input; acceptingvalue; kind; provenance`
+ *   `namespace; type; subtypes; name; signature; ext; input; acceptingValue; kind; provenance`
  *
  * The interpretation of a row is similar to API-graphs with a left-to-right
  * reading.
@@ -90,7 +90,7 @@
  *    value, and
  *    - flow from the _second_ indirection of the 0th argument to the first
  *    indirection of the return value, etc.
- * 8. The `acceptingvalue` column of barrier guard models specifies the condition
+ * 8. The `acceptingValue` column of barrier guard models specifies the condition
  *    under which the guard blocks flow. It can be one of "true" or "false". In
  *    the future "no-exception", "not-zero", "null", "not-null" may be supported.
  * 9. The `kind` column is a tag that can be referenced from QL to determine to
@@ -1089,13 +1089,13 @@ private module Cached {
 
   private predicate barrierGuardChecks(IRGuardCondition g, Expr e, boolean gv, TKindModelPair kmp) {
     exists(
-      SourceSinkInterpretationInput::InterpretNode n, Public::AcceptingValue acceptingvalue,
+      SourceSinkInterpretationInput::InterpretNode n, Public::AcceptingValue acceptingValue,
       string kind, string model
     |
-      isBarrierGuardNode(n, acceptingvalue, kind, model) and
+      isBarrierGuardNode(n, acceptingValue, kind, model) and
       n.asNode().asExpr() = e and
       kmp = TMkPair(kind, model) and
-      gv = convertAcceptingValue(acceptingvalue).asBooleanValue() and
+      gv = convertAcceptingValue(acceptingValue).asBooleanValue() and
       n.asNode().(Private::ArgumentNode).getCall().asCallInstruction() = g
     )
   }
@@ -1112,14 +1112,14 @@ private module Cached {
   ) {
     exists(
       SourceSinkInterpretationInput::InterpretNode interpretNode,
-      Public::AcceptingValue acceptingvalue, string kind, string model, int indirectionIndex,
+      Public::AcceptingValue acceptingValue, string kind, string model, int indirectionIndex,
       Private::ArgumentNode arg
     |
-      isBarrierGuardNode(interpretNode, acceptingvalue, kind, model) and
+      isBarrierGuardNode(interpretNode, acceptingValue, kind, model) and
       arg = interpretNode.asNode() and
       arg.asIndirectExpr(indirectionIndex) = e and
       kmp = MkKindModelPairIntPair(TMkPair(kind, model), indirectionIndex) and
-      gv = convertAcceptingValue(acceptingvalue).asBooleanValue() and
+      gv = convertAcceptingValue(acceptingValue).asBooleanValue() and
       arg.getCall().asCallInstruction() = g
     )
   }
