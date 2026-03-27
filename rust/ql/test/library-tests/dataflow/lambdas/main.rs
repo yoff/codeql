@@ -99,7 +99,7 @@ fn test_apply_wrap() {
     apply_wrap(|x| sink(x), a); // $ hasValueFlow=79 $ SPURIOUS: hasValueFlow=80
     let b = source(80);
     apply_wrap(|x| sink(x), b); // $ hasValueFlow=80 $ SPURIOUS: hasValueFlow=79
-    apply_wrap(|x| sink(x), 0); // $ SPURIOUS: hasValueFlow=79 hasValueFlow=80
+    apply_wrap(|x| sink(x), 0);
 }
 
 fn main() {
