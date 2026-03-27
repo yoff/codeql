@@ -74,8 +74,8 @@
  *    - "ReturnValue": Selects the return value of a call to the selected element.
  *    - "Element": Selects the collection elements of the selected element.
  * 8. The `acceptingvalue` column of barrier guard models specifies the condition
- *    under which the guard accepts or blocks flow. It can be one of "true" or
- *    "false", "no-exception", "not-zero", "null", "not-null".
+ *    under which the guard blocks flow. It can be one of "true" or "false". In
+ *    the future "no-exception", "not-zero", "null", "not-null" may be supported.
  * 9. The `kind` column is a tag that can be referenced from QL to determine to
  *    which classes the interpreted elements should be added. For example, for
  *    sources "remote" indicates a default remote flow source, and for summaries
