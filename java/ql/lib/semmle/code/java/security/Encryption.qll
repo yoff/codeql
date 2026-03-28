@@ -263,7 +263,9 @@ string getASecureAlgorithmName() {
       // Elliptic Curve algorithms: EC (key generation), ECDSA (signatures), ECDH (key agreement),
       // EdDSA/Ed25519/Ed448 (Edwards-curve signatures), XDH/X25519/X448 (key agreement).
       // These are modern, secure algorithms recommended by NIST and other standards bodies.
-      "EC", "ECDSA", "ECDH", "EdDSA", "Ed25519", "Ed448", "XDH", "X25519", "X448"
+      "EC", "ECDSA", "ECDH", "EdDSA", "Ed25519", "Ed448", "XDH", "X25519", "X448",
+      // HMAC-based algorithms and key derivation functions.
+      "HMACSHA(1|256|384|512)", "HmacSHA(1|256|384|512)", "PBKDF2"
     ]
 }
 
@@ -370,9 +372,13 @@ class JavaSecuritySignature extends JavaSecurityAlgoSpec {
     exists(Constructor c | c.getAReference() = this |
       c.getDeclaringType().hasQualifiedName("java.security", "Signature")
     )
+    or
+    exists(Method m | m.getAReference() = this |
+      m.hasQualifiedName("java.security", "Signature", "getInstance")
+    )
   }
 
-  override Expr getAlgoSpec() { result = this.(ConstructorCall).getArgument(0) }
+  override Expr getAlgoSpec() { result = this.(Call).getArgument(0) }
 }
 
 /** A call to the `getInstance` method declared in `java.security.KeyPairGenerator`. */

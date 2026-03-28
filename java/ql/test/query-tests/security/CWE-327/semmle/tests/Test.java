@@ -52,7 +52,7 @@ class Test {
 			// GOOD: EC is a secure algorithm for key pair generation
 			keyPairGenerator = KeyPairGenerator.getInstance("EC");
 
-			// GOOD: ECDSA is a secure algorithm for digital signatures
+			// GOOD: ECDSA is a secure signature algorithm
 			Signature ecdsaSig = Signature.getInstance("ECDSA");
 
 			// GOOD: ECDH is a secure algorithm for key agreement
@@ -61,23 +61,32 @@ class Test {
 			// GOOD: EdDSA is a secure algorithm (Edwards-curve Digital Signature Algorithm)
 			keyPairGenerator = KeyPairGenerator.getInstance("EdDSA");
 
-			// GOOD: Ed25519 is a secure algorithm
+			// GOOD: Ed25519 is a secure algorithm for key pair generation
 			keyPairGenerator = KeyPairGenerator.getInstance("Ed25519");
 
-			// GOOD: Ed448 is a secure algorithm
+			// GOOD: Ed448 is a secure algorithm for key pair generation
 			keyPairGenerator = KeyPairGenerator.getInstance("Ed448");
 
 			// GOOD: XDH is a secure algorithm for key agreement
-			keyPairGenerator = KeyPairGenerator.getInstance("XDH");
+			KeyAgreement xdhKa = KeyAgreement.getInstance("XDH");
 
 			// GOOD: X25519 is a secure algorithm for key agreement
-			keyPairGenerator = KeyPairGenerator.getInstance("X25519");
+			KeyAgreement x25519Ka = KeyAgreement.getInstance("X25519");
 
 			// GOOD: X448 is a secure algorithm for key agreement
-			keyPairGenerator = KeyPairGenerator.getInstance("X448");
+			KeyAgreement x448Ka = KeyAgreement.getInstance("X448");
 
 			// GOOD: SHA256withECDSA is a secure signature algorithm
 			Signature sha256Ecdsa = Signature.getInstance("SHA256withECDSA");
+
+			// GOOD: HMAC-based SecretKeySpec should not be flagged
+			new SecretKeySpec(null, "HMACSHA1");
+			new SecretKeySpec(null, "HMACSHA256");
+			new SecretKeySpec(null, "HMACSHA384");
+			new SecretKeySpec(null, "SHA384withECDSA");
+
+			// GOOD: PBKDF2 key derivation is a secure algorithm
+			SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
 		} catch (Exception e) {
 			// fail
