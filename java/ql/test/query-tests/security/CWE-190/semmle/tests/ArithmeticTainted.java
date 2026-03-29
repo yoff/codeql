@@ -119,6 +119,8 @@ public class ArithmeticTainted {
 			test2(data);
 			test3(data);
 			test4(data);
+			boundsCheckGood(null, data, 5);
+			boundsCheckGood2(null, data, 5);
 		}
 	}
 
