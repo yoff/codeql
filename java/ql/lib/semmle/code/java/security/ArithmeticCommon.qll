@@ -138,9 +138,9 @@ predicate overflowIrrelevant(Expr exp) {
 
 /**
  * Holds if `exp` is an arithmetic expression used directly as an operand of a
- * comparison, indicating it is part of a bounds check rather than a vulnerable
- * computation. For example, in `if (off + len > array.length)`, the addition
- * is the bounds check itself.
+ * comparison in an `if`-condition, indicating it is part of a bounds check
+ * rather than a vulnerable computation. For example, in
+ * `if (off + len > array.length)`, the addition is the bounds check itself.
  */
 private predicate arithmeticUsedInBoundsCheck(ArithExpr exp) {
   exists(ComparisonExpr comp |
