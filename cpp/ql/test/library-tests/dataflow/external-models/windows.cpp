@@ -894,14 +894,14 @@ void test_http_server_api(HANDLE hRequestQueue) {
     ULONG result = HttpReceiveHttpRequest(hRequestQueue, 0, 0, &requestBuffer, sizeof(requestBuffer), &bytesReturned, nullptr);
     char* p = reinterpret_cast<char*>(&requestBuffer);
     sink(p);
-    sink(*p); // $ MISSING: ir
+    sink(*p); // $ ir
   }
   {
     char buffer[1024];
     ULONG bytesReturned;
     ULONG result = HttpReceiveRequestEntityBody(hRequestQueue, 0, 0, buffer, sizeof(buffer), &bytesReturned, nullptr);
     sink(buffer);
-    sink(*buffer); // $ MISSING: ir
+    sink(*buffer); // $ ir
   }
   {
     HTTP_SSL_CLIENT_CERT_INFO certInfo;
@@ -909,6 +909,6 @@ void test_http_server_api(HANDLE hRequestQueue) {
     ULONG result = HttpReceiveClientCertificate(hRequestQueue, 0, 0, &certInfo, sizeof(certInfo), &bytesReceived, nullptr);
     char* p = reinterpret_cast<char*>(&certInfo);
     sink(p);
-    sink(*p); // $ MISSING: ir
+    sink(*p); // $ ir
   }
 }
