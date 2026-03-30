@@ -1,3 +1,29 @@
+| ConstantComparison.cs:19:15:19:27 | ... < ... | Condition always evaluates to 'false'. | ConstantComparison.cs:19:15:19:27 | ... < ... | dummy |
+| ConstantComparison.cs:20:15:20:27 | ... > ... | Condition always evaluates to 'false'. | ConstantComparison.cs:20:15:20:27 | ... > ... | dummy |
+| ConstantComparison.cs:21:15:21:28 | ... <= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:21:15:21:28 | ... <= ... | dummy |
+| ConstantComparison.cs:22:15:22:28 | ... >= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:22:15:22:28 | ... >= ... | dummy |
+| ConstantComparison.cs:24:15:24:29 | ... == ... | Condition always evaluates to 'false'. | ConstantComparison.cs:24:15:24:29 | ... == ... | dummy |
+| ConstantComparison.cs:25:15:25:29 | ... != ... | Condition always evaluates to 'true'. | ConstantComparison.cs:25:15:25:29 | ... != ... | dummy |
+| ConstantComparison.cs:26:15:26:30 | ... == ... | Condition always evaluates to 'false'. | ConstantComparison.cs:26:15:26:30 | ... == ... | dummy |
+| ConstantComparison.cs:27:15:27:30 | ... != ... | Condition always evaluates to 'true'. | ConstantComparison.cs:27:15:27:30 | ... != ... | dummy |
+| ConstantComparison.cs:28:15:28:20 | ... != ... | Condition always evaluates to 'true'. | ConstantComparison.cs:28:15:28:20 | ... != ... | dummy |
+| ConstantComparison.cs:42:15:42:32 | ... <= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:42:15:42:32 | ... <= ... | dummy |
+| ConstantComparison.cs:43:15:43:28 | ... >= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:43:15:43:28 | ... >= ... | dummy |
+| ConstantComparison.cs:48:15:48:40 | ... >= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:48:15:48:40 | ... >= ... | dummy |
+| ConstantComparison.cs:49:15:49:40 | ... <= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:49:15:49:40 | ... <= ... | dummy |
+| ConstantComparison.cs:54:15:54:42 | ... >= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:54:15:54:42 | ... >= ... | dummy |
+| ConstantComparison.cs:55:15:55:42 | ... <= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:55:15:55:42 | ... <= ... | dummy |
+| ConstantComparison.cs:60:15:60:42 | ... >= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:60:15:60:42 | ... >= ... | dummy |
+| ConstantComparison.cs:61:15:61:42 | ... <= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:61:15:61:42 | ... <= ... | dummy |
+| ConstantComparison.cs:66:15:66:44 | ... >= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:66:15:66:44 | ... >= ... | dummy |
+| ConstantComparison.cs:67:15:67:44 | ... <= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:67:15:67:44 | ... <= ... | dummy |
+| ConstantComparison.cs:72:15:72:38 | ... >= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:72:15:72:38 | ... >= ... | dummy |
+| ConstantComparison.cs:73:15:73:38 | ... <= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:73:15:73:38 | ... <= ... | dummy |
+| ConstantComparison.cs:78:15:78:40 | ... >= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:78:15:78:40 | ... >= ... | dummy |
+| ConstantComparison.cs:81:15:81:42 | ... >= ... | Condition always evaluates to 'true'. | ConstantComparison.cs:81:15:81:42 | ... >= ... | dummy |
+| ConstantComparison.cs:88:15:88:36 | ... > ... | Condition always evaluates to 'false'. | ConstantComparison.cs:88:15:88:36 | ... > ... | dummy |
+| ConstantComparison.cs:89:15:89:43 | ... > ... | Condition always evaluates to 'false'. | ConstantComparison.cs:89:15:89:43 | ... > ... | dummy |
+| ConstantComparison.cs:92:15:92:37 | ... == ... | Condition always evaluates to 'false'. | ConstantComparison.cs:92:15:92:37 | ... == ... | dummy |
 | ConstantCondition.cs:38:18:38:29 | (...) ... | Expression is always 'null'. | ConstantCondition.cs:38:18:38:29 | (...) ... | dummy |
 | ConstantCondition.cs:39:18:39:24 | (...) ... | Expression is never 'null'. | ConstantCondition.cs:39:18:39:24 | (...) ... | dummy |
 | ConstantCondition.cs:46:17:46:26 | (...) ... | Expression is always 'null'. | ConstantCondition.cs:46:17:46:26 | (...) ... | dummy |
