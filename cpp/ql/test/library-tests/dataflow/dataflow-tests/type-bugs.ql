@@ -21,7 +21,7 @@ module IrTest {
 
   query predicate irTypeBugs(Location location, Node node) {
     exists(int n |
-      // Flow summary nodes don't have a type since we don't (necessary) have
+      // Flow summary nodes don't have a type since we don't necessarily have
       // the source code in the database.
       not node instanceof FlowSummaryNode and
       n = count(node.getType()) and
