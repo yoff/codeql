@@ -104,7 +104,7 @@ class WcfRemoteFlowSource extends RemoteFlowSource, DataFlow::ParameterNode {
 }
 
 /** A data flow source of remote user input (ASP.NET web service). */
-class AspNetServiceRemoteFlowSource extends RemoteFlowSource, DataFlow::ParameterNode {
+class AspNetServiceRemoteFlowSource extends AspNetRemoteFlowSource, DataFlow::ParameterNode {
   AspNetServiceRemoteFlowSource() {
     exists(Method m |
       m.getAParameter() = this.getParameter() and
@@ -116,7 +116,8 @@ class AspNetServiceRemoteFlowSource extends RemoteFlowSource, DataFlow::Paramete
 }
 
 /** A data flow source of remote user input (ASP.NET request message). */
-class SystemNetHttpRequestMessageRemoteFlowSource extends RemoteFlowSource, DataFlow::ExprNode {
+class SystemNetHttpRequestMessageRemoteFlowSource extends AspNetRemoteFlowSource, DataFlow::ExprNode
+{
   SystemNetHttpRequestMessageRemoteFlowSource() {
     this.getType() instanceof SystemWebHttpRequestMessageClass
   }
@@ -166,7 +167,7 @@ class MicrosoftOwinRequestRemoteFlowSource extends RemoteFlowSource, DataFlow::E
 }
 
 /** A parameter to an Mvc controller action method, viewed as a source of remote user input. */
-class ActionMethodParameter extends RemoteFlowSource, DataFlow::ParameterNode {
+class ActionMethodParameter extends AspNetRemoteFlowSource, DataFlow::ParameterNode {
   ActionMethodParameter() {
     exists(Parameter p |
       p = this.getParameter() and
