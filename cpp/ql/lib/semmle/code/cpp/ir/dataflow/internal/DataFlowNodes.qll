@@ -1687,7 +1687,9 @@ private class IndirectInstructionParameterNode extends AbstractIndirectParameter
   InitializeParameterInstruction init;
 
   IndirectInstructionParameterNode() {
-    IndirectInstruction.super.hasInstructionAndIndirectionIndex(init, _)
+    IndirectInstruction.super.hasInstructionAndIndirectionIndex(init, _) and
+    // We don't model catch parameters as parameter nodes
+    not exists(init.getParameter().getCatchBlock())
   }
 
   int getArgumentIndex() { init.hasIndex(result) }
@@ -1759,7 +1761,10 @@ abstract private class AbstractExplicitParameterNode extends AbstractDirectParam
 private class ExplicitParameterInstructionNode extends AbstractExplicitParameterNode,
   InstructionDirectParameterNode
 {
-  ExplicitParameterInstructionNode() { exists(instr.getParameter()) }
+  ExplicitParameterInstructionNode() {
+    // We don't model catch parameters as parameter nodes.
+    exists(instr.getParameter().getFunction())
+  }
 
   override string toStringImpl() { result = instr.getParameter().toString() }
 }
