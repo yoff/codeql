@@ -1,3 +1,5 @@
+remoteFlowSourceMembers
+remoteFlowSources
 | Controller.cs:11:43:11:52 | sampleData | ASP.NET MVC action method parameter |
 | Controller.cs:11:62:11:66 | taint | ASP.NET MVC action method parameter |
 | Controller.cs:16:43:16:52 | sampleData | ASP.NET MVC action method parameter |
