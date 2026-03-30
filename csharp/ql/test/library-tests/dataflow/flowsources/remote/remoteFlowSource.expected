@@ -1,4 +1,12 @@
 remoteFlowSourceMembers
+| Controller.cs:6:19:6:25 | Tainted |
+| RemoteFlowSource.cs:64:23:64:33 | SubDataProp |
+| RemoteFlowSource.cs:69:23:69:40 | ElementSubDataProp |
+| RemoteFlowSource.cs:74:23:74:31 | DataField |
+| RemoteFlowSource.cs:75:23:75:30 | DataProp |
+| RemoteFlowSource.cs:76:26:76:32 | SubData |
+| RemoteFlowSource.cs:77:35:77:42 | Elements |
+| RemoteFlowSource.cs:82:23:82:26 | Prop |
 remoteFlowSources
 | Controller.cs:11:43:11:52 | sampleData | ASP.NET MVC action method parameter |
 | Controller.cs:11:62:11:66 | taint | ASP.NET MVC action method parameter |
@@ -12,3 +20,5 @@ remoteFlowSources
 | RemoteFlowSource.cs:45:17:45:23 | access to parameter request | ASP.NET query string |
 | RemoteFlowSource.cs:45:17:45:42 | access to property RawUrl | ASP.NET unvalidated request data |
 | RemoteFlowSource.cs:52:55:52:61 | [post] access to local variable segment | external |
+| RemoteFlowSource.cs:89:37:89:40 | data | ASP.NET web service input |
+| RemoteFlowSource.cs:97:47:97:50 | data | ASP.NET web service input |
