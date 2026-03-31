@@ -332,11 +332,23 @@ edges
 | windows.cpp:729:44:729:57 | WinHttpCrackUrl output argument | windows.cpp:731:10:731:36 | * ... | provenance |  |
 | windows.cpp:729:44:729:57 | WinHttpCrackUrl output argument | windows.cpp:733:10:733:35 | * ... | provenance |  |
 | windows.cpp:729:44:729:57 | WinHttpCrackUrl output argument | windows.cpp:735:10:735:37 | * ... | provenance |  |
-| windows.cpp:873:64:873:77 | HttpReceiveHttpRequest output argument | windows.cpp:874:15:874:53 | *& ... | provenance | Src:MaD:7  |
-| windows.cpp:874:15:874:53 | *& ... | windows.cpp:876:10:876:11 | * ... | provenance |  |
-| windows.cpp:881:70:881:75 | HttpReceiveRequestEntityBody output argument | windows.cpp:883:10:883:16 | * ... | provenance | Src:MaD:8  |
-| windows.cpp:888:70:888:78 | HttpReceiveClientCertificate output argument | windows.cpp:889:15:889:48 | *& ... | provenance | Src:MaD:6  |
-| windows.cpp:889:15:889:48 | *& ... | windows.cpp:891:10:891:11 | * ... | provenance |  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:898:15:898:53 | *& ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:902:10:902:31 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:904:10:904:42 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:906:10:906:57 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:908:10:908:60 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:909:54:909:63 | FileHandle | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:911:10:911:70 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:913:10:913:72 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:915:10:915:64 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:917:10:917:51 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:919:10:919:52 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | windows.cpp:921:10:921:63 | * ... | provenance | Src:MaD:7  |
+| windows.cpp:898:15:898:53 | *& ... | windows.cpp:900:10:900:11 | * ... | provenance |  |
+| windows.cpp:926:70:926:75 | HttpReceiveRequestEntityBody output argument | windows.cpp:928:10:928:16 | * ... | provenance | Src:MaD:8  |
+| windows.cpp:933:70:933:78 | HttpReceiveClientCertificate output argument | windows.cpp:934:15:934:48 | *& ... | provenance | Src:MaD:6  |
+| windows.cpp:933:70:933:78 | HttpReceiveClientCertificate output argument | windows.cpp:938:10:938:31 | * ... | provenance | Src:MaD:6  |
+| windows.cpp:934:15:934:48 | *& ... | windows.cpp:936:10:936:11 | * ... | provenance |  |
 nodes
 | asio_streams.cpp:56:18:56:23 | [summary param] *0 in buffer | semmle.label | [summary param] *0 in buffer |
 | asio_streams.cpp:56:18:56:23 | [summary] to write: ReturnValue in buffer | semmle.label | [summary] to write: ReturnValue in buffer |
@@ -644,14 +656,26 @@ nodes
 | windows.cpp:731:10:731:36 | * ... | semmle.label | * ... |
 | windows.cpp:733:10:733:35 | * ... | semmle.label | * ... |
 | windows.cpp:735:10:735:37 | * ... | semmle.label | * ... |
-| windows.cpp:873:64:873:77 | HttpReceiveHttpRequest output argument | semmle.label | HttpReceiveHttpRequest output argument |
-| windows.cpp:874:15:874:53 | *& ... | semmle.label | *& ... |
-| windows.cpp:876:10:876:11 | * ... | semmle.label | * ... |
-| windows.cpp:881:70:881:75 | HttpReceiveRequestEntityBody output argument | semmle.label | HttpReceiveRequestEntityBody output argument |
-| windows.cpp:883:10:883:16 | * ... | semmle.label | * ... |
-| windows.cpp:888:70:888:78 | HttpReceiveClientCertificate output argument | semmle.label | HttpReceiveClientCertificate output argument |
-| windows.cpp:889:15:889:48 | *& ... | semmle.label | *& ... |
-| windows.cpp:891:10:891:11 | * ... | semmle.label | * ... |
+| windows.cpp:897:64:897:77 | HttpReceiveHttpRequest output argument | semmle.label | HttpReceiveHttpRequest output argument |
+| windows.cpp:898:15:898:53 | *& ... | semmle.label | *& ... |
+| windows.cpp:900:10:900:11 | * ... | semmle.label | * ... |
+| windows.cpp:902:10:902:31 | * ... | semmle.label | * ... |
+| windows.cpp:904:10:904:42 | * ... | semmle.label | * ... |
+| windows.cpp:906:10:906:57 | * ... | semmle.label | * ... |
+| windows.cpp:908:10:908:60 | * ... | semmle.label | * ... |
+| windows.cpp:909:54:909:63 | FileHandle | semmle.label | FileHandle |
+| windows.cpp:911:10:911:70 | * ... | semmle.label | * ... |
+| windows.cpp:913:10:913:72 | * ... | semmle.label | * ... |
+| windows.cpp:915:10:915:64 | * ... | semmle.label | * ... |
+| windows.cpp:917:10:917:51 | * ... | semmle.label | * ... |
+| windows.cpp:919:10:919:52 | * ... | semmle.label | * ... |
+| windows.cpp:921:10:921:63 | * ... | semmle.label | * ... |
+| windows.cpp:926:70:926:75 | HttpReceiveRequestEntityBody output argument | semmle.label | HttpReceiveRequestEntityBody output argument |
+| windows.cpp:928:10:928:16 | * ... | semmle.label | * ... |
+| windows.cpp:933:70:933:78 | HttpReceiveClientCertificate output argument | semmle.label | HttpReceiveClientCertificate output argument |
+| windows.cpp:934:15:934:48 | *& ... | semmle.label | *& ... |
+| windows.cpp:936:10:936:11 | * ... | semmle.label | * ... |
+| windows.cpp:938:10:938:31 | * ... | semmle.label | * ... |
 subpaths
 | asio_streams.cpp:100:64:100:71 | *send_str | asio_streams.cpp:56:18:56:23 | [summary param] *0 in buffer | asio_streams.cpp:56:18:56:23 | [summary] to write: ReturnValue in buffer | asio_streams.cpp:100:44:100:62 | call to buffer |
 | azure.cpp:257:5:257:8 | *resp | azure.cpp:113:16:113:19 | [summary param] this in Read | azure.cpp:113:16:113:19 | [summary param] *0 in Read [Return] | azure.cpp:257:16:257:21 | Read output argument |

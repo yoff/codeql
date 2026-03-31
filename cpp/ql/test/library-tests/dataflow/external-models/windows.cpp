@@ -899,26 +899,26 @@ void test_http_server_api(HANDLE hRequestQueue) {
     sink(p);
     sink(*p); // $ ir
     sink(requestBuffer.pRawUrl);
-    sink(*requestBuffer.pRawUrl); // $ MISSING: ir
+    sink(*requestBuffer.pRawUrl); // $ ir
     sink(requestBuffer.CookedUrl.pFullUrl);
-    sink(*requestBuffer.CookedUrl.pFullUrl); // $ MISSING: ir
+    sink(*requestBuffer.CookedUrl.pFullUrl); // $ ir
     sink(requestBuffer.Headers.KnownHeaders[0].pRawValue);
-    sink(*requestBuffer.Headers.KnownHeaders[0].pRawValue); // $ MISSING: ir
+    sink(*requestBuffer.Headers.KnownHeaders[0].pRawValue); // $ ir
     sink(requestBuffer.Headers.pUnknownHeaders[0].pRawValue);
-    sink(*requestBuffer.Headers.pUnknownHeaders[0].pRawValue); // $ MISSING: ir
-    sink(requestBuffer.pEntityChunks->FromFileHandle.FileHandle); // $ MISSING: ir
+    sink(*requestBuffer.Headers.pUnknownHeaders[0].pRawValue); // $ ir
+    sink(requestBuffer.pEntityChunks->FromFileHandle.FileHandle); // $ ir
     sink(requestBuffer.pEntityChunks->FromFragmentCache.pFragmentName);
-    sink(*requestBuffer.pEntityChunks->FromFragmentCache.pFragmentName); // $ MISSING: ir
+    sink(*requestBuffer.pEntityChunks->FromFragmentCache.pFragmentName); // $ ir
     sink(requestBuffer.pEntityChunks->FromFragmentCacheEx.pFragmentName);
-    sink(*requestBuffer.pEntityChunks->FromFragmentCacheEx.pFragmentName); // $ MISSING: ir
+    sink(*requestBuffer.pEntityChunks->FromFragmentCacheEx.pFragmentName); // $ ir
     sink(requestBuffer.pEntityChunks->FromMemory.pBuffer);
-    sink(*(char*)requestBuffer.pEntityChunks->FromMemory.pBuffer); // $ MISSING: ir
+    sink(*(char*)requestBuffer.pEntityChunks->FromMemory.pBuffer); // $ ir
     sink(requestBuffer.pSslInfo->pServerCertIssuer);
-    sink(*requestBuffer.pSslInfo->pServerCertIssuer); // $ MISSING: ir
+    sink(*requestBuffer.pSslInfo->pServerCertIssuer); // $ ir
     sink(requestBuffer.pSslInfo->pServerCertSubject);
-    sink(*requestBuffer.pSslInfo->pServerCertSubject); // $ MISSING: ir
+    sink(*requestBuffer.pSslInfo->pServerCertSubject); // $ ir
     sink(requestBuffer.pSslInfo->pClientCertInfo->pCertEncoded);
-    sink(*requestBuffer.pSslInfo->pClientCertInfo->pCertEncoded); // $ MISSING: ir
+    sink(*requestBuffer.pSslInfo->pClientCertInfo->pCertEncoded); // $ ir
   }
   {
     char buffer[1024];
@@ -935,6 +935,6 @@ void test_http_server_api(HANDLE hRequestQueue) {
     sink(p);
     sink(*p); // $ ir
     sink(certInfo.pCertEncoded);
-    sink(*certInfo.pCertEncoded); // $ MISSING: ir
+    sink(*certInfo.pCertEncoded); // $ ir
   }
 }
