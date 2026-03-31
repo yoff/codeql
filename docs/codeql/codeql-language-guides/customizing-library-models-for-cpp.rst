@@ -77,7 +77,7 @@ This example shows how the CPP query pack models the return value from the ``rea
 
    boost::asio::read_until(socket, recv_buffer, '\0', error);
 
-We need to add a tuple to the ``sourceModel``\(namespace, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``sourceModel(namespace, type, subtypes, name, signature, ext, output, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -113,7 +113,7 @@ This example shows how the CPP query pack models the second argument of the ``bo
 
    boost::asio::write(socket, send_buffer, error);
 
-We need to add a tuple to the ``sinkModel``\(namespace, type, subtypes, name, signature, ext, input, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``sinkModel(namespace, type, subtypes, name, signature, ext, input, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -149,7 +149,7 @@ This example shows how the CPP query pack models flow through a function for a s
 
    boost::asio::write(socket, boost::asio::buffer(send_str), error);
 
-We need to add tuples to the ``summaryModel``\(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add tuples to the ``summaryModel(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -192,7 +192,7 @@ This function escapes special characters in a string for use in an SQL statement
    mysql_real_escape_string(mysql, escaped_name, name, strlen(name)); // The escaped_name is safe for SQL injection.
    sprintf(query_buffer, query, escaped_name);
 
-We need to add a tuple to the ``barrierModel``\(namespace, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``barrierModel(namespace, type, subtypes, name, signature, ext, output, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -232,7 +232,7 @@ Consider a function called ``is_safe`` which returns ``true`` when the data is c
        mysql_query(user_input); // This is safe.
    }
 
-We need to add a tuple to the ``barrierGuardModel``\(namespace, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``barrierGuardModel(namespace, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 

@@ -121,7 +121,7 @@ This is the ``GetStream`` method in the ``TcpClient`` class, which is located in
        ...
    }
 
-We need to add a tuple to the ``sourceModel``\(namespace, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``sourceModel(namespace, type, subtypes, name, signature, ext, output, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -161,7 +161,7 @@ This pattern covers many of the cases where we need to summarize flow through a 
        ...
    }
 
-We need to add tuples to the ``summaryModel``\(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add tuples to the ``summaryModel(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -218,7 +218,7 @@ This example shows how the C# query pack models flow through a method for a simp
        ...
    }
 
-We need to add a tuple to the ``summaryModel``\(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add a tuple to the ``summaryModel(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -262,7 +262,7 @@ Here we model flow through higher order methods and collection types, as well as
      ...
    }
 
-We need to add tuples to the ``summaryModel``\(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add tuples to the ``summaryModel(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -323,7 +323,7 @@ The ``RawUrl`` property returns the raw URL of the current request, which is con
        Response.Redirect(url); // This is not a URL redirection vulnerability.
    }
 
-We need to add a tuple to the ``barrierModel``\(namespace, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``barrierModel(namespace, type, subtypes, name, signature, ext, output, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -365,7 +365,7 @@ When the ``IsAbsoluteUri`` property returns ``false``, the URL is relative and t
        }
    }
 
-We need to add a tuple to the ``barrierGuardModel``\(namespace, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``barrierGuardModel(namespace, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -405,7 +405,7 @@ A neutral model is used to define that there is no flow through a method.
        ...
    }
 
-We need to add a tuple to the ``neutralModel``\(namespace, type, name, signature, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``neutralModel(namespace, type, name, signature, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 

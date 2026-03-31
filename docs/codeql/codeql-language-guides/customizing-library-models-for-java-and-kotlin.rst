@@ -87,7 +87,7 @@ This is the ``execute`` method in the ``Statement`` class, which is located in t
        stmt.execute(query); // The argument to this method is a SQL injection sink.
    }
 
-We need to add a tuple to the ``sinkModel``\(package, type, subtypes, name, signature, ext, input, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``sinkModel(package, type, subtypes, name, signature, ext, input, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -127,7 +127,7 @@ This is the ``getInputStream`` method in the ``Socket`` class, which is located 
        ...
    }
 
-We need to add a tuple to the ``sourceModel``\(package, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``sourceModel(package, type, subtypes, name, signature, ext, output, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -167,7 +167,7 @@ This pattern covers many of the cases where we need to summarize flow through a 
        ...
    }
 
-We need to add tuples to the ``summaryModel``\(package, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add tuples to the ``summaryModel(package, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -212,7 +212,7 @@ Here we model flow through higher order methods and collection types.
      ...
    }
 
-We need to add tuples to the ``summaryModel``\(package, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add tuples to the ``summaryModel(package, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -271,7 +271,7 @@ This is the ``getName`` method in the ``File`` class, which is located in the ``
        ...
    }
 
-We need to add a tuple to the ``barrierModel``\(package, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``barrierModel(package, type, subtypes, name, signature, ext, output, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -315,7 +315,7 @@ When the ``isAbsolute`` method returns ``false``, the URI is relative and theref
        }
    }
 
-We need to add a tuple to the ``barrierGuardModel``\(package, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``barrierGuardModel(package, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -356,7 +356,7 @@ A neutral model is used to define that there is no flow through a method.
        ...
    }
 
-We need to add a tuple to the ``neutralModel``\(package, type, name, signature, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``neutralModel(package, type, name, signature, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 

@@ -122,7 +122,7 @@ This is the ``FormValue`` method of the ``Request`` type which is located in the
     }
 
 
-We need to add a tuple to the ``sourceModel``\(package, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``sourceModel(package, type, subtypes, name, signature, ext, output, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -164,7 +164,7 @@ This pattern covers many of the cases where we need to summarize flow through a 
         ...
     }
 
-We need to add a tuple to the ``summaryModel``\(package, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add a tuple to the ``summaryModel(package, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -209,7 +209,7 @@ This pattern covers many of the cases where we need to summarize flow through a 
         ...
     }
 
-We need to add a tuple to the ``summaryModel``\(package, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add a tuple to the ``summaryModel(package, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -253,7 +253,7 @@ This pattern covers many of the cases where we need to summarize flow through a 
         ...
     }
 
-We need to add tuples to the ``summaryModel``\(package, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add tuples to the ``summaryModel(package, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -310,7 +310,7 @@ This example shows how the Go query pack models flow through a method for a simp
         ...
     }
 
-We need to add a tuple to the ``summaryModel``\(package, type, subtypes, name, signature, ext, input, output, kind, provenance) extensible predicate by updating a data extension file:
+We need to add a tuple to the ``summaryModel(package, type, subtypes, name, signature, ext, input, output, kind, provenance)`` extensible predicate by updating a data extension file:
 
 .. code-block:: yaml
 
@@ -354,7 +354,7 @@ The ``Htmlquote`` function from the beego framework HTML-escapes a string, which
         ...
     }
 
-We need to add a tuple to the ``barrierModel``\(package, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``barrierModel(package, type, subtypes, name, signature, ext, output, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -395,7 +395,7 @@ Consider a function called ``IsSafe`` which returns ``true`` when the data is co
         }
     }
 
-We need to add a tuple to the ``barrierGuardModel``\(package, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``barrierGuardModel(package, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -434,7 +434,7 @@ This example shows how we can model a field read as a source of tainted data.
        ...
    }
 
-We need to add a tuple to the ``sourceModel``\(package, type, subtypes, name, signature, ext, output, kind, provenance) extensible predicate by updating a data extension file.
+We need to add a tuple to the ``sourceModel(package, type, subtypes, name, signature, ext, output, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
