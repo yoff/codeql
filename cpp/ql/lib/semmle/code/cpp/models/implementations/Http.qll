@@ -54,7 +54,7 @@ private class HttpRequestHeadersInheritingContent extends TaintInheritingContent
       this.getIndirectionIndex() = 1
       or
       this.getAField().hasName("pUnknownHeaders") and
-      this.getIndirectionIndex() = 1
+      this.getIndirectionIndex() = 2
     )
   }
 }
