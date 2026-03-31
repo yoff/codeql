@@ -92,7 +92,7 @@ Since we are adding a new source, we need to add a tuple to the ``sourceModel`` 
 The first five values identify the callable (in this case a free function) to be modeled as a source.
 
 - The first value ``"boost::asio"`` is the namespace name.
-- The second value ``""`` is the name of the type (class) that contains the method. Because we're modelling a free function, the type is left blank.
+- The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
 - The third value ``False`` is a flag that indicates whether or not the sink also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"read_until"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name. In this case, we want the model to include all functions in ``boost::asio`` called ``read_until``.
@@ -128,7 +128,7 @@ Since we want to add a new sink, we need to add a tuple to the ``sinkModel`` ext
 The first five values identify the callable (in this case a free function) to be modeled as a sink.
 
 - The first value ``"boost::asio"`` is the namespace name.
-- The second value ``""`` is the name of the type (class) that contains the method. Because we're modelling a free function, the type is left blank.
+- The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
 - The third value ``False`` is a flag that indicates whether or not the sink also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"write"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name. In this case, we want the model to include all functions in ``boost::asio`` called ``write``.
@@ -165,7 +165,7 @@ Since we are adding flow through a function, we need to add tuples to the ``summ
 The first five values identify the callable (in this case free function) to be modeled as a summary.
 
 - The first value ``"boost::asio"`` is the namespace name.
-- The second value ``""`` is the name of the type (class) that contains the method. Because we're modelling a free function, the type is left blank.
+- The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
 - The third value ``False`` is a flag that indicates whether or not the sink also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"buffer"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name. In this case, we want the model to include all functions in ``boost::asio`` called ``buffer``.
@@ -207,7 +207,7 @@ Since we are adding a barrier, we need to add a tuple to the ``barrierModel`` ex
 The first five values identify the callable (in this case a free function) to be modeled as a barrier.
 
 - The first value ``""`` is the namespace name.
-- The second value ``""`` is the name of the type (class) that contains the method. Because we're modelling a free function, the type is left blank.
+- The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
 - The third value ``False`` is a flag that indicates whether or not the barrier also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"mysql_real_escape_string"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name.
@@ -247,7 +247,7 @@ Since we are adding a barrier guard, we need to add a tuple to the ``barrierGuar
 The first five values identify the callable (in this case a free function) to be modeled as a barrier guard.
 
 - The first value ``""`` is the namespace name.
-- The second value ``""`` is the name of the type (class) that contains the method. Because we're modelling a free function, the type is left blank.
+- The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
 - The third value ``False`` is a flag that indicates whether or not the barrier guard also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"is_safe"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name.
