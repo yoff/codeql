@@ -56,6 +56,13 @@ private module Input implements InputSig<Location, CsharpDataFlow> {
         )
       or
       call.(NonDelegateDataFlowCall).getDispatchCall().isReflection()
+      or
+      // Exclude calls that are both getter and setter calls, as they share the same argument nodes.
+      exists(AccessorCall ac |
+        call.(NonDelegateDataFlowCall).getDispatchCall().getCall() = ac and
+        ac instanceof AssignableRead and
+        ac instanceof AssignableWrite
+      )
     )
   }
 }
