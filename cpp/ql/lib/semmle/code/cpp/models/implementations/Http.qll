@@ -3,7 +3,7 @@ private import semmle.code.cpp.ir.dataflow.FlowSteps
 private import semmle.code.cpp.dataflow.new.DataFlow
 
 private class HttpRequest extends Class {
-  HttpRequest() { this.hasGlobalName("_HTTP_REQUEST") }
+  HttpRequest() { this.hasGlobalName("_HTTP_REQUEST_V1") }
 }
 
 private class HttpRequestInheritingContent extends TaintInheritingContent, DataFlow::FieldContent {

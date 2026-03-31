@@ -836,7 +836,7 @@ typedef struct _HTTP_SSL_INFO {
   ULONG                       SslClientCertNegotiated;
 } HTTP_SSL_INFO, *PHTTP_SSL_INFO;
 
-typedef struct _HTTP_REQUEST {
+typedef struct _HTTP_REQUEST_V1 {
   ULONG                    Flags;
   HTTP_CONNECTION_ID       ConnectionId;
   HTTP_REQUEST_ID          RequestId;
@@ -855,7 +855,10 @@ typedef struct _HTTP_REQUEST {
   PHTTP_DATA_CHUNK         pEntityChunks;
   HTTP_RAW_CONNECTION_ID   RawConnectionId;
   PHTTP_SSL_INFO           pSslInfo;
-} HTTP_REQUEST, *PHTTP_REQUEST;
+} HTTP_REQUEST_V1, *PHTTP_REQUEST_V1;
+
+using HTTP_REQUEST = HTTP_REQUEST_V1;
+using PHTTP_REQUEST = PHTTP_REQUEST_V1;
 
 ULONG HttpReceiveHttpRequest(
   HANDLE          RequestQueueHandle,
