@@ -253,7 +253,7 @@ The first five values identify the callable (in this case a free function) to be
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the input specification, the ``accepting value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
+The remaining values are used to define the input specification, the ``accepting-value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
 
 - The seventh value ``Argument[*0]`` is the input specification (the value being validated). In this case, the first indirection (or pointed-to value, ``*``) of the first argument (``Argument[0]``) passed to the function.
 - The eighth value ``true`` is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply.

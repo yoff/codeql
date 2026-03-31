@@ -103,9 +103,9 @@ The first five values identify the function (in this case a method) to be modele
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the sink.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the sink.
 
-- The seventh value ``Argument[0]`` is the ``access path`` to the first argument passed to the method, which means that this is the location of the sink.
+- The seventh value ``Argument[0]`` is the ``access-path`` to the first argument passed to the method, which means that this is the location of the sink.
 - The eighth value ``sql-injection`` is the kind of the sink. The sink kind is used to define the queries where the sink is in scope. In this case - the SQL injection queries.
 - The ninth value ``manual`` is the provenance of the sink, which is used to identify the origin of the sink.
 
@@ -144,7 +144,7 @@ The first five values identify the function to be modeled as a source.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the source.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the source.
 
 - The seventh value ``ReturnValue`` is the access path to the return of the method, which means that it is the return value that should be considered a source of tainted input.
 - The eighth value ``remote`` is the kind of the source. The source kind is used to define the threat model where the source is in scope. ``remote`` applies to many of the security related queries as it means a remote source of untrusted data. As an example the SQL injection query uses ``remote`` sources. For more information, see ":ref:`Threat models <threat-models-go>`."
@@ -187,7 +187,7 @@ The first five values identify the function to be modeled as a summary.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the summary.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the summary.
 
 - The seventh value is the access path to the input (where data flows from). ``Argument[0].ArrayElement`` is the access path to the array elements of the first argument (the elements of the slice in the example).
 - The eighth value ``ReturnValue`` is the access path to the output (where data flows to), in this case ``ReturnValue``, which means that the input flows to the return value.
@@ -232,7 +232,7 @@ The first five values identify the function to be modeled as a summary.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the summary.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the summary.
 
 - The seventh value is the access path to the input (where data flows from). ``Argument[0].ArrayElement.ArrayElement`` is the access path to the array elements of the array elements of the first argument. Note that a variadic parameter of type `...T` is treated as if it has type `[]T` and arguments corresponding to the variadic parameter are accessed as elements of this slice.
 - The eighth value ``ReturnValue.ArrayElement`` is the access path to the output (where data flows to), in this case ``ReturnValue.ArrayElement``, which means that the input flows to the array elements of the return value.
@@ -279,7 +279,7 @@ These are the same for both of the rows above as we are adding two summaries for
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the summary.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the summary.
 
 - The seventh value is the access path to the input (where data flows from). ``Argument[0]`` is the access path to the first argument (``elems`` in the example) and ``Argument[1]`` is the access path to the second argument (``sep`` in the example).
 - The eighth value ``ReturnValue`` is the access path to the output (where data flows to), in this case ``ReturnValue``, which means that the input flows to the return value.
@@ -334,7 +334,7 @@ The first five values identify the function (in this case a method) to be modele
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the summary.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the summary.
 
 - The seventh value is the access path to the input (where data flows from). ``Argument[receiver]`` is the access path to the receiver (``u`` in the example).
 - The eighth value ``ReturnValue`` is the access path to the output (where data flows to), in this case ``ReturnValue``, which means that the input flows to the return value. When there are multiple return values, use ``ReturnValue[i]`` to refer to the ``i`` th return value (starting from 0).
@@ -375,7 +375,7 @@ The first five values identify the function to be modeled as a barrier.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the barrier.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the barrier.
 
 - The seventh value ``ReturnValue`` is the access path to the output of the barrier, which means that the return value is considered sanitized.
 - The eighth value ``html-injection`` is the kind of the barrier. The barrier kind must match the kind used in the query where the barrier should take effect. In this case, it matches the ``html-injection`` sink kind used by XSS queries.
@@ -416,7 +416,7 @@ The first five values identify the function to be modeled as a barrier guard.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``accepting value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
+The remaining values are used to define the ``access-path``, the ``accepting-value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
 
 - The seventh value ``Argument[0]`` is the access path to the input whose flow is blocked. In this case, the first argument to the function (``input`` in the example).
 - The eighth value ``true`` is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply. In this case, when ``IsSafe`` returns ``true``, the input is considered safe.
@@ -455,7 +455,7 @@ The first five values identify the field to be modeled as a source.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the source.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the source.
 
 - The seventh value ``""`` is left blank. Leaving the access path of a source model blank indicates that it is a field access.
 - The eighth value ``remote`` is the source kind. This indicates that the source is a remote source of untrusted data.

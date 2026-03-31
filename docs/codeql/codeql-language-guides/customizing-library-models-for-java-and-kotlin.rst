@@ -109,9 +109,9 @@ The first five values identify the callable (in this case a method) to be modele
 - The fifth value ``(String)`` is the method input type signature.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the sink.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the sink.
 
-- The seventh value ``Argument[0]`` is the ``access path`` to the first argument passed to the method, which means that this is the location of the sink.
+- The seventh value ``Argument[0]`` is the ``access-path`` to the first argument passed to the method, which means that this is the location of the sink.
 - The eighth value ``sql-injection`` is the kind of the sink. The sink kind is used to define the queries where the sink is in scope. In this case - the SQL injection queries.
 - The ninth value ``manual`` is the provenance of the sink, which is used to identify the origin of the sink.
 
@@ -149,7 +149,7 @@ The first five values identify the callable (in this case a method) to be modele
 - The fifth value ``()`` is the method input type signature.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the source.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the source.
 
 - The seventh value ``ReturnValue`` is the access path to the return of the method, which means that it is the return value that should be considered a source of tainted input.
 - The eighth value ``remote`` is the kind of the source. The source kind is used to define the threat model where the source is in scope. ``remote`` applies to many of the security related queries as it means a remote source of untrusted data. As an example the SQL injection query uses ``remote`` sources. For more information, see ":ref:`Threat models <threat-models-java>`."
@@ -193,7 +193,7 @@ These are the same for both of the rows above as we are adding two summaries for
 - The fifth value ``(String)`` is the method input type signature.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the summary.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the summary.
 
 - The seventh value is the access path to the input (where data flows from). ``Argument[this]`` is the access path to the qualifier (``s1`` in the example) and ``Argument[0]`` is the access path to the first argument (``s2`` in the example).
 - The eighth value ``ReturnValue`` is the access path to the output (where data flows to), in this case ``ReturnValue``, which means that the input flows to the return value.
@@ -237,7 +237,7 @@ These are the same for both of the rows above as we are adding two summaries for
 - The fifth value ``Function`` is the method input type signature.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the summary definition.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the summary definition.
 
 - The seventh value is the access path to the ``input`` (where data flows from).
 - The eighth value is the access path to the ``output`` (where data flows to).
@@ -293,7 +293,7 @@ The first five values identify the callable (in this case a method) to be modele
 - The fifth value ``()`` is the method input type signature.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``kind``, and the ``provenance`` (origin) of the barrier.
+The remaining values are used to define the ``access-path``, the ``kind``, and the ``provenance`` (origin) of the barrier.
 
 - The seventh value ``ReturnValue`` is the access path to the return of the method, which means that it is the return value that should be considered a barrier.
 - The eighth value ``path-injection`` is the kind of the barrier. The barrier kind is used to define the queries where the barrier is in scope. In this case - the path injection queries.
@@ -337,7 +337,7 @@ The first five values identify the callable (in this case a method) to be modele
 - The fifth value ``()`` is the method input type signature.
 
 The sixth value should be left empty and is out of scope for this documentation.
-The remaining values are used to define the ``access path``, the ``accepting value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
+The remaining values are used to define the ``access-path``, the ``accepting-value``, the ``kind``, and the ``provenance`` (origin) of the barrier guard.
 
 - The seventh value ``Argument[this]`` is the access path to the input whose flow is blocked. In this case, the qualifier of the method call (``uri`` in the example).
 - The eighth value ``false`` is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply. In this case, when ``isAbsolute`` is ``false``, the URI is relative and considered safe.
