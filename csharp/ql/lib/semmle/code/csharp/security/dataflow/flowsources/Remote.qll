@@ -137,7 +137,7 @@ private class CandidateMembersToTaint extends Member {
  * 1. Action method parameters.
  * 2. WebMethod parameters.
  *
- * Note, that this also impacts uses of such types in other contexts.
+ * Note that this also impacts uses of such types in other contexts.
  */
 private class AspNetRemoteFlowSourceMember extends TaintTracking::TaintedMember,
   CandidateMembersToTaint
