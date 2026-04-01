@@ -115,25 +115,8 @@ class AspNetServiceRemoteFlowSource extends AspNetRemoteFlowSource, DataFlow::Pa
   override string getSourceType() { result = "ASP.NET web service input" }
 }
 
-/**
- * Taint members (transitively) on types used in
- * 1. Action method parameters.
- * 2. WebMethod parameters.
- *
- * Note, that this also impacts uses of such types in other contexts.
- */
-private class AspNetRemoteFlowSourceMember extends TaintTracking::TaintedMember {
-  AspNetRemoteFlowSourceMember() {
-    exists(Type t, Type t0 | t = this.getDeclaringType() |
-      (t = t0 or t = t0.(ArrayType).getElementType()) and
-      (
-        t0 = any(AspNetRemoteFlowSourceMember m).getType()
-        or
-        t0 = any(ActionMethodParameter p).getType()
-        or
-        t0 = any(AspNetServiceRemoteFlowSource source).getType()
-      )
-    ) and
+private class CandidateMembersToTaint extends Member {
+  CandidateMembersToTaint() {
     this.isPublic() and
     not this.isStatic() and
     (
@@ -145,6 +128,30 @@ private class AspNetRemoteFlowSourceMember extends TaintTracking::TaintedMember 
         )
       or
       this = any(Field f | f.isPublic())
+    )
+  }
+}
+
+/**
+ * Taint members (transitively) on types used in
+ * 1. Action method parameters.
+ * 2. WebMethod parameters.
+ *
+ * Note, that this also impacts uses of such types in other contexts.
+ */
+private class AspNetRemoteFlowSourceMember extends TaintTracking::TaintedMember,
+  CandidateMembersToTaint
+{
+  AspNetRemoteFlowSourceMember() {
+    exists(Type t, Type t0 | t = this.getDeclaringType() |
+      (t = t0 or t = t0.(ArrayType).getElementType()) and
+      (
+        t0 = any(AspNetRemoteFlowSourceMember m).getType()
+        or
+        t0 = any(ActionMethodParameter p).getType()
+        or
+        t0 = any(AspNetServiceRemoteFlowSource source).getType()
+      )
     )
   }
 }
@@ -253,14 +260,18 @@ class AspNetCoreRoutingMethodParameter extends AspNetCoreRemoteFlowSource, DataF
  * Flow is defined from any ASP.NET Core remote source object to any of its member
  * properties.
  */
-private class AspNetCoreRemoteFlowSourceMember extends TaintTracking::TaintedMember, Property {
+private class AspNetCoreRemoteFlowSourceMember extends TaintTracking::TaintedMember,
+  CandidateMembersToTaint
+{
   AspNetCoreRemoteFlowSourceMember() {
-    this.getDeclaringType() = any(AspNetCoreRemoteFlowSource source).getType() and
-    this.isPublic() and
-    not this.isStatic() and
-    this.isAutoImplemented() and
-    this.getGetter().isPublic() and
-    this.getSetter().isPublic()
+    exists(Type t, Type t0 | t = this.getDeclaringType() |
+      (t = t0 or t = t0.(ArrayType).getElementType()) and
+      (
+        t0 = any(AspNetCoreRemoteFlowSourceMember m).getType()
+        or
+        t0 = any(AspNetCoreRemoteFlowSource m).getType()
+      )
+    )
   }
 }
 
