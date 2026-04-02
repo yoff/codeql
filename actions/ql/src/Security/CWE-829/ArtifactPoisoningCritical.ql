@@ -21,5 +21,5 @@ where
   ArtifactPoisoningFlow::flowPath(source, sink) and
   event = getRelevantEventInPrivilegedContext(sink.getNode())
 select sink.getNode(), source, sink,
-  "Potential artifact poisoning in $@, which may be controlled by an external user ($@).", sink,
-  sink.getNode().toString(), event, event.getName()
+  "Potential artifact poisoning, which may be controlled by an external user ($@).", event,
+  event.getName()
