@@ -29,7 +29,7 @@ class Test {
         String tokenType, String tokenEndpoint, String tokenCount, String tokenUrl,
         String tokenIndex, String tokenLength, String tokenName, String tokenId,
         String secretName, String secretId, String secretVersion, String secretArn,
-        String secretPath, String secretType, String secretQuestion,
+        String secretPath, String secretType,
         String secretManager, String secretProperties
     ) {
         Logger logger = null;
@@ -54,7 +54,6 @@ class Test {
         logger.info("arn: " + secretArn); // Safe
         logger.info("path: " + secretPath); // Safe
         logger.info("type: " + secretType); // Safe
-        logger.info("question: " + secretQuestion); // Safe
         logger.info("manager: " + secretManager); // Safe
         logger.info("properties: " + secretProperties); // Safe
     }

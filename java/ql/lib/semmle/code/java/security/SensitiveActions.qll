@@ -63,7 +63,7 @@ string getCommonSensitiveInfoFPRegex() {
   or
   // Secret metadata (secret followed by a non-value descriptor)
   result =
-    "(?i).*secrets?(name|id|version|ref|arn|path|type|label|description|question|manager|client|provider|store|factory|properties).*"
+    "(?i).*secrets?(name|id|version|ref|arn|path|type|label|description|manager|client|provider|store|factory|properties).*"
 }
 
 /** An expression that might contain sensitive data. */
