@@ -1,6 +1,6 @@
 #include "conftest.h"
 
 int main2() {
-  strlen(""); // GOOD: the source file occurs in a `CMakeFiles/CMakeScratch/TryCompile-...` directory
+  strlen(""); // GOOD: conftest files are ignored
   return 0;
 }
