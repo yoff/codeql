@@ -2526,6 +2526,8 @@ predicate typeStrongerThan(DataFlowType t1, DataFlowType t2) {
   uselessTypebound(t2)
   or
   compatibleTypesDelegateLeft(t1, t2)
+  or
+  compatibleTypesSourceContextParameterTypeLeft(t1, t2)
 }
 
 /**

@@ -64,7 +64,7 @@ signature module InputSig<LocationSig Location> {
   DataFlowType getNodeType(Node node);
 
   /**
-   * Gets a special type to use for parameter nodes belonging to callables with a
+   * Gets a special type to use for parameter node `p` belonging to callables with a
    * source node where a source call context `FlowFeature` is used, if any.
    *
    * This can be used to prevent lambdas from being resolved, when a concrete call
@@ -90,7 +90,7 @@ signature module InputSig<LocationSig Location> {
    * prevent the call edge from (1) to (4). Note that the call edge from (3) to (2)
    * will still be valid.
    */
-  default DataFlowType getSourceContextParameterNodeType() { none() }
+  default DataFlowType getSourceContextParameterNodeType(Node p) { none() }
 
   predicate nodeIsHidden(Node node);
 

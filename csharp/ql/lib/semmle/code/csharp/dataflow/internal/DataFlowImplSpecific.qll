@@ -30,5 +30,7 @@ module CsharpDataFlow implements InputSig<Location> {
     exists(n.(AssignableDefinitionNode).getDefinition().getTargetAccess())
   }
 
-  DataFlowType getSourceContextParameterNodeType() { result.isSourceContextParameterType() }
+  DataFlowType getSourceContextParameterNodeType(Node p) {
+    exists(p) and result.isSourceContextParameterType()
+  }
 }
