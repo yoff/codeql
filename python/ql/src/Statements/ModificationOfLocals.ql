@@ -37,5 +37,8 @@ where
   // in module level scope `locals() == globals()`
   // see https://docs.python.org/3/library/functions.html#locals
   // FP report in https://github.com/github/codeql/issues/6674
-  not a.getScope() instanceof Module
+  not a.getScope() instanceof Module and
+  // in class level scope `locals()` reflects the class namespace,
+  // so modifications do take effect.
+  not a.getScope() instanceof Class
 select a, "Modification of the locals() dictionary will have no effect on the local variables."
