@@ -314,8 +314,12 @@ SwiftMangledName SwiftMangler::visitAnyFunctionType(const swift::AnyFunctionType
   if (type->hasGlobalActor()) {
     ret << "_actor" << fetch(type->getGlobalActor());
   }
-  if (type->getIsolation().isErased()) {
+  const auto& isolation = type->getIsolation();
+  if (isolation.isErased()) {
     ret << "_isolated";
+  }
+  if (isolation.isNonIsolatedCaller()) {
+    ret << "_nonisolatednonsending";
   }
   // TODO: see if this needs to be used in identifying types, if not it needs to be removed from
   // type printing in the Swift compiler code
