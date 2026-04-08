@@ -133,12 +133,14 @@ AssignableDefinitionNode assignableDefinitionNode(AssignableDefinition def) {
 
 predicate localFlowStep = localFlowStepImpl/2;
 
+private predicate localFlowStepPlus(Node source, Node sink) = fastTC(localFlowStep/2)(source, sink)
+
 /**
  * Holds if data flows from `source` to `sink` in zero or more local
  * (intra-procedural) steps.
  */
 pragma[inline]
-predicate localFlow(Node source, Node sink) { localFlowStep*(source, sink) }
+predicate localFlow(Node source, Node sink) { localFlowStepPlus(source, sink) or source = sink }
 
 /**
  * Holds if data can flow from `e1` to `e2` in zero or more
