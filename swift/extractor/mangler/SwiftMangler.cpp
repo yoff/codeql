@@ -202,6 +202,14 @@ SwiftMangledName SwiftMangler::visitBuiltinType(const swift::BuiltinType* type) 
   return initMangled(type) << type->getTypeName(buffer, /* prependBuiltinNamespace= */ false);
 }
 
+SwiftMangledName SwiftMangler::visitBuiltinFixedArrayType(
+    const swift::BuiltinFixedArrayType* type) {
+  auto ret = visitBuiltinType(type);
+  ret << fetch(type->getSize());
+  ret << fetch(type->getElementType());
+  return ret;
+}
+
 SwiftMangledName SwiftMangler::visitAnyGenericType(const swift::AnyGenericType* type) {
   auto ret = initMangled(type);
   auto decl = type->getDecl();
@@ -239,9 +247,6 @@ SwiftMangledName SwiftMangler::visitAnyFunctionType(const swift::AnyFunctionType
     }
     if (flags.isNonEphemeral()) {
       ret << "_nonephermeral";
-    }
-    if (flags.isIsolated()) {
-      ret << "_isolated";
     }
     if (flags.isSending()) {
       ret << "_sending";

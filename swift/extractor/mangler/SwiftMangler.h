@@ -71,6 +71,7 @@ class SwiftMangler : private swift::TypeVisitor<SwiftMangler, SwiftMangledName>,
   SwiftMangledName visitModuleType(const swift::ModuleType* type);
   SwiftMangledName visitTupleType(const swift::TupleType* type);
   SwiftMangledName visitBuiltinType(const swift::BuiltinType* type);
+  SwiftMangledName visitBuiltinFixedArrayType(const swift::BuiltinFixedArrayType* type);
   SwiftMangledName visitAnyGenericType(const swift::AnyGenericType* type);
 
   // shouldn't be required, but they forgot to link `NominalType` to its direct superclass
