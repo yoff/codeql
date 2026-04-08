@@ -40,8 +40,8 @@ std::string_view getTypeKindStr(const swift::TypeBase* type) {
 
 }  // namespace
 
-std::unordered_map<const swift::Decl*, SwiftMangler::ExtensionIndex>
-    SwiftMangler::preloadedExtensionIndexes;
+std::unordered_map<const swift::Decl*, SwiftMangler::ExtensionOrFilePrivateValueIndex>
+    SwiftMangler::preloadedExtensionOrFilePrivateValueIndexes;
 
 SwiftMangledName SwiftMangler::initMangled(const swift::TypeBase* type) {
   return {getTypeKindStr(type), '_'};
@@ -75,6 +75,12 @@ SwiftMangledName SwiftMangler::visitValueDecl(const swift::ValueDecl* decl, bool
   if (decl->isStatic()) {
     ret << "|static";
   }
+  if (decl->getFormalAccess() == swift::AccessLevel::FilePrivate) {
+    auto parent = getParent(decl);
+    auto index = getExtensionOrFilePrivateValueIndex(decl, parent);
+    ret << "|fileprivate" << index.index
+        << (index.kind == ExtensionOrFilePrivateValueKind::clang ? "_clang" : "");
+  }
   return ret;
 }
 
@@ -105,51 +111,63 @@ SwiftMangledName SwiftMangler::visitExtensionDecl(const swift::ExtensionDecl* de
 
   auto parent = getParent(decl);
   auto target = decl->getExtendedType();
-  auto index = getExtensionIndex(decl, parent);
+  auto index = getExtensionOrFilePrivateValueIndex(decl, parent);
   return initMangled(decl) << fetch(target) << index.index
-                           << (index.kind == ExtensionKind::clang ? "_clang" : "");
+                           << (index.kind == ExtensionOrFilePrivateValueKind::clang ? "_clang"
+                                                                                    : "");
 }
 
-SwiftMangler::ExtensionIndex SwiftMangler::getExtensionIndex(const swift::ExtensionDecl* decl,
-                                                             const swift::Decl* parent) {
-  // to avoid iterating multiple times on the parent of multiple extensions, we preload extension
-  // indexes once for each encountered parent into the `preloadedExtensionIndexes` mapping.
-  if (auto found = SwiftMangler::preloadedExtensionIndexes.find(decl);
-      found != SwiftMangler::preloadedExtensionIndexes.end()) {
+SwiftMangler::ExtensionOrFilePrivateValueIndex SwiftMangler::getExtensionOrFilePrivateValueIndex(
+    const swift::Decl* decl,
+    const swift::Decl* parent) {
+  // to avoid iterating multiple times on the parent, we preload the indexes once for each
+  // encountered parent.
+  if (auto found = SwiftMangler::preloadedExtensionOrFilePrivateValueIndexes.find(decl);
+      found != SwiftMangler::preloadedExtensionOrFilePrivateValueIndexes.end()) {
     return found->second;
   }
   if (auto parentModule = llvm::dyn_cast<swift::ModuleDecl>(parent)) {
     llvm::SmallVector<swift::Decl*> siblings;
     parentModule->getTopLevelDecls(siblings);
-    indexExtensions(siblings);
+    indexExtensionsAndFilePrivateValues(siblings);
     if (auto clangModule = parentModule->findUnderlyingClangModule()) {
-      indexClangExtensions(clangModule, decl->getASTContext().getClangModuleLoader());
+      indexClangExtensionsAndFilePrivateValues(clangModule,
+                                               decl->getASTContext().getClangModuleLoader());
     }
   } else if (auto iterableParent = llvm::dyn_cast<swift::IterableDeclContext>(parent)) {
-    indexExtensions(iterableParent->getAllMembers());
+    indexExtensionsAndFilePrivateValues(iterableParent->getAllMembers());
   } else {
     // TODO use a generic logging handle for Swift entities here, once it's available
     CODEQL_ASSERT(false, "non-local context must be module or iterable decl context");
   }
-  auto found = SwiftMangler::preloadedExtensionIndexes.find(decl);
+  auto found = SwiftMangler::preloadedExtensionOrFilePrivateValueIndexes.find(decl);
   // TODO use a generic logging handle for Swift entities here, once it's available
-  CODEQL_ASSERT(found != SwiftMangler::preloadedExtensionIndexes.end(),
-                "extension not found within parent");
+  CODEQL_ASSERT(found != SwiftMangler::preloadedExtensionOrFilePrivateValueIndexes.end(),
+                "declaration not found within parent");
   return found->second;
 }
 
-void SwiftMangler::indexExtensions(llvm::ArrayRef<swift::Decl*> siblings) {
+bool SwiftMangler::isExtensionOrFilePrivateValue(const swift::Decl* decl) {
+  return decl->getKind() == swift::DeclKind::Extension ||
+         (swift::isa<swift::ValueDecl>(decl) &&
+          swift::dyn_cast<swift::ValueDecl>(decl)->getFormalAccess() ==
+              swift::AccessLevel::FilePrivate);
+}
+
+void SwiftMangler::indexExtensionsAndFilePrivateValues(llvm::ArrayRef<swift::Decl*> siblings) {
   auto index = 0u;
   for (auto sibling : siblings) {
-    if (sibling->getKind() == swift::DeclKind::Extension) {
-      SwiftMangler::preloadedExtensionIndexes.try_emplace(sibling, ExtensionKind::swift, index);
+    if (isExtensionOrFilePrivateValue(sibling)) {
+      SwiftMangler::preloadedExtensionOrFilePrivateValueIndexes.try_emplace(
+          sibling, ExtensionOrFilePrivateValueKind::swift, index);
       index++;
     }
   }
 }
 
-void SwiftMangler::indexClangExtensions(const clang::Module* clangModule,
-                                        swift::ClangModuleLoader* moduleLoader) {
+void SwiftMangler::indexClangExtensionsAndFilePrivateValues(
+    const clang::Module* clangModule,
+    swift::ClangModuleLoader* moduleLoader) {
   if (!moduleLoader) {
     return;
   }
@@ -160,8 +178,9 @@ void SwiftMangler::indexClangExtensions(const clang::Module* clangModule,
       llvm::SmallVector<swift::Decl*> children;
       swiftSubmodule->getTopLevelDecls(children);
       for (const auto child : children) {
-        if (child->getKind() == swift::DeclKind::Extension) {
-          SwiftMangler::preloadedExtensionIndexes.try_emplace(child, ExtensionKind::clang, index);
+        if (isExtensionOrFilePrivateValue(child)) {
+          SwiftMangler::preloadedExtensionOrFilePrivateValueIndexes.try_emplace(
+              child, ExtensionOrFilePrivateValueKind::clang, index);
           index++;
         }
       }
