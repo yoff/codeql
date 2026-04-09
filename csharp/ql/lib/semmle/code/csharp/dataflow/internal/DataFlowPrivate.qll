@@ -1213,7 +1213,7 @@ class SsaNode extends NodeImpl, TSsaNode {
   SsaNode() { this = TSsaNode(node) }
 
   override DataFlowCallable getEnclosingCallableImpl() {
-    result.getAControlFlowNode().getBasicBlock() = node.getBasicBlock()
+    result.getABasicBlock() = node.getBasicBlock()
   }
 
   override Type getTypeImpl() { result = node.getSourceVariable().getType() }
@@ -1904,7 +1904,7 @@ class CaptureNode extends NodeImpl, TCaptureNode {
   VariableCapture::Flow::SynthesizedCaptureNode getSynthesizedCaptureNode() { result = cn }
 
   override DataFlowCallable getEnclosingCallableImpl() {
-    result.getAControlFlowNode().getBasicBlock() = cn.getBasicBlock()
+    result.getABasicBlock() = cn.getBasicBlock()
   }
 
   override Type getTypeImpl() {

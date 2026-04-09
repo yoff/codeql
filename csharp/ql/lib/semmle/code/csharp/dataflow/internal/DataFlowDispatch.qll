@@ -210,55 +210,58 @@ class DataFlowCallable extends TDataFlowCallable {
   }
 
   pragma[nomagic]
-  private ControlFlowNode getAMultiBodyEntryNode(BasicBlock bb, int i) {
+  private BasicBlock getAMultiBodyEntryBlock() {
     this.isMultiBodied() and
     exists(ControlFlowElement body, Location l |
       body = this.asCallable(l).getBody() or
       objectInitEntry(this.asCallable(l), body)
     |
       NearestLocation<NearestBodyLocationInput>::nearestLocation(body, l, _) and
-      result.isBefore(body)
-    ) and
-    bb.getNode(i) = result
-  }
-
-  pragma[nomagic]
-  private ControlFlowNode getAMultiBodyControlFlowNodePred() {
-    result = this.getAMultiBodyEntryNode(_, _).getAPredecessor()
-    or
-    result = this.getAMultiBodyControlFlowNodePred().getAPredecessor()
-  }
-
-  pragma[nomagic]
-  private ControlFlowNode getAMultiBodyControlFlowNodeSuccSameBasicBlock() {
-    exists(BasicBlock bb, int i, int j |
-      exists(this.getAMultiBodyEntryNode(bb, i)) and
-      result = bb.getNode(j) and
-      j > i
+      result.getANode().isBefore(body)
     )
   }
 
   pragma[nomagic]
+  private BasicBlock getAMultiBodyControlFlowPred() {
+    result = this.getAMultiBodyEntryBlock().getAPredecessor()
+    or
+    result = this.getAMultiBodyControlFlowPred().getAPredecessor()
+  }
+
+  pragma[nomagic]
   private BasicBlock getAMultiBodyBasicBlockSucc() {
-    result = this.getAMultiBodyEntryNode(_, _).getBasicBlock().getASuccessor()
+    result = this.getAMultiBodyEntryBlock().getASuccessor()
     or
     result = this.getAMultiBodyBasicBlockSucc().getASuccessor()
   }
 
-  pragma[inline]
-  private ControlFlowNode getAMultiBodyControlFlowNode() {
+  pragma[nomagic]
+  private BasicBlock getAMultiBodyBasicBlock() {
     result =
       [
-        this.getAMultiBodyEntryNode(_, _), this.getAMultiBodyControlFlowNodePred(),
-        this.getAMultiBodyControlFlowNodeSuccSameBasicBlock(),
-        this.getAMultiBodyBasicBlockSucc().getANode()
+        this.getAMultiBodyEntryBlock(), this.getAMultiBodyControlFlowPred(),
+        this.getAMultiBodyBasicBlockSucc()
       ]
+  }
+
+  pragma[inline]
+  private ControlFlowNode getAMultiBodyControlFlowNode() {
+    result = this.getAMultiBodyBasicBlock().getANode()
   }
 
   /** Gets a control flow node belonging to this callable. */
   pragma[inline]
   ControlFlowNode getAControlFlowNode() {
     result = this.getAMultiBodyControlFlowNode()
+    or
+    not this.isMultiBodied() and
+    result.getEnclosingCallable() = this.asCallable(_)
+  }
+
+  /** Gets a basic block belonging to this callable. */
+  pragma[inline]
+  BasicBlock getABasicBlock() {
+    result = this.getAMultiBodyBasicBlock()
     or
     not this.isMultiBodied() and
     result.getEnclosingCallable() = this.asCallable(_)
