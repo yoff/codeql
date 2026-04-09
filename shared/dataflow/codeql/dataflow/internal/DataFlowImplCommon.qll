@@ -2115,11 +2115,13 @@ module MakeImplCommon<LocationSig Location, InputSig<Location> Lang> {
      * context.
      */
     private predicate typeFlowParamType(ParamNode p, Type t, boolean cc) {
-      exists(Callable c |
-        Input::dataFlowNonCallEntry(c, cc) and
-        if cc = true and exists(getSourceContextParameterNodeType(p))
-        then t = getSourceContextParameterNodeType(p)
-        else trackedParamWithType(p, t, c)
+      exists(Callable c | Input::dataFlowNonCallEntry(c, cc) |
+        cc = true and
+        nodeEnclosingCallable(p, c) and
+        t = getSourceContextParameterNodeType(p)
+        or
+        (cc = false or not exists(getSourceContextParameterNodeType(p))) and
+        trackedParamWithType(p, t, c)
       )
       or
       exists(Type t1, Type t2 |
