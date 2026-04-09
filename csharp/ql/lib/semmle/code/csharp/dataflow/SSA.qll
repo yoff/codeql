@@ -605,7 +605,9 @@ module Ssa {
 
     override Element getElement() { result = this.getParameter() }
 
-    override string toString() { result = "SSA param(" + this.getParameter() + ")" }
+    override string toString() {
+      result = "SSA param(" + pragma[only_bind_out](this.getParameter()) + ")"
+    }
 
     override Location getLocation() {
       not NearestLocation<NearestLocationInput>::nearestLocation(this, _, _) and

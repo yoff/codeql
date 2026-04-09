@@ -748,6 +748,7 @@ private class Argument extends Expr {
  *
  * `postUpdate` indicates whether the store targets a post-update node.
  */
+pragma[nomagic]
 private predicate fieldOrPropertyStore(ContentSet c, Expr src, Expr q, boolean postUpdate) {
   exists(FieldOrProperty f |
     c = f.getContentSet() and
@@ -795,9 +796,9 @@ private predicate fieldOrPropertyStore(ContentSet c, Expr src, Expr q, boolean p
     // Tuple element, `(..., src, ...)` `f` is `ItemX` of tuple `q`
     exists(TupleExpr te, int i |
       te = q and
-      src = te.getArgument(i) and
+      src = te.getArgument(pragma[only_bind_into](i)) and
       te.isConstruction() and
-      f = q.getType().(TupleType).getElement(i) and
+      f = q.getType().(TupleType).getElement(pragma[only_bind_into](i)) and
       postUpdate = false
     )
   )

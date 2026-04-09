@@ -13,6 +13,7 @@
 import csharp
 import semmle.code.csharp.frameworks.System
 
+pragma[nomagic]
 predicate nodeBeforeParameterAccess(ControlFlowNode node) {
   exists(EqualsMethod equals | equals.getBody().getControlFlowNode() = node)
   or
