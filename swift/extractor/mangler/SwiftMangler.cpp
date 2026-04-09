@@ -451,7 +451,13 @@ SwiftMangledName SwiftMangler::visitArchetypeType(const swift::ArchetypeType* ty
 
 SwiftMangledName SwiftMangler::visitOpaqueTypeArchetypeType(
     const swift::OpaqueTypeArchetypeType* type) {
-  return visitArchetypeType(type) << fetch(type->getDecl());
+  auto ret = visitArchetypeType(type) << fetch(type->getDecl());
+  ret << '<';
+  for (auto replacement : type->getSubstitutions().getReplacementTypes()) {
+    ret << fetch(replacement);
+  }
+  ret << '>';
+  return ret;
 }
 
 SwiftMangledName SwiftMangler::visitExistentialArchetypeType(
