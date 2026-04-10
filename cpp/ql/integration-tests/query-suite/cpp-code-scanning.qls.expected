@@ -11,6 +11,7 @@ ql/cpp/ql/src/Likely Bugs/Arithmetic/SignedOverflowCheck.ql
 ql/cpp/ql/src/Likely Bugs/Conversion/CastArrayPointerArithmetic.ql
 ql/cpp/ql/src/Likely Bugs/Format/SnprintfOverflow.ql
 ql/cpp/ql/src/Likely Bugs/Format/WrongNumberOfFormatArguments.ql
+ql/cpp/ql/src/Likely Bugs/Format/WrongTypeFormatArguments.ql
 ql/cpp/ql/src/Likely Bugs/Memory Management/AllocaInLoop.ql
 ql/cpp/ql/src/Likely Bugs/Memory Management/PointerOverflow.ql
 ql/cpp/ql/src/Likely Bugs/Memory Management/ReturnStackAllocatedMemory.ql
