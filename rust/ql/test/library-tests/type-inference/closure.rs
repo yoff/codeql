@@ -228,6 +228,7 @@ mod implicit_deref {
         let x = 0i32;
         let v = Default::default(); // $ type=v:i32 target=default
         let s = S(v);
+        let _ret = s(x); // $ type=_ret:bool
         let s_ref = &s;
         let _ret = s_ref(x); // $ type=_ret:bool
 
