@@ -8,6 +8,7 @@ private import semmle.code.csharp.Caching
 
 private class TControlFlowElementOrCallable = @callable or @control_flow_element;
 
+/** A `ControlFlowElement` or a `Callable`. */
 class ControlFlowElementOrCallable extends ExprOrStmtParent, TControlFlowElementOrCallable { }
 
 /**

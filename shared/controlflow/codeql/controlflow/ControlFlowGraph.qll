@@ -894,6 +894,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
       override string toString() { result = tag + " " + n }
     }
 
+    /** The `PreControlFlowNode` at the entry point of a callable. */
     final class EntryNodeImpl extends NodeImpl, TEntryNode {
       private Callable c;
 
