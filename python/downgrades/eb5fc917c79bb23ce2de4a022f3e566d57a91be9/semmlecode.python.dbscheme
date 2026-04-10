@@ -517,7 +517,6 @@ py_extracted_version(int module : @py_Module ref,
 
 /* <Field> Import.location = 0, location */
 /* <Field> Import.names = 1, alias_list */
-/* <Field> Import.is_lazy = 2, bool */
 
 /* <Field> ImportExpr.location = 0, location */
 /* <Field> ImportExpr.parenthesised = 1, bool */
@@ -527,7 +526,6 @@ py_extracted_version(int module : @py_Module ref,
 
 /* <Field> ImportStar.location = 0, location */
 /* <Field> ImportStar.module = 1, expr */
-/* <Field> ImportStar.is_lazy = 2, bool */
 
 /* <Field> ImportMember.location = 0, location */
 /* <Field> ImportMember.parenthesised = 1, bool */
@@ -1129,7 +1127,7 @@ case @py_unaryop.kind of
 
 @py_ast_node = @py_Class | @py_Function | @py_Module | @py_StringPart | @py_comprehension | @py_dict_item | @py_expr | @py_pattern | @py_stmt | @py_type_parameter;
 
-@py_bool_parent = @py_For | @py_Function | @py_Import | @py_ImportStar | @py_Print | @py_With | @py_expr | @py_pattern;
+@py_bool_parent = @py_For | @py_Function | @py_Print | @py_With | @py_expr | @py_pattern;
 
 @py_dict_item_list_parent = @py_Call | @py_ClassExpr | @py_Dict;
 
