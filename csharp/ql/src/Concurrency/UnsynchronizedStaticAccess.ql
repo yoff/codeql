@@ -26,18 +26,28 @@ predicate correctlySynchronized(CollectionMember c, Expr access) {
   )
 }
 
-ControlFlowNode unlockedReachable(Callable a) {
-  result = a.getEntryPoint()
+predicate firstLockingCallInBlock(BasicBlock b, int i) {
+  i = min(int j | b.getNode(j).asExpr() instanceof LockingCall)
+}
+
+BasicBlock unlockedReachable(Callable a) {
+  result = a.getEntryPoint().getBasicBlock()
   or
-  exists(ControlFlowNode mid | mid = unlockedReachable(a) |
-    not mid.asExpr() instanceof LockingCall and
+  exists(BasicBlock mid | mid = unlockedReachable(a) |
+    not firstLockingCallInBlock(mid, _) and
     result = mid.getASuccessor()
   )
 }
 
 predicate unlockedCalls(Callable a, Callable b) {
-  exists(Call call |
-    call.getAControlFlowNode() = unlockedReachable(a) and
+  exists(Call call, BasicBlock callBlock, int j |
+    call.getControlFlowNode() = callBlock.getNode(j) and
+    callBlock = unlockedReachable(a) and
+    (
+      exists(int i | j <= i and firstLockingCallInBlock(callBlock, i))
+      or
+      not firstLockingCallInBlock(callBlock, _)
+    ) and
     call.getARuntimeTarget() = b and
     not call.getParent*() instanceof LockStmt
   )
