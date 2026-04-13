@@ -195,6 +195,13 @@ class ScanfFormatLiteral extends Expr {
   }
 
   /**
+   * Gets the nth conversion specifier string.
+   */
+  private string getConvSpecString(int n) {
+    n >= 0 and result = "%" + this.getFormat().splitAt("%", n + 1)
+  }
+
+  /**
    * Gets the regular expression to match each individual part of a conversion specifier.
    */
   private string getMaxWidthRegexp() { result = "(?:[1-9][0-9]*)?" }
@@ -227,10 +234,8 @@ class ScanfFormatLiteral extends Expr {
    * specifier.
    */
   predicate parseConvSpec(int n, string spec, string width, string len, string conv) {
-    exists(int offset, string fmt, string rst, string regexp |
-      offset = this.getConvSpecOffset(n) and
-      fmt = this.getFormat() and
-      rst = fmt.substring(offset, fmt.length()) and
+    exists(string rst, string regexp |
+      rst = this.getConvSpecString(n) and
       regexp = this.getConvSpecRegexp() and
       (
         spec = rst.regexpCapture(regexp, 1) and

@@ -459,6 +459,13 @@ class FormatLiteral extends Literal instanceof StringLiteral {
    */
   int getConvSpecOffset(int n) { result = this.getFormat().indexOf("%", n, 0) }
 
+  /**
+   * Gets the nth conversion specifier string.
+   */
+  private string getConvSpecString(int n) {
+    n >= 0 and result = "%" + this.getFormat().splitAt("%", n + 1)
+  }
+
   /*
    * Each of these predicates gets a regular expressions to match each individual
    * parts of a conversion specifier.
@@ -524,10 +531,8 @@ class FormatLiteral extends Literal instanceof StringLiteral {
     int n, string spec, string params, string flags, string width, string prec, string len,
     string conv
   ) {
-    exists(int offset, string fmt, string rst, string regexp |
-      offset = this.getConvSpecOffset(n) and
-      fmt = this.getFormat() and
-      rst = fmt.substring(offset, fmt.length()) and
+    exists(string rst, string regexp |
+      rst = this.getConvSpecString(n) and
       regexp = this.getConvSpecRegexp() and
       (
         spec = rst.regexpCapture(regexp, 1) and
@@ -554,10 +559,8 @@ class FormatLiteral extends Literal instanceof StringLiteral {
    * Gets the nth conversion specifier (including the initial `%`).
    */
   string getConvSpec(int n) {
-    exists(int offset, string fmt, string rst, string regexp |
-      offset = this.getConvSpecOffset(n) and
-      fmt = this.getFormat() and
-      rst = fmt.substring(offset, fmt.length()) and
+    exists(string rst, string regexp |
+      rst = this.getConvSpecString(n) and
       regexp = this.getConvSpecRegexp() and
       result = rst.regexpCapture(regexp, 1)
     )
