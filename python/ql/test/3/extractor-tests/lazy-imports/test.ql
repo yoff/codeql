@@ -1,7 +1,11 @@
 import python
 
-string lazy(Import imp) { if imp.isLazy() then result = "lazy" else result = "normal" }
+string lazy(Stmt s) {
+  if s.(Import).isLazy() or s.(ImportStar).isLazy() then result = "lazy" else result = "normal"
+}
 
-from Import imp
-where imp.getLocation().getFile().getShortName() = "test.py"
-select imp.getLocation().getStartLine(), imp.toString(), lazy(imp)
+from Stmt s
+where
+  s.getLocation().getFile().getShortName() = "test.py" and
+  (s instanceof Import or s instanceof ImportStar)
+select s.getLocation().getStartLine(), s.toString(), lazy(s)
