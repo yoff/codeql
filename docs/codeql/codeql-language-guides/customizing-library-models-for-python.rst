@@ -319,7 +319,7 @@ Consider the function ``url_has_allowed_host_and_scheme`` from the ``django.util
   if url_has_allowed_host_and_scheme(url, allowed_hosts=...): # The check guards the use of 'url', so it is safe.
       redirect(url) # This is safe.
 
-We need to add a tuple ``(type, path, branch, kind)`` to the ``barrierGuardModel`` extensible predicate by updating a data extension file (the extension ID is implicit and auto-assigned).
+We need to add a tuple ``(type, path, branch, kind)`` to the ``barrierGuardModel`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
