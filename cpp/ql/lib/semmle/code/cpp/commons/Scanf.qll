@@ -234,14 +234,14 @@ class ScanfFormatLiteral extends Expr {
    * specifier.
    */
   predicate parseConvSpec(int n, string spec, string width, string len, string conv) {
-    exists(string rst, string regexp |
-      rst = this.getConvSpecString(n) and
+    exists(string convSpec, string regexp |
+      convSpec = this.getConvSpecString(n) and
       regexp = this.getConvSpecRegexp() and
       (
-        spec = rst.regexpCapture(regexp, 1) and
-        width = rst.regexpCapture(regexp, 2) and
-        len = rst.regexpCapture(regexp, 3) and
-        conv = rst.regexpCapture(regexp, 4)
+        spec = convSpec.regexpCapture(regexp, 1) and
+        width = convSpec.regexpCapture(regexp, 2) and
+        len = convSpec.regexpCapture(regexp, 3) and
+        conv = convSpec.regexpCapture(regexp, 4)
       )
     )
   }

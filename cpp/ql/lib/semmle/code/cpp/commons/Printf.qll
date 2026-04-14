@@ -531,20 +531,20 @@ class FormatLiteral extends Literal instanceof StringLiteral {
     int n, string spec, string params, string flags, string width, string prec, string len,
     string conv
   ) {
-    exists(string rst, string regexp |
-      rst = this.getConvSpecString(n) and
+    exists(string convSpec, string regexp |
+      convSpec = this.getConvSpecString(n) and
       regexp = this.getConvSpecRegexp() and
       (
-        spec = rst.regexpCapture(regexp, 1) and
-        params = rst.regexpCapture(regexp, 2) and
-        flags = rst.regexpCapture(regexp, 3) and
-        width = rst.regexpCapture(regexp, 4) and
-        prec = rst.regexpCapture(regexp, 5) and
-        len = rst.regexpCapture(regexp, 6) and
-        conv = rst.regexpCapture(regexp, 7)
+        spec = convSpec.regexpCapture(regexp, 1) and
+        params = convSpec.regexpCapture(regexp, 2) and
+        flags = convSpec.regexpCapture(regexp, 3) and
+        width = convSpec.regexpCapture(regexp, 4) and
+        prec = convSpec.regexpCapture(regexp, 5) and
+        len = convSpec.regexpCapture(regexp, 6) and
+        conv = convSpec.regexpCapture(regexp, 7)
         or
-        spec = rst.regexpCapture(regexp, 1) and
-        not exists(rst.regexpCapture(regexp, 2)) and
+        spec = convSpec.regexpCapture(regexp, 1) and
+        not exists(convSpec.regexpCapture(regexp, 2)) and
         params = "" and
         flags = "" and
         width = "" and
@@ -559,10 +559,10 @@ class FormatLiteral extends Literal instanceof StringLiteral {
    * Gets the nth conversion specifier (including the initial `%`).
    */
   string getConvSpec(int n) {
-    exists(string rst, string regexp |
-      rst = this.getConvSpecString(n) and
+    exists(string convSpec, string regexp |
+      convSpec = this.getConvSpecString(n) and
       regexp = this.getConvSpecRegexp() and
-      result = rst.regexpCapture(regexp, 1)
+      result = convSpec.regexpCapture(regexp, 1)
     )
   }
 
