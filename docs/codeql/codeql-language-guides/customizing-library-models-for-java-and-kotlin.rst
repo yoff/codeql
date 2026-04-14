@@ -64,7 +64,7 @@ The CodeQL library for Java and Kotlin analysis exposes the following extensible
 - ``sinkModel(package, type, subtypes, name, signature, ext, input, kind, provenance)``. This is used to model sinks where tainted data maybe used in a way that makes the code vulnerable.
 - ``summaryModel(package, type, subtypes, name, signature, ext, input, output, kind, provenance)``. This is used to model flow through elements.
 - ``barrierModel(namespace, type, subtypes, name, signature, ext, output, kind, provenance)``. This is used to model barriers, which are elements that stop the flow of taint.
-- ``barrierGuardModel(namespace, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance)``. This is used to model barrier guards, which are elements that can stop the flow of taint depending on a conditional check.
+- ``barrierGuardModel(namespace, type, subtypes, name, signature, ext, input, acceptingValue, kind, provenance)``. This is used to model barrier guards, which are elements that can stop the flow of taint depending on a conditional check.
 - ``neutralModel(package, type, name, signature, kind, provenance)``. This is similar to a summary model but used to model the flow of values that have only a minor impact on the dataflow analysis. Manual neutral models (those with a provenance such as ``manual`` or ``ai-manual``) override generated summary models (those with a provenance such as ``df-generated``) so that the summary will be ignored. Other than that, neutral models have a slight impact on the dataflow dispatch logic, which is out of scope for this documentation.
 
 The extensible predicates are populated using the models defined in data extension files.
@@ -315,7 +315,7 @@ When the ``isAbsolute`` method returns ``false``, the URI is relative and theref
        }
    }
 
-We need to add a tuple to the ``barrierGuardModel(package, type, subtypes, name, signature, ext, input, acceptingvalue, kind, provenance)`` extensible predicate by updating a data extension file.
+We need to add a tuple to the ``barrierGuardModel(package, type, subtypes, name, signature, ext, input, acceptingValue, kind, provenance)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
