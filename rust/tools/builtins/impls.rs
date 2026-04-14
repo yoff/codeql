@@ -30,8 +30,8 @@
 /// }
 /// ```
 ///
-/// which the type inference library cannot currently handle (we fail
-/// to resolve the `Output` types).
+/// (as well as their `IndexMut` counterparts), which the type inference library
+/// cannot currently handle (we fail to resolve the `Output` types).
 mod index_impls {
     use std::alloc::Allocator;
     use std::ops::Index;
@@ -44,10 +44,26 @@ mod index_impls {
         }
     }
 
+    impl<T, const N: usize> IndexMut<i32> for [T; N] {
+        type Output = T;
+
+        fn index_mut(&mut self, index: i32) -> &mut Self::Output {
+            panic!()
+        }
+    }
+
     impl<T, const N: usize> Index<usize> for [T; N] {
         type Output = T;
 
         fn index(&self, index: usize) -> &Self::Output {
+            panic!()
+        }
+    }
+
+    impl<T, const N: usize> IndexMut<usize> for [T; N] {
+        type Output = T;
+
+        fn index_mut(&mut self, index: usize) -> &mut Self::Output {
             panic!()
         }
     }
@@ -60,10 +76,26 @@ mod index_impls {
         }
     }
 
+    impl<T> IndexMut<i32> for [T] {
+        type Output = T;
+
+        fn index_mut(&mut self, index: i32) -> &mut Self::Output {
+            panic!()
+        }
+    }
+
     impl<T> Index<usize> for [T] {
         type Output = T;
 
         fn index(&self, index: usize) -> &Self::Output {
+            panic!()
+        }
+    }
+
+    impl<T> IndexMut<usize> for [T] {
+        type Output = T;
+
+        fn index_mut(&mut self, index: usize) -> &mut Self::Output {
             panic!()
         }
     }
@@ -76,10 +108,26 @@ mod index_impls {
         }
     }
 
+    impl<T, A: Allocator> IndexMut<i32> for Vec<T, A> {
+        type Output = T;
+
+        fn index_mut(&mut self, index: i32) -> &mut Self::Output {
+            panic!()
+        }
+    }
+
     impl<T, A: Allocator> Index<usize> for Vec<T, A> {
         type Output = T;
 
         fn index(&self, index: usize) -> &Self::Output {
+            panic!()
+        }
+    }
+
+    impl<T, A: Allocator> IndexMut<usize> for Vec<T, A> {
+        type Output = T;
+
+        fn index_mut(&mut self, index: usize) -> &mut Self::Output {
             panic!()
         }
     }
