@@ -12,7 +12,7 @@ class MissedSelectOpportunity
         {
             int j = i * i;
             Console.WriteLine(j);
-        }
+        } // $ Alert
     }
 
     public async Task M2(IEnumerable<ICounter> counters)
