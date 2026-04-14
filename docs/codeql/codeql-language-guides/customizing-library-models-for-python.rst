@@ -27,7 +27,7 @@ The CodeQL library for Python exposes the following extensible predicates:
 - **typeModel**\(type1, type2, path)
 - **summaryModel**\(type, path, input, output, kind)
 - **barrierModel**\(type, path, kind)
-- **barrierGuardModel**\(type, path, branch, kind)
+- **barrierGuardModel**\(type, path, acceptingValue, kind)
 
 We'll explain how to use these using a few examples, and provide some reference material at the end of this article.
 
@@ -319,7 +319,7 @@ Consider the function ``url_has_allowed_host_and_scheme`` from the ``django.util
   if url_has_allowed_host_and_scheme(url, allowed_hosts=...): # The check guards the use of 'url', so it is safe.
       redirect(url) # This is safe.
 
-We need to add a tuple ``(type, path, branch, kind)`` to the ``barrierGuardModel`` extensible predicate by updating a data extension file.
+We need to add a tuple ``(type, path, acceptingValue, kind)`` to the ``barrierGuardModel`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
