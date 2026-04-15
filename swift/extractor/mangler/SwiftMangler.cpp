@@ -148,10 +148,15 @@ SwiftMangler::ExtensionOrFilePrivateValueIndex SwiftMangler::getExtensionOrFileP
 }
 
 bool SwiftMangler::isExtensionOrFilePrivateValue(const swift::Decl* decl) {
-  return decl->getKind() == swift::DeclKind::Extension ||
-         (swift::isa<swift::ValueDecl>(decl) &&
-          swift::dyn_cast<swift::ValueDecl>(decl)->getFormalAccess() ==
-              swift::AccessLevel::FilePrivate);
+  if (decl->getKind() == swift::DeclKind::Extension) {
+    return true;
+  }
+
+  if (const auto* valueDecl = swift::dyn_cast<swift::ValueDecl>(decl)) {
+    return valueDecl->getFormalAccess() == swift::AccessLevel::FilePrivate;
+  }
+
+  return false;
 }
 
 void SwiftMangler::indexExtensionsAndFilePrivateValues(llvm::ArrayRef<swift::Decl*> siblings) {
