@@ -21,9 +21,16 @@ module IoFs {
     override predicate step(DataFlow::Node pred, DataFlow::Node succ) {
       //signature: func WalkDir(fsys FS, root string, fn WalkDirFunc) error
       exists(DataFlow::CallNode call, DataFlow::FunctionNode f |
-        call.getTarget().hasQualifiedName(packagePath(), "WalkDir") and
-        f.getASuccessor*() = call.getArgument(2)
+        f.(DataFlow::FuncLitNode).getASuccessor*() = call.getArgument(2)
+        or
+        exists(DataFlow::ExprNode functionName |
+          f.(DataFlow::GlobalFunctionNode).getFunction() =
+            functionName.asExpr().(FunctionName).getTarget()
+        |
+          functionName.getASuccessor*() = call.getArgument(2)
+        )
       |
+        call.getTarget().hasQualifiedName(packagePath(), "WalkDir") and
         pred = call.getArgument(0) and
         succ = f.getParameter([0, 1])
       )
