@@ -98,7 +98,7 @@ The first five values identify the function (in this case a method) to be modele
 
 - The first value ``database/sql`` is the package name.
 - The second value ``DB`` is the name of the type that the method is associated with.
-- The third value ``True`` is a flag that indicates whether or not the sink also applies to subtypes. This includes when the subtype embeds the given type, so that the method or field is promoted to be a method or field of the subtype. For interface methods it also includes types which implement the interface type.
+- The third value ``True`` is a flag that indicates whether or not the model also applies to subtypes. This includes when the subtype embeds the given type, so that the method or field is promoted to be a method or field of the subtype. For interface methods it also includes types which implement the interface type.
 - The fourth value ``Prepare`` is the method name.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
@@ -139,7 +139,7 @@ The first five values identify the function to be modeled as a source.
 
 - The first value ``net/http`` is the package name.
 - The second value ``Request`` is the type name, since the function is a method of the ``Request`` type.
-- The third value ``True`` is a flag that indicates whether or not the sink also applies to subtypes. This includes when the subtype embeds the given type, so that the method or field is promoted to be a method or field of the subtype. For interface methods it also includes types which implement the interface type.
+- The third value ``True`` is a flag that indicates whether or not the model also applies to subtypes. This includes when the subtype embeds the given type, so that the method or field is promoted to be a method or field of the subtype. For interface methods it also includes types which implement the interface type.
 - The fourth value ``FormValue`` is the function name.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
@@ -182,7 +182,7 @@ The first five values identify the function to be modeled as a summary.
 
 - The first value ``slices`` is the package name.
 - The second value ``""`` is left blank, since the function is not a method of a type.
-- The third value ``False`` is a flag that indicates whether or not the sink also applies to subtypes. This has no effect for non-method functions.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to subtypes. This has no effect for non-method functions.
 - The fourth value ``Max`` is the function name.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
@@ -227,7 +227,7 @@ The first five values identify the function to be modeled as a summary.
 
 - The first value ``slices`` is the package name.
 - The second value ``""`` is left blank, since the function is not a method of a type.
-- The third value ``False`` is a flag that indicates whether or not the sink also applies to subtypes. This has no effect for non-method functions.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to subtypes. This has no effect for non-method functions.
 - The fourth value ``Max`` is the function name.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
@@ -274,7 +274,7 @@ These are the same for both of the rows above as we are adding two summaries for
 
 - The first value ``strings`` is the package name.
 - The second value ``""`` is left blank, since the function is not a method of a type.
-- The third value ``False`` is a flag that indicates whether or not the sink also applies to subtypes. This has no effect for non-method functions.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to subtypes. This has no effect for non-method functions.
 - The fourth value ``Join`` is the function name.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
@@ -329,7 +329,7 @@ The first five values identify the function (in this case a method) to be modele
 
 - The first value ``net/url`` is the package name.
 - The second value ``URL`` is the receiver type.
-- The third value ``True`` is a flag that indicates whether or not the sink also applies to subtypes. This includes when the subtype embeds the given type, so that the method or field is promoted to be a method or field of the subtype. For interface methods it also includes types which implement the interface type.
+- The third value ``True`` is a flag that indicates whether or not the model also applies to subtypes. This includes when the subtype embeds the given type, so that the method or field is promoted to be a method or field of the subtype. For interface methods it also includes types which implement the interface type.
 - The fourth value ``Hostname`` is the method name.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 
@@ -370,7 +370,7 @@ The first five values identify the function to be modeled as a barrier.
 
 - The first value ``group:beego`` is the package group name. The ``group:`` prefix indicates that this is a package group, which is used to match multiple package paths that refer to the same package.
 - The second value ``""`` is left blank since the function is not a method of a type.
-- The third value ``True`` is a flag that indicates whether or not the barrier also applies to subtypes. This has no effect for non-method functions.
+- The third value ``True`` is a flag that indicates whether or not the model also applies to subtypes. This has no effect for non-method functions.
 - The fourth value ``Htmlquote`` is the function name.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string.
 
@@ -411,7 +411,7 @@ The first five values identify the function to be modeled as a barrier guard.
 
 - The first value ``example.com/example`` is the package name.
 - The second value ``""`` is left blank since the function is not a method of a type.
-- The third value ``False`` is a flag that indicates whether or not the barrier guard also applies to subtypes. This has no effect for non-method functions.
+- The third value ``False`` is a flag that indicates whether or not the model guard also applies to subtypes. This has no effect for non-method functions.
 - The fourth value ``IsSafe`` is the function name.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string.
 
@@ -450,7 +450,7 @@ The first five values identify the field to be modeled as a source.
 
 - The first value ``net/http`` is the package name.
 - The second value ``Request`` is the name of the type that the field is associated with.
-- The third value ``True`` is a flag that indicates whether or not the sink also applies to subtypes. For fields this means when the field is accessed as a promoted field in another type.
+- The third value ``True`` is a flag that indicates whether or not the model also applies to subtypes. For fields this means when the field is accessed as a promoted field in another type.
 - The fourth value ``Body`` is the field name.
 - The fifth value ``""`` is the input type signature. For Go it should always be an empty string. It is needed for other languages where multiple functions may have the same name and they need to be distinguished by the number and types of the arguments.
 

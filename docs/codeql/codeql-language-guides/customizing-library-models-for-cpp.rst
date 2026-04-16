@@ -93,7 +93,7 @@ The first five values identify the callable (in this case a free function) to be
 
 - The first value ``"boost::asio"`` is the namespace name.
 - The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
-- The third value ``False`` is a flag that indicates whether or not the sink also applies to all overrides of the method. For a free function, this should be ``False``.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"read_until"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name. In this case, we want the model to include all functions in ``boost::asio`` called ``read_until``.
 
@@ -129,7 +129,7 @@ The first five values identify the callable (in this case a free function) to be
 
 - The first value ``"boost::asio"`` is the namespace name.
 - The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
-- The third value ``False`` is a flag that indicates whether or not the sink also applies to all overrides of the method. For a free function, this should be ``False``.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"write"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name. In this case, we want the model to include all functions in ``boost::asio`` called ``write``.
 
@@ -166,7 +166,7 @@ The first five values identify the callable (in this case free function) to be m
 
 - The first value ``"boost::asio"`` is the namespace name.
 - The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
-- The third value ``False`` is a flag that indicates whether or not the sink also applies to all overrides of the method. For a free function, this should be ``False``.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"buffer"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name. In this case, we want the model to include all functions in ``boost::asio`` called ``buffer``.
 
@@ -208,7 +208,7 @@ The first five values identify the callable (in this case a free function) to be
 
 - The first value ``""`` is the namespace name.
 - The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
-- The third value ``False`` is a flag that indicates whether or not the barrier also applies to all overrides of the method. For a free function, this should be ``False``.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"mysql_real_escape_string"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name.
 
@@ -248,7 +248,7 @@ The first five values identify the callable (in this case a free function) to be
 
 - The first value ``""`` is the namespace name.
 - The second value ``""`` is the name of the type (class) that contains the method. Because we're modeling a free function, the type is left blank.
-- The third value ``False`` is a flag that indicates whether or not the barrier guard also applies to all overrides of the method. For a free function, this should be ``False``.
+- The third value ``False`` is a flag that indicates whether or not the model guard also applies to all overrides of the method. For a free function, this should be ``False``.
 - The fourth value ``"is_safe"`` is the function name.
 - The fifth value is the function input type signature, which can be used to narrow down between functions that have the same name.
 

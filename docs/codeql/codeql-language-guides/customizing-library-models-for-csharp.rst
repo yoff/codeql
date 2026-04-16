@@ -98,7 +98,7 @@ The first five values identify the callable (in this case a method) to be modele
 
 - The first value ``System.Data.SqlClient`` is the namespace name.
 - The second value ``SqlCommand`` is the name of the class (type) that contains the method.
-- The third value ``False`` is a flag that indicates whether or not the sink also applies to all overrides of the method.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``SqlCommand`` is the method name. Constructors are named after the class.
 - The fifth value ``(System.String,System.Data.SqlClient.SqlConnection)`` is the method input type signature. The type names must be fully qualified.
 
@@ -138,7 +138,7 @@ The first five values identify the callable (in this case a method) to be modele
 
 - The first value ``System.Net.Sockets`` is the namespace name.
 - The second value ``TcpClient`` is the name of the class (type) that contains the source.
-- The third value ``False`` is a flag that indicates whether or not the source also applies to all overrides of the method.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``GetStream`` is the method name.
 - The fifth value ``()`` is the method input type signature.
 
@@ -182,7 +182,7 @@ These are the same for both of the rows above as we are adding two summaries for
 
 - The first value ``System`` is the namespace name.
 - The second value ``String`` is the class (type) name.
-- The third value ``False`` is a flag that indicates whether or not the summary also applies to all overrides of the method.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``Concat`` is the method name.
 - The fifth value ``(System.Object,System.Object)`` is the method input type signature.
 
@@ -238,7 +238,7 @@ These are the same for both of the rows above as we are adding two summaries for
 
 - The first value ``System`` is the namespace name.
 - The second value ``String`` is the class (type) name.
-- The third value ``False`` is a flag that indicates whether or not the summary also applies to all overrides of the method.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``Trim`` is the method name.
 - The fifth value ``()`` is the method input type signature.
 
@@ -282,7 +282,7 @@ These are the same for both of the rows above as we are adding two summaries for
 
 - The first value ``System.Linq`` is the namespace name.
 - The second value ``Enumerable`` is the class (type) name.
-- The third value ``False`` is a flag that indicates whether or not the summary also applies to all overrides of the method.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``Select<TSource,TResult>`` is the method name, along with the type parameters for the method. The names of the generic type parameters provided in the model must match the names of the generic type parameters in the method signature in the source code.
 - The fifth value ``(System.Collections.Generic.IEnumerable<TSource>,System.Func<TSource,TResult>)`` is the method input type signature. The generics in the signature must match the generics in the method signature in the source code.
 
@@ -339,7 +339,7 @@ The first five values identify the callable (in this case the getter of a proper
 
 - The first value ``System.Web`` is the namespace name.
 - The second value ``HttpRequest`` is the class (type) name.
-- The third value ``False`` is a flag that indicates whether or not the barrier also applies to all overrides of the method.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``get_RawUrl`` is the method name. Getter and setter methods are named ``get_<name>`` and ``set_<name>`` respectively.
 - The fifth value ``()`` is the method input type signature.
 
@@ -381,7 +381,7 @@ The first five values identify the callable (in this case the getter of a proper
 
 - The first value ``System`` is the namespace name.
 - The second value ``Uri`` is the class (type) name.
-- The third value ``False`` is a flag that indicates whether or not the barrier guard also applies to all overrides of the method.
+- The third value ``False`` is a flag that indicates whether or not the model guard also applies to all overrides of the method.
 - The fourth value ``get_IsAbsoluteUri`` is the method name. Getter and setter methods are named ``get_<name>`` and ``set_<name>`` respectively.
 - The fifth value ``()`` is the method input type signature.
 

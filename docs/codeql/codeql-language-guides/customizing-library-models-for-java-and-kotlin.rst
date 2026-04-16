@@ -104,7 +104,7 @@ The first five values identify the callable (in this case a method) to be modele
 
 - The first value ``java.sql`` is the package name.
 - The second value ``Statement`` is the name of the class (type) that contains the method.
-- The third value ``True`` is a flag that indicates whether or not the sink also applies to all overrides of the method.
+- The third value ``True`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``execute`` is the method name.
 - The fifth value ``(String)`` is the method input type signature.
 
@@ -144,7 +144,7 @@ The first five values identify the callable (in this case a method) to be modele
 
 - The first value ``java.net`` is the package name.
 - The second value ``Socket`` is the name of the class (type) that contains the source.
-- The third value ``False`` is a flag that indicates whether or not the source also applies to all overrides of the method.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``getInputStream`` is the method name.
 - The fifth value ``()`` is the method input type signature.
 
@@ -188,7 +188,7 @@ These are the same for both of the rows above as we are adding two summaries for
 
 - The first value ``java.lang`` is the package name.
 - The second value ``String`` is the class (type) name.
-- The third value ``False`` is a flag that indicates whether or not the summary also applies to all overrides of the method.
+- The third value ``False`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``concat`` is the method name.
 - The fifth value ``(String)`` is the method input type signature.
 
@@ -232,7 +232,7 @@ These are the same for both of the rows above as we are adding two summaries for
 
 - The first value ``java.util.stream`` is the package name.
 - The second value ``Stream`` is the class (type) name.
-- The third value ``True`` is a flag that indicates whether or not the summary also applies to all overrides of the method.
+- The third value ``True`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``map`` is the method name.
 - The fifth value ``Function`` is the method input type signature.
 
@@ -288,7 +288,7 @@ The first five values identify the callable (in this case a method) to be modele
 
 - The first value ``java.io`` is the package name.
 - The second value ``File`` is the name of the class (type) that contains the method.
-- The third value ``True`` is a flag that indicates whether or not the barrier also applies to all overrides of the method.
+- The third value ``True`` is a flag that indicates whether or not the model also applies to all overrides of the method.
 - The fourth value ``getName`` is the method name.
 - The fifth value ``()`` is the method input type signature.
 
@@ -332,7 +332,7 @@ The first five values identify the callable (in this case a method) to be modele
 
 - The first value ``java.net`` is the package name.
 - The second value ``URI`` is the name of the class (type) that contains the method.
-- The third value ``True`` is a flag that indicates whether or not the barrier guard also applies to all overrides of the method.
+- The third value ``True`` is a flag that indicates whether or not the model guard also applies to all overrides of the method.
 - The fourth value ``isAbsolute`` is the method name.
 - The fifth value ``()`` is the method input type signature.
 
