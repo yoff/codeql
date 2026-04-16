@@ -98,8 +98,6 @@ We need to add a tuple to the ``sinkModel(package, type, subtypes, name, signatu
        data:
          - ["java.sql", "Statement", True, "execute", "(String)", "", "Argument[0]", "sql-injection", "manual"]
 
-
-Since we want to add a new sink, we need to add a tuple to the ``sinkModel`` extensible predicate.
 The first five values identify the callable (in this case a method) to be modeled as a sink.
 
 - The first value ``java.sql`` is the package name.
@@ -138,8 +136,6 @@ We need to add a tuple to the ``sourceModel(package, type, subtypes, name, signa
        data:
          - ["java.net", "Socket", False, "getInputStream", "()", "", "ReturnValue", "remote", "manual"]
 
-
-Since we are adding a new source, we need to add a tuple to the ``sourceModel`` extensible predicate.
 The first five values identify the callable (in this case a method) to be modeled as a source.
 
 - The first value ``java.net`` is the package name.
@@ -179,7 +175,6 @@ We need to add tuples to the ``summaryModel(package, type, subtypes, name, signa
          - ["java.lang", "String", False, "concat", "(String)", "", "Argument[this]", "ReturnValue", "taint", "manual"]
          - ["java.lang", "String", False, "concat", "(String)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
 
-Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 Each tuple defines flow from one argument to the return value.
 The first row defines flow from the qualifier (``s1`` in the example) to the return value (``t`` in the example) and the second row defines flow from the first argument (``s2`` in the example) to the return value (``t`` in the example).
 
@@ -224,8 +219,6 @@ We need to add tuples to the ``summaryModel(package, type, subtypes, name, signa
          - ["java.util.stream", "Stream", True, "map", "(Function)", "", "Argument[this].Element", "Argument[0].Parameter[0]", "value", "manual"]
          - ["java.util.stream", "Stream", True, "map", "(Function)", "", "Argument[0].ReturnValue", "ReturnValue.Element", "value", "manual"]
 
-
-Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 Each tuple defines part of the flow that comprises the total flow through the ``map`` method.
 The first five values identify the callable (in this case a method) to be modeled as a summary.
 These are the same for both of the rows above as we are adding two summaries for the same method.
@@ -282,8 +275,6 @@ We need to add a tuple to the ``barrierModel(package, type, subtypes, name, sign
        data:
          - ["java.io", "File", True, "getName", "()", "", "ReturnValue", "path-injection", "manual"]
 
-
-Since we are adding a new barrier, we need to add a tuple to the ``barrierModel`` extensible predicate.
 The first five values identify the callable (in this case a method) to be modeled as a barrier.
 
 - The first value ``java.io`` is the package name.
@@ -326,8 +317,6 @@ We need to add a tuple to the ``barrierGuardModel(package, type, subtypes, name,
        data:
          - ["java.net", "URI", True, "isAbsolute", "()", "", "Argument[this]", "false", "request-forgery", "manual"]
 
-
-Since we are adding a barrier guard, we need to add a tuple to the ``barrierGuardModel`` extensible predicate.
 The first five values identify the callable (in this case a method) to be modeled as a barrier guard.
 
 - The first value ``java.net`` is the package name.
@@ -367,8 +356,6 @@ We need to add a tuple to the ``neutralModel(package, type, name, signature, kin
      data:
        - ["java.time", "Instant", "now", "()", "summary", "manual"]
 
-
-Since we are adding a neutral model, we need to add tuples to the ``neutralModel`` extensible predicate.
 The first four values identify the callable (in this case a method) to be modeled as a neutral, the fifth value is the kind, and the sixth value is the provenance (origin) of the neutral.
 
 - The first value ``java.time`` is the package name.

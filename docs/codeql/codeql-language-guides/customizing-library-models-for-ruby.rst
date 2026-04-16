@@ -42,7 +42,8 @@ In this example, we'll show how to add the following argument, passed to **tty-c
   tty = TTY::Command.new
   tty.run(cmd) # <-- add 'cmd' as a taint sink
 
-For this example, you can use the following data extension:
+
+We need to add a tuple to the **sinkModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -54,7 +55,6 @@ For this example, you can use the following data extension:
         - ["TTY::Command", "Method[run].Argument[0]", "command-injection"]
 
 
-- Since we're adding a new sink, we add a tuple to the **sinkModel** extensible predicate.
 - The first column, **"TTY::Command"**, identifies a set of values from which to begin the search for the sink.
   The string **"TTY::Command""** means we start at the places where the codebase constructs instances of the class **TTY::Command**.
 - The second column is an access path that is evaluated from left to right, starting at the values that were identified by the first column.
@@ -77,7 +77,7 @@ In this example, we'll show how the 'x' parameter below could be marked as a rem
     end
   end
 
-For this example you could use the following data extension:
+We need to add a tuple to the **sourceModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -92,7 +92,6 @@ For this example you could use the following data extension:
             "remote",
           ]
 
-- Since we're adding a new taint source, we add a tuple to the **sourceModel** extensible predicate.
 - The first column, **"Sinatra::Base!"**, begins the search at references to the **Sinatra::Base** class.
   The **!** suffix indicates that we want to search for references to the class itself, rather than instances of the class.
 - **Method[get]** selects calls to the **get** method of the **Sinatra::Base** class.
@@ -112,7 +111,7 @@ In this example, we'll show how to add the following SQL injection sink:
     client.query(q) # <-- add 'q' as a SQL injection sink
   end
 
-We can recognize this using the following extension:
+We need to add a tuple to the **sinkModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -143,8 +142,8 @@ The client is obtained via a call to **Mysql2::EM::Client.new**.
 
 So far we have only one model for **Mysql2::Client**, but in the real world we
 may have many models for the various methods available. Because **Mysql2::EM::Client** is a subclass of **Mysql2::Client**, it inherits all of the same methods.
-Instead of updating all our models to include both classes, we can add a type
-model to indicate that **Mysql2::EM::Client** is a subclass of **Mysql2::Client**:
+Instead of updating all our models to include both classes, we can add a tuple to the **typeModel(type, subtype, ext)** extensible predicate to indicate that
+**Mysql2::EM::Client** is a subclass of **Mysql2::Client**:
 
 .. code-block:: yaml
 
@@ -164,7 +163,7 @@ In this example, we'll show how to add flow through calls to 'URI.decode_uri_com
 
   y = URI.decode_uri_component(x); # add taint flow from 'x' to 'y'
 
-We can model this using the following data extension:
+We need to add a tuple to the **summaryModel(type, path, input, output, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -181,8 +180,6 @@ We can model this using the following data extension:
             "taint",
           ]
 
-
-- Since we're adding flow through a method call, we add a tuple to the **summaryModel** extensible predicate.
 - The first column, **"URI!"**, begins the search for relevant calls at references to the **URI** class.
   The **!** suffix indicates that we are looking for the class itself, rather than instances of the class.
 - The second column, **Method[decode_uri_component]**, is a path leading to the method calls we wish to model.
@@ -202,7 +199,7 @@ In this example, we'll show how to add flow through calls to **File#each** from 
   f = File.new("example.txt")
   f.each { |line| ... } # add taint flow from `f` to `line`
 
-We can model this using the following data extension:
+We need to add a tuple to the **summaryModel(type, path, input, output, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -219,8 +216,6 @@ We can model this using the following data extension:
             "taint",
           ]
 
-
-- Since we're adding flow through a method call, we add a tuple to the **summaryModel** extensible predicate.
 - The first column, **"File"**, begins the search for relevant calls at places where the **File** class is used.
 - The second column, **Method[each]**, selects references to the **each** method on the **File** class.
 - The third column specifies the input of the flow. **Argument[self]** selects the **self** argument of **each**, which is the **File** instance being iterated over.
@@ -243,7 +238,7 @@ In this example, we'll show how to add the return value of **Mysql2::Client#esca
   escaped = client.escape(input) # The return value of this method is safe for SQL injection.
   client.query("SELECT * FROM users WHERE name = '#{escaped}'")
 
-We can model this using the following data extension:
+We need to add a tuple to the **barrierModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -254,7 +249,6 @@ We can model this using the following data extension:
       data:
         - ["Mysql2::Client!", "Method[escape].ReturnValue", "sql-injection"]
 
-- Since we are adding a barrier, we need to add a tuple to the **barrierModel** extensible predicate.
 - The first column, **"Mysql2::Client!"**, begins the search for relevant calls at references to the **Mysql2::Client** class.
   The **!** suffix indicates that we want to search for references to the class itself, rather than instances of the class.
 - The second column, **"Method[escape].ReturnValue"**, selects the return value of the **escape** method.
@@ -273,7 +267,7 @@ Consider a validation method ``Validator.is_safe`` which returns ``true`` when t
     client.query("SELECT * FROM users WHERE name = '#{user_input}'")
   end
 
-We can model this using the following data extension:
+We need to add a tuple to the **barrierGuardModel(type, path, acceptingValue, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -284,7 +278,6 @@ We can model this using the following data extension:
       data:
         - ["Validator!", "Method[is_safe].Argument[0]", "true", "sql-injection"]
 
-- Since we are adding a barrier guard, we need to add a tuple to the **barrierGuardModel** extensible predicate.
 - The first column, **"Validator!"**, begins the search at references to the **Validator** class.
   The **!** suffix indicates that we want to search for references to the class itself, rather than instances of the class.
 - The second column, **"Method[is_safe].Argument[0]"**, selects the first argument of the **is_safe** method. This is the value being validated.

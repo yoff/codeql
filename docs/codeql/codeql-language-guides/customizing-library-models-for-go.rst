@@ -93,7 +93,6 @@ We need to add a tuple to the ``sinkModel``\(package, type, subtypes, name, sign
        data:
          - ["database/sql", "DB", True, "Prepare", "", "", "Argument[0]", "sql-injection", "manual"]
 
-Since we want to add a new sink, we need to add a tuple to the ``sinkModel`` extensible predicate.
 The first five values identify the function (in this case a method) to be modeled as a sink.
 
 - The first value ``database/sql`` is the package name.
@@ -133,8 +132,6 @@ We need to add a tuple to the ``sourceModel(package, type, subtypes, name, signa
        data:
          - ["net/http", "Request", True, "FormValue", "", "", "ReturnValue", "remote", "manual"]
 
-
-Since we are adding a new source, we need to add a tuple to the ``sourceModel`` extensible predicate.
 The first five values identify the function to be modeled as a source.
 
 - The first value ``net/http`` is the package name.
@@ -175,7 +172,6 @@ We need to add a tuple to the ``summaryModel(package, type, subtypes, name, sign
        data:
          - ["slices", "", False, "Max", "", "", "Argument[0].ArrayElement", "ReturnValue", "value", "manual"]
 
-Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 The first row defines flow from the first argument (``a`` in the example) to the return value (``max`` in the example).
 
 The first five values identify the function to be modeled as a summary.
@@ -220,7 +216,6 @@ We need to add a tuple to the ``summaryModel(package, type, subtypes, name, sign
        data:
          - ["slices", "", False, "Concat", "", "", "Argument[0].ArrayElement.ArrayElement", "ReturnValue.ArrayElement", "value", "manual"]
 
-Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 The first row defines flow from the arguments (``a`` and ``b`` in the example) to the return value (``c`` in the example).
 
 The first five values identify the function to be modeled as a summary.
@@ -265,7 +260,6 @@ We need to add tuples to the ``summaryModel(package, type, subtypes, name, signa
          - ["strings", "", False, "Join", "", "", "Argument[0]", "ReturnValue", "taint", "manual"]
          - ["strings", "", False, "Join", "", "", "Argument[1]", "ReturnValue", "taint", "manual"]
 
-Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 Each tuple defines flow from one argument to the return value.
 The first row defines flow from the first argument (``elems`` in the example) to the return value (``t`` in the example) and the second row defines flow from the second argument (``sep`` in the example) to the return value (``t`` in the example).
 
@@ -321,7 +315,6 @@ We need to add a tuple to the ``summaryModel(package, type, subtypes, name, sign
        data:
          - ["net/url", "URL", True, "Hostname", "", "", "Argument[receiver]", "ReturnValue", "taint", "manual"]
 
-Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 Each tuple defines flow from one argument to the return value.
 The first row defines flow from the qualifier of the method call (``u`` in the example) to the return value (``host`` in the example).
 
@@ -365,7 +358,6 @@ We need to add a tuple to the ``barrierModel(package, type, subtypes, name, sign
        data:
          - ["group:beego", "", True, "Htmlquote", "", "", "ReturnValue", "html-injection", "manual"]
 
-Since we are adding a barrier, we need to add a tuple to the ``barrierModel`` extensible predicate.
 The first five values identify the function to be modeled as a barrier.
 
 - The first value ``group:beego`` is the package group name. The ``group:`` prefix indicates that this is a package group, which is used to match multiple package paths that refer to the same package.
@@ -406,7 +398,6 @@ We need to add a tuple to the ``barrierGuardModel(package, type, subtypes, name,
        data:
          - ["example.com/example", "", False, "IsSafe", "", "", "Argument[0]", "true", "sql-injection", "manual"]
 
-Since we are adding a barrier guard, we need to add a tuple to the ``barrierGuardModel`` extensible predicate.
 The first five values identify the function to be modeled as a barrier guard.
 
 - The first value ``example.com/example`` is the package name.
@@ -445,7 +436,6 @@ We need to add a tuple to the ``sourceModel(package, type, subtypes, name, signa
     data:
       - ["net/http", "Request", True, "Body", "", "", "", "remote", "manual"]
 
-Since we are adding a new source, we need to add a tuple to the ``sourceModel`` extensible predicate.
 The first five values identify the field to be modeled as a source.
 
 - The first value ``net/http`` is the package name.

@@ -93,7 +93,6 @@ We need to add a tuple to the ``sinkModel``\(namespace, type, subtypes, name, si
        data:
          - ["System.Data.SqlClient", "SqlCommand", False, "SqlCommand", "(System.String,System.Data.SqlClient.SqlConnection)", "", "Argument[0]", "sql-injection", "manual"]
 
-Since we want to add a new sink, we need to add a tuple to the ``sinkModel`` extensible predicate.
 The first five values identify the callable (in this case a method) to be modeled as a sink.
 
 - The first value ``System.Data.SqlClient`` is the namespace name.
@@ -132,8 +131,6 @@ We need to add a tuple to the ``sourceModel(namespace, type, subtypes, name, sig
        data:
          - ["System.Net.Sockets", "TcpClient", False, "GetStream", "()", "", "ReturnValue", "remote", "manual"]
 
-
-Since we are adding a new source, we need to add a tuple to the ``sourceModel`` extensible predicate.
 The first five values identify the callable (in this case a method) to be modeled as a source.
 
 - The first value ``System.Net.Sockets`` is the namespace name.
@@ -173,7 +170,6 @@ We need to add tuples to the ``summaryModel(namespace, type, subtypes, name, sig
          - ["System", "String", False, "Concat", "(System.Object,System.Object)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
          - ["System", "String", False, "Concat", "(System.Object,System.Object)", "", "Argument[1]", "ReturnValue", "taint", "manual"]
 
-Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 Each tuple defines flow from one argument to the return value.
 The first row defines flow from the first argument (``s1`` in the example) to the return value (``t`` in the example) and the second row defines flow from the second argument (``s2`` in the example) to the return value (``t`` in the example).
 
@@ -229,7 +225,6 @@ We need to add a tuple to the ``summaryModel(namespace, type, subtypes, name, si
        data:
          - ["System", "String", False, "Trim", "()", "", "Argument[this]", "ReturnValue", "taint", "manual"]
 
-Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 Each tuple defines flow from one argument to the return value.
 The first row defines flow from the qualifier of the method call (``s1`` in the example) to the return value (``t`` in the example).
 
@@ -274,8 +269,6 @@ We need to add tuples to the ``summaryModel(namespace, type, subtypes, name, sig
          - ["System.Linq", "Enumerable", False, "Select<TSource,TResult>", "(System.Collections.Generic.IEnumerable<TSource>,System.Func<TSource,TResult>)", "", "Argument[0].Element", "Argument[1].Parameter[0]", "value", "manual"]
          - ["System.Linq", "Enumerable", False, "Select<TSource,TResult>", "(System.Collections.Generic.IEnumerable<TSource>,System.Func<TSource,TResult>)", "", "Argument[1].ReturnValue", "ReturnValue.Element", "value", "manual"]
 
-
-Since we are adding flow through a method, we need to add tuples to the ``summaryModel`` extensible predicate.
 Each tuple defines part of the flow that comprises the total flow through the ``Select`` method.
 The first five values identify the callable (in this case a method) to be modeled as a summary.
 These are the same for both of the rows above as we are adding two summaries for the same method.
@@ -334,7 +327,6 @@ We need to add a tuple to the ``barrierModel(namespace, type, subtypes, name, si
        data:
          - ["System.Web", "HttpRequest", False, "get_RawUrl", "()", "", "ReturnValue", "url-redirection", "manual"]
 
-Since we are adding a barrier, we need to add a tuple to the ``barrierModel`` extensible predicate.
 The first five values identify the callable (in this case the getter of a property) to be modeled as a barrier.
 
 - The first value ``System.Web`` is the namespace name.
@@ -376,7 +368,6 @@ We need to add a tuple to the ``barrierGuardModel(namespace, type, subtypes, nam
        data:
          - ["System", "Uri", False, "get_IsAbsoluteUri", "()", "", "Argument[this]", "false", "url-redirection", "manual"]
 
-Since we are adding a barrier guard, we need to add a tuple to the ``barrierGuardModel`` extensible predicate.
 The first five values identify the callable (in this case the getter of a property) to be modeled as a barrier guard.
 
 - The first value ``System`` is the namespace name.
@@ -416,8 +407,6 @@ We need to add a tuple to the ``neutralModel(namespace, type, name, signature, k
      data:
        - ["System", "DateTime", "get_Now", "()", "summary", "manual"]
 
-
-Since we are adding a neutral model, we need to add tuples to the ``neutralModel`` extensible predicate.
 The first four values identify the callable (in this case the getter of the ``Now`` property) to be modeled as a neutral, the fifth value is the kind, and the sixth value is the provenance (origin) of the neutral.
 
 - The first value ``System`` is the namespace name.

@@ -41,7 +41,8 @@ In this example, we'll show how to add the following argument, passed to **sudo*
   from fabric.operations import sudo
   sudo(cmd) # <-- add 'cmd' as a taint sink
 
-Note that this sink is already recognized by the CodeQL Python analysis, but for this example, you could use the following data extension:
+Note that this sink is already recognized by the CodeQL Python analysis, but for this example, you could add a tuple to the
+**sinkModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -52,8 +53,6 @@ Note that this sink is already recognized by the CodeQL Python analysis, but for
       data:
         - ["fabric", "Member[operations].Member[sudo].Argument[0]", "command-injection"]
 
-
-- Since we're adding a new sink, we add a tuple to the **sinkModel** extensible predicate.
 - The first column, **"fabric"**, identifies a set of values from which to begin the search for the sink.
   The string **"fabric"** means we start at the places where the codebase imports the package **fabric**.
 - The second column is an access path that is evaluated from left to right, starting at the values that were identified by the first column.
@@ -75,7 +74,8 @@ Often sinks are found as arguments to methods rather than functions. In this exa
   c = invoke.Context()
   c.run(cmd) # <-- add 'cmd' as a taint sink
 
-Note that this sink is already recognized by the CodeQL Python analysis, but for this example, you could use the following data extension:
+Note that this sink is already recognized by the CodeQL Python analysis, but for this example, you could add a tuple to the
+**sinkModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -121,7 +121,8 @@ The invoke package provides multiple ways to obtain a **Context** instance. The 
   c.run(cmd) # <-- add 'cmd' as a taint sink
 
 Comparing to the previous Python snippet, the **Context** class is now found as **invoke.context.Context** instead of **invoke.Context**.
-We could add a data extension similar to the previous one, but with the type **invoke.context.Context**. However, we can also use the **typeModel** extensible predicate to describe how to reach **invoke.Context** from **invoke.context.Context**:
+We could add a data extension similar to the previous one, but with the type **invoke.context.Context**.
+However, we can also use the **typeModel(type1, type2, path)** extensible predicate to describe how to reach **invoke.Context** from **invoke.context.Context**:
 
 .. code-block:: yaml
 
@@ -158,7 +159,8 @@ This filename is what we want to mark as a taint source. An example use looks as
   class MyModel(models.Model):
     upload = models.FileField(upload_to=user_directory_path) # <-- the 'upload_to' parameter defines our custom function
 
-Note that this source is already known by the CodeQL Python analysis, but for this example, you could use the following data extension:
+Note that this source is already recognized by the CodeQL Python analysis, but for this example, you could add a tuple to the
+**sourceModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -173,8 +175,6 @@ Note that this source is already known by the CodeQL Python analysis, but for th
             "remote",
           ]
 
-
-- Since we're adding a new taint source, we add a tuple to the **sourceModel** extensible predicate.
 - The first column, **"django.db.models.FileField!"**, is a dotted path to the **FileField** class from the **django.db.models** package.
   The **!** at the end of the type name indicates that we are looking for the class itself rather than instances of this class.
 
@@ -198,7 +198,8 @@ In this example, we'll show how to add flow through calls to ``re.compile``.
 
   let y = re.compile(pattern = x); // add value flow from 'x' to 'y.pattern'
 
-Note that this flow is already recognized by the CodeQL Python analysis, but for this example, you could use the following data extension:
+Note that this flow is already recognized by the CodeQL Python analysis, but for this example, you could add a tuple to the
+**summaryModel(type, path, input, output, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -215,8 +216,6 @@ Note that this flow is already recognized by the CodeQL Python analysis, but for
             "value",
           ]
 
-
-- Since we're adding flow through a function call, we add a tuple to the **summaryModel** extensible predicate.
 - The first column, **"re"**, begins the search for relevant calls at places where the **re** package is imported.
 - The second column, **"Member[compile]"**, is a path leading to the function calls we wish to model.
   In this case, we select references to the **compile** function from the ``re`` package.
@@ -234,7 +233,8 @@ In this example, we'll show how to add flow through calls to the built-in functi
 
   y = sorted(x) # add taint flow from 'x' to 'y'
 
-Note that this flow is already recognized by the CodeQL Python analysis, but for this example, you could use the following data extension:
+Note that this flow is already recognized by the CodeQL Python analysis, but for this example, you could add a tuple to the
+**summaryModel(type, path, input, output, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -251,8 +251,6 @@ Note that this flow is already recognized by the CodeQL Python analysis, but for
             "taint",
           ]
 
-
-- Since we're adding flow through a function call, we add a tuple to the **summaryModel** extensible predicate.
 - The first column, **"builtins"**, begins the search for relevant calls among references to the built-in names.
   In Python, many built-in functions are available. Technically, most of these are part of the **builtins** package, but they can be accessed without an explicit import. When we write **builtins** in the first column, we will find both the implicit and explicit references to the built-in functions.
 - The second column, **"Member[sorted]"**, selects references to the **sorted** function from the **builtins** package; that is, the built-in function **sorted**.
@@ -291,7 +289,7 @@ In this example, we'll show how to add the return value of **html.escape** as a 
   import html
   escaped = html.escape(unknown) # The return value of this function is safe for XSS.
 
-We can model this using the following data extension:
+We need to add a tuple to the **barrierModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -302,7 +300,6 @@ We can model this using the following data extension:
       data:
         - ["html", "Member[escape].ReturnValue", "html-injection"]
 
-- Since we are adding a barrier, we need to add a tuple to the **barrierModel** extensible predicate.
 - The first column, **"html"**, begins the search at places where the **html** module is imported.
 - The second column, **Member[escape].ReturnValue**, selects the return value of the **escape** function from the **html** module.
 - The third column, **"html-injection"**, is the kind of the barrier.
@@ -319,7 +316,7 @@ Consider the function ``url_has_allowed_host_and_scheme`` from the ``django.util
   if url_has_allowed_host_and_scheme(url, allowed_hosts=...): # The check guards the use of 'url', so it is safe.
       redirect(url) # This is safe.
 
-We need to add a tuple ``(type, path, acceptingValue, kind)`` to the ``barrierGuardModel`` extensible predicate by updating a data extension file.
+We need to add a tuple to the **barrierGuardModel(type, path, acceptingValue, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -335,7 +332,6 @@ We need to add a tuple ``(type, path, acceptingValue, kind)`` to the ``barrierGu
             "url-redirection",
           ]
 
-- Since we are adding a barrier guard, we need to add a tuple to the **barrierGuardModel** extensible predicate.
 - The first column, **"django"**, begins the search at places where the **django** package is imported.
 - The second column, **Member[utils].Member[http].Member[url_has_allowed_host_and_scheme].Argument[0,url:]**, selects the first argument (or the keyword argument ``url``) of the ``url_has_allowed_host_and_scheme`` function in the ``django.utils.http`` module. This is the value being validated.
 - The third column, **"true"**, is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply.

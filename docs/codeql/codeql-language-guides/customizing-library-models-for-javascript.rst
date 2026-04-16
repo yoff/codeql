@@ -41,7 +41,8 @@ In this example, we'll show how to add the following argument, passed to **execa
   import { shell } from "execa";
   shell(cmd); // <-- add 'cmd' as a taint sink
 
-Note that this sink is already recognized by the CodeQL JS analysis, but for this example, you could use the following data extension:
+Note that this sink is already recognized by the CodeQL JS analysis, but for this example, you could add a tuple to the
+**sinkModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -52,8 +53,6 @@ Note that this sink is already recognized by the CodeQL JS analysis, but for thi
       data:
         - ["execa", "Member[shell].Argument[0]", "command-injection"]
 
-
-- Since we're adding a new sink, we add a tuple to the **sinkModel** extensible predicate.
 - The first column, **"execa"**, identifies a set of values from which to begin the search for the sink.
   The string **"execa"** means we start at the places where the codebase imports the NPM package **execa**.
 - The second column is an access path that is evaluated from left to right, starting at the values that were identified by the first column.
@@ -74,7 +73,8 @@ In this example, we'll show how the **event.data** expression below could be mar
     let data = event.data; // <-- add 'event.data' as a taint source
   });
 
-Note that this source is already known by the CodeQL JS analysis, but for this example, you could use the following data extension:
+Note that this source is already recognized by the CodeQL JS analysis, but for this example, you could add a tuple to the
+**sourceModel(type, path, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -89,8 +89,6 @@ Note that this source is already known by the CodeQL JS analysis, but for this e
             "remote",
           ]
 
-
-- Since we're adding a new taint source, we add a tuple to the **sourceModel** extensible predicate.
 - The first column, **"global"**, begins the search at references to the global object (also known as **window** in browser contexts). This is a special JavaScript object that contains all global variables and methods.
 - **Member[addEventListener]** selects accesses to the **addEventListener** member.
 - **Argument[1]** selects the second argument of calls to that member (the argument containing the callback).
@@ -143,7 +141,7 @@ In this example, we'll show how to add the following SQL injection sink:
     connection.query(q); // <-- add 'q' as a SQL injection sink
   }
 
-We can recognize this using the following extension:
+We need to add a tuple to the ``sinkModel(type, path, kind)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -153,7 +151,6 @@ We can recognize this using the following extension:
         extensible: sinkModel
       data:
         - ["mysql.Connection", "Member[query].Argument[0]", "sql-injection"]
-
 
 - The first column, **"mysql.Connection"**, begins the search at any expression whose value is known to be an instance of
   the **Connection** type from the **mysql** package. This will select the **connection** parameter above because of its type annotation.
@@ -188,7 +185,8 @@ Suppose we want the model from above to detect the sink in this snippet:
   connection.query(q); // <-- add 'q' as a SQL injection sink
 
 There is no type annotation on **connection**, and there is no indication of what **getConnection()** returns.
-Using a **typeModel** tuple we can tell our model that this function returns an instance of **mysql.Connection**:
+By adding a tuple to the ``typeModel(type1, type2, path)`` extensible predicate we can tell our model that
+this function returns an instance of **mysql.Connection**:
 
 .. code-block:: yaml
 
@@ -199,8 +197,6 @@ Using a **typeModel** tuple we can tell our model that this function returns an 
       data:
         - ["mysql.Connection", "@example/db", "Member[getConnection].ReturnValue"]
 
-
-- Since we're providing type information, we add a tuple to the **typeModel** extensible predicate.
 - The first column, **"mysql.Connection"**, names the type that we're adding a new definition for.
 - The second column, **"@example/db"**, begins the search at imports of the hypothetical NPM package **@example/db**.
 - **Member[getConnection]** selects references to the **getConnection** member from that package.
@@ -230,7 +226,7 @@ In this example, we'll show how to add the following SQL injection sink using a 
     conn.query(q, (err, rows) => {...}); // <-- add 'q' as a SQL injection sink
   });
 
-We can recognize this using a fuzzy model, as shown in the following extension:
+We need to add a tuple for a fuzzy model to the ``sinkModel(type, path, kind)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -279,7 +275,8 @@ In this example, we'll show how to add flow through calls to `decodeURIComponent
 
   let y = decodeURIComponent(x); // add taint flow from 'x' to 'y'
 
-Note that this flow is already recognized by the CodeQL JS analysis, but for this example, you could use the following data extension:
+Note that this flow is already recognized by the CodeQL JS analysis, but for this example, you could add a tuple to the
+**summaryModel(type, path, input, output, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -296,8 +293,6 @@ Note that this flow is already recognized by the CodeQL JS analysis, but for thi
             "taint",
           ]
 
-
-- Since we're adding flow through a function call, we add a tuple to the **summaryModel** extensible predicate.
 - The first column, **"global"**, begins the search for relevant calls at references to the global object.
   In JavaScript, global variables are properties of the global object, so this lets us access global variables or functions.
 - The second column, **Member[decodeURIComponent]**, is a path leading to the function calls we wish to model.
@@ -317,7 +312,8 @@ In this example, we'll show how to add flow through calls to **forEach** from th
 
   require('underscore').forEach([x, y], (v) => { ... }); // add value flow from 'x' and 'y' to 'v'
 
-Note that this flow is already recognized by the CodeQL JS analysis, but for this example, you could use the following data extension:
+Note that this flow is already recognized by the CodeQL JS analysis, but for this example, you could add a tuple to the
+**summaryModel(type, path, input, output, kind)** extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -334,8 +330,6 @@ Note that this flow is already recognized by the CodeQL JS analysis, but for thi
             "value",
           ]
 
-
-- Since we're adding flow through a function call, we add a tuple to the **summaryModel** extensible predicate.
 - The first column, **"underscore"**, begins the search for relevant calls at places where the **underscore** package is imported.
 - The second column, **Member[forEach]**, selects references to the **forEach** member from the **underscore** package.
 - The third column specifies the input of the flow:
@@ -369,7 +363,7 @@ on the incoming request objects:
     req.data; // <-- mark 'req.data' as a taint source
   });
 
-This can be achieved with the following data extension:
+We need to add a tuple to the ``sourceModel(type, path, kind)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -384,7 +378,6 @@ This can be achieved with the following data extension:
             "remote",
           ]
 
-- Since we're adding a new taint source, we add a tuple to the **sourceModel** extensible predicate.
 - The first column, **"@example/middleware"**, begins the search at imports of the hypothetical NPM package **@example/middleware**.
 - **Member[injectData]** selects accesses to the **injectData** member.
 - **ReturnValue** selects the return value of the call to **injectData**.
@@ -403,7 +396,7 @@ In this example, we'll show how to add the return value of **encodeURIComponent*
   let escaped = encodeURIComponent(input); // The return value of this method is safe for XSS.
   document.body.innerHTML = escaped;
 
-We can model this using the following data extension:
+We need to add a tuple to the ``barrierModel(type, path, kind)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -414,7 +407,6 @@ We can model this using the following data extension:
       data:
         - ["global", "Member[encodeURIComponent].ReturnValue", "html-injection"]
 
-- Since we are adding a barrier, we need to add a tuple to the **barrierModel** extensible predicate.
 - The first column, **"global"**, begins the search for relevant calls at references to the global object.
 - The second column, **Member[encodeURIComponent].ReturnValue**, selects the return value of the **encodeURIComponent** function.
 - The third column, **"html-injection"**, is the kind of the barrier.
@@ -431,7 +423,7 @@ Consider a function called `isValid` which returns `true` when the data is consi
     db.query(userInput); // This is safe.
   }
 
-We can model this using the following data extension:
+We need to add a tuple to the ``barrierGuardModel(type, path, acceptingValue, kind)`` extensible predicate by updating a data extension file.
 
 .. code-block:: yaml
 
@@ -442,7 +434,6 @@ We can model this using the following data extension:
       data:
         - ["my-package", "Member[isValid].Argument[0]", "true", "sql-injection"]
 
-- Since we are adding a barrier guard, we need to add a tuple to the **barrierGuardModel** extensible predicate.
 - The first column, **"my-package"**, begins the search at imports of the hypothetical NPM package **my-package**.
 - The second column, **Member[isValid].Argument[0]**, selects the first argument of the `isValid` function. This is the value being validated.
 - The third column, **"true"**, is the accepting value of the barrier guard. This is the value that the conditional check must return for the barrier to apply.

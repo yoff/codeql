@@ -88,7 +88,6 @@ We need to add a tuple to the ``sourceModel(namespace, type, subtypes, name, sig
        data:
          - ["boost::asio", "", False, "read_until", "", "", "Argument[*1]", "remote", "manual"]
 
-Since we are adding a new source, we need to add a tuple to the ``sourceModel`` extensible predicate.
 The first five values identify the callable (in this case a free function) to be modeled as a source.
 
 - The first value ``"boost::asio"`` is the namespace name.
@@ -124,7 +123,6 @@ We need to add a tuple to the ``sinkModel(namespace, type, subtypes, name, signa
        data:
          - ["boost::asio", "", False, "write", "", "", "Argument[*1]", "remote-sink", "manual"]
 
-Since we want to add a new sink, we need to add a tuple to the ``sinkModel`` extensible predicate.
 The first five values identify the callable (in this case a free function) to be modeled as a sink.
 
 - The first value ``"boost::asio"`` is the namespace name.
@@ -159,8 +157,6 @@ We need to add tuples to the ``summaryModel(namespace, type, subtypes, name, sig
          extensible: summaryModel
        data:
          - ["boost::asio", "", False, "buffer", "", "", "Argument[*0]", "ReturnValue", "taint", "manual"]
-
-Since we are adding flow through a function, we need to add tuples to the ``summaryModel`` extensible predicate.
 
 The first five values identify the callable (in this case free function) to be modeled as a summary.
 
@@ -203,7 +199,6 @@ We need to add a tuple to the ``barrierModel(namespace, type, subtypes, name, si
        data:
          - ["", "", False, "mysql_real_escape_string", "", "", "Argument[*1]", "sql-injection", "manual"]
 
-Since we are adding a barrier, we need to add a tuple to the ``barrierModel`` extensible predicate.
 The first five values identify the callable (in this case a free function) to be modeled as a barrier.
 
 - The first value ``""`` is the namespace name.
@@ -243,7 +238,6 @@ We need to add a tuple to the ``barrierGuardModel(namespace, type, subtypes, nam
        data:
          - ["", "", False, "is_safe", "", "", "Argument[*0]", "true", "sql-injection", "manual"]
 
-Since we are adding a barrier guard, we need to add a tuple to the ``barrierGuardModel`` extensible predicate.
 The first five values identify the callable (in this case a free function) to be modeled as a barrier guard.
 
 - The first value ``""`` is the namespace name.
