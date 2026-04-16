@@ -12,6 +12,7 @@ private module Frameworks {
   private import semmle.code.java.frameworks.javase.Beans
   private import semmle.code.java.frameworks.mdht.MdhtXml
   private import semmle.code.java.frameworks.rundeck.RundeckXml
+  private import semmle.code.java.frameworks.woodstox.WoodstoxXml
 }
 
 /**
