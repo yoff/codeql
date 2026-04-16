@@ -344,7 +344,7 @@ The remaining values are used to define the ``access-path``, the ``kind``, and t
 Example: Add a barrier using the ``Htmlquote`` function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This example shows how the Go query pack models a barrier that stops the flow of taint.
-The ``Htmlquote`` function from the beego framework HTML-escapes a string, which prevents HTML injection attacks.
+The ``Htmlquote`` function from the `beego` framework HTML-escapes a string, which prevents HTML injection attacks.
 
 .. code-block:: go
 
