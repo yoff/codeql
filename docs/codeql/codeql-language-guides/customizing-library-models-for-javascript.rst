@@ -22,12 +22,12 @@ A data extension for JavaScript is a YAML file of the form:
 
 The CodeQL library for JavaScript exposes the following extensible predicates:
 
-- **sourceModel**\(type, path, kind)
-- **sinkModel**\(type, path, kind)
-- **typeModel**\(type1, type2, path)
-- **summaryModel**\(type, path, input, output, kind)
-- **barrierModel**\(type, path, kind)
-- **barrierGuardModel**\(type, path, acceptingValue, kind)
+- ``sourceModel(type, path, kind)``
+- ``sinkModel(type, path, kind)``
+- ``typeModel(type1, type2, path)``
+- ``summaryModel(type, path, input, output, kind)``
+- ``barrierModel(type, path, kind)``
+- ``barrierGuardModel(type, path, acceptingValue, kind)``
 
 We'll explain how to use these using a few examples, and provide some reference material at the end of this article.
 
