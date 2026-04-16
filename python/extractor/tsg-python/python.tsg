@@ -795,12 +795,7 @@
 ;;;;;; DictComp (`{a: b for c in d if e}`)
 ; See GeneratorExp for details.
 
-(dictionary_comprehension
-    body: (pair
-        key: (_) @_key
-        value: (_) @_value
-    )
-) @genexpr
+(dictionary_comprehension) @genexpr
 {
     ; Synthesize the `genexpr` function
     let @genexpr.fun = (ast-node @genexpr "Function")
@@ -819,29 +814,6 @@
 
     ; Synthesize the use of `.0` in the innermost `yield`. This has a different context than the parameter
     ; ("param" vs. "load") hence we must create another node.
-    let @genexpr.arg_use = (ast-node @genexpr "Name")
-    attr (@genexpr.arg_use) variable = ".0"
-    attr (@genexpr.arg_use) ctx = "load"
-}
-
-; DictComp with unpacking (PEP 798): `{**d for d in dicts}`
-(dictionary_comprehension
-    body: (dictionary_splat)
-) @genexpr
-{
-    let @genexpr.fun = (ast-node @genexpr "Function")
-    attr (@genexpr.node) function = @genexpr.fun
-    attr (@genexpr.fun) name = "dictcomp"
-
-    let @genexpr.arg = (ast-node @genexpr "Name")
-    attr (@genexpr.arg) variable = ".0"
-    attr (@genexpr.arg) ctx = "param"
-
-    edge @genexpr.fun -> @genexpr.arg
-    attr (@genexpr.fun -> @genexpr.arg) args = 0
-    attr (@genexpr.fun) kwonlyargs = #null
-    attr (@genexpr.fun) kwarg = #null
-
     let @genexpr.arg_use = (ast-node @genexpr "Name")
     attr (@genexpr.arg_use) variable = ".0"
     attr (@genexpr.arg_use) ctx = "load"
