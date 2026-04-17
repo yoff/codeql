@@ -1,4 +1,7 @@
-| RedundantToStringCall.cs:7:27:7:38 | call to method ToString | Redundant call to 'ToString' on a String object. |
-| RedundantToStringCall.cs:10:37:10:48 | call to method ToString | Redundant call to 'ToString' on a String object. |
-| RedundantToStringCall.cs:13:39:13:50 | call to method ToString | Redundant call to 'ToString' on a String object. |
+| RedundantToStringCall.cs:8:27:8:38 | call to method ToString | Redundant call to 'ToString' on a String object. |
+| RedundantToStringCall.cs:11:37:11:48 | call to method ToString | Redundant call to 'ToString' on a String object. |
+| RedundantToStringCall.cs:14:39:14:50 | call to method ToString | Redundant call to 'ToString' on a String object. |
+| RedundantToStringCall.cs:18:19:18:30 | call to method ToString | Redundant call to 'ToString' on a String object. |
+| RedundantToStringCall.cs:20:23:20:34 | call to method ToString | Redundant call to 'ToString' on a String object. |
+| RedundantToStringCall.cs:22:37:22:51 | call to method ToString | Redundant call to 'ToString' on a String object. |
 | RedundantToStringCallBad.cs:7:45:7:56 | call to method ToString | Redundant call to 'ToString' on a String object. |
