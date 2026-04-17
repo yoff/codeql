@@ -20,4 +20,4 @@ where
   mc instanceof ImplicitToStringExpr and
   mc.getTarget() instanceof ToStringMethod and
   not mc.getQualifier() instanceof BaseAccess
-select mc, "Redundant call to 'ToString' on a String object."
+select mc, "Redundant call to 'ToString'."
