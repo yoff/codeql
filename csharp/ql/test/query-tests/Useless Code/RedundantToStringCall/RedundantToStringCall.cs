@@ -17,8 +17,8 @@ class RedundantToString
         var sb = new StringBuilder();
         sb.Append(o.ToString()); // $ Alert
         sb.Append(o); // GOOD
-        sb.AppendLine(o.ToString()); // $ SPURIOUS: Alert
+        sb.AppendLine(o.ToString()); // GOOD
 
-        Console.WriteLine($"Hello: {base.ToString()}"); // $ SPURIOUS: Alert
+        Console.WriteLine($"Hello: {base.ToString()}"); // GOOD
     }
 }
