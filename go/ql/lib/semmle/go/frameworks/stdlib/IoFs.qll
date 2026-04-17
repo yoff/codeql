@@ -20,17 +20,13 @@ module IoFs {
   private class WalkDirStep extends TaintTracking::AdditionalTaintStep {
     override predicate step(DataFlow::Node pred, DataFlow::Node succ) {
       //signature: func WalkDir(fsys FS, root string, fn WalkDirFunc) error
-      exists(DataFlow::CallNode call, DataFlow::FunctionNode f |
-        f.(DataFlow::FuncLitNode).getASuccessor*() = call.getArgument(2)
+      exists(DataFlow::CallNode call, DataFlow::FunctionNode f, DataFlow::Node n |
+        n = f.(DataFlow::FuncLitNode)
         or
-        exists(DataFlow::ExprNode functionName |
-          f.(DataFlow::GlobalFunctionNode).getFunction() =
-            functionName.asExpr().(FunctionName).getTarget()
-        |
-          functionName.getASuccessor*() = call.getArgument(2)
-        )
+        n.asExpr().(FunctionName).getTarget() = f.(DataFlow::GlobalFunctionNode).getFunction()
       |
         call.getTarget().hasQualifiedName(packagePath(), "WalkDir") and
+        n.getASuccessor*() = call.getArgument(2) and
         pred = call.getArgument(0) and
         succ = f.getParameter([0, 1])
       )
