@@ -228,6 +228,14 @@ public class PartialPathTraversalTest {
         }
     }
 
+    void foo25(File parent) throws IOException {
+        String path = parent.getCanonicalPath();
+        path += File.separator;
+        if (!dir().getCanonicalPath().startsWith(path)) { // $ SPURIOUS: Alert[java/partial-path-traversal-from-remote] Alert[java/partial-path-traversal]
+            throw new IOException("Invalid directory: " + dir().getCanonicalPath());
+        }
+    }
+
     public void doesNotFlagOptimalSafeVersion(File parent) throws IOException {
         if (!dir().toPath().normalize().startsWith(parent.toPath())) { // Safe
             throw new IOException("Path traversal attempt: " + dir().getCanonicalPath());
