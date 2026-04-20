@@ -7,7 +7,6 @@ private import codeql.controlflow.ControlFlowGraph
 private import codeql.controlflow.SuccessorType
 private import semmle.code.csharp.commons.Compilation
 private import semmle.code.csharp.controlflow.internal.NonReturning as NonReturning
-private import semmle.code.csharp.controlflow.internal.Completion as Completion
 
 private module Cfg0 = Make0<Location, Ast>;
 
@@ -315,6 +314,108 @@ private module Initializers {
   }
 }
 
+private module Exceptions {
+  private import semmle.code.csharp.commons.Assertions
+  private import semmle.code.csharp.frameworks.System
+
+  private class Overflowable extends UnaryOperation {
+    Overflowable() {
+      not this instanceof UnaryBitwiseOperation and
+      this.getType() instanceof IntegralType
+    }
+  }
+
+  /** Holds if `cfe` is a control flow element that may throw an exception. */
+  predicate mayThrowException(ControlFlowElement cfe) {
+    exists(cfe.(TriedControlFlowElement).getAThrownException())
+    or
+    cfe instanceof Assertion
+  }
+
+  /** A control flow element that is inside a `try` block. */
+  private class TriedControlFlowElement extends ControlFlowElement {
+    TriedControlFlowElement() {
+      this = any(TryStmt try).getATriedElement() and
+      not this instanceof NonReturning::NonReturningCall
+    }
+
+    /**
+     * Gets an exception class that is potentially thrown by this element, if any.
+     */
+    Class getAThrownException() {
+      this instanceof Overflowable and
+      result instanceof SystemOverflowExceptionClass
+      or
+      this.(CastExpr).getType() instanceof IntegralType and
+      result instanceof SystemOverflowExceptionClass
+      or
+      invalidCastCandidate(this) and
+      result instanceof SystemInvalidCastExceptionClass
+      or
+      this instanceof Call and
+      result instanceof SystemExceptionClass
+      or
+      this =
+        any(MemberAccess ma |
+          not ma.isConditional() and
+          ma.getQualifier() = any(Expr e | not e instanceof TypeAccess) and
+          result instanceof SystemNullReferenceExceptionClass
+        )
+      or
+      this instanceof DelegateCreation and
+      result instanceof SystemOutOfMemoryExceptionClass
+      or
+      this instanceof ArrayCreation and
+      result instanceof SystemOutOfMemoryExceptionClass
+      or
+      this =
+        any(AddOperation ae |
+          ae.getType() instanceof StringType and
+          result instanceof SystemOutOfMemoryExceptionClass
+          or
+          ae.getType() instanceof IntegralType and
+          result instanceof SystemOverflowExceptionClass
+        )
+      or
+      this =
+        any(SubOperation se |
+          se.getType() instanceof IntegralType and
+          result instanceof SystemOverflowExceptionClass
+        )
+      or
+      this =
+        any(MulOperation me |
+          me.getType() instanceof IntegralType and
+          result instanceof SystemOverflowExceptionClass
+        )
+      or
+      this =
+        any(DivOperation de |
+          not de.getDenominator().getValue().toFloat() != 0 and
+          result instanceof SystemDivideByZeroExceptionClass
+        )
+      or
+      this instanceof RemOperation and
+      result instanceof SystemDivideByZeroExceptionClass
+      or
+      this instanceof DynamicExpr and
+      result instanceof SystemExceptionClass
+    }
+  }
+
+  pragma[nomagic]
+  private ValueOrRefType getACastExprBaseType(CastExpr ce) {
+    result = ce.getType().(ValueOrRefType).getABaseType()
+    or
+    result = getACastExprBaseType(ce).getABaseType()
+  }
+
+  pragma[nomagic]
+  private predicate invalidCastCandidate(CastExpr ce) {
+    ce.getExpr().getType() = getACastExprBaseType(ce)
+  }
+}
+
 private module Input implements InputSig1, InputSig2 {
   predicate cfgCachedStageRef() { CfgCachedStage::ref() }
 
@@ -368,7 +469,7 @@ private module Input implements InputSig1, InputSig2 {
     c.asSimpleAbruptCompletion() instanceof ReturnSuccessor and
     always = true
     or
-    Completion::mayThrowException(ast) and
+    Exceptions::mayThrowException(ast) and
     n.isIn(ast) and
     c.asSimpleAbruptCompletion() instanceof ExceptionSuccessor and
     always = false
