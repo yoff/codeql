@@ -50,20 +50,16 @@ string getCommonSensitiveInfoRegex() {
  * - Secret metadata: "secretName" (K8s/AWS), "secretId" (Azure), "secretVersion", etc.
  */
 string getCommonSensitiveInfoFPRegex() {
-  result = "(?i).*(null|tokenizer).*"
-  or
-  result = "tokenImage"
-  or
-  // Pagination/iteration tokens (e.g., AWS SDK pagination cursors, parser tokens)
-  result = "(?i).*(next|previous|current|page|continuation|cursor)tokens?.*"
-  or
-  // Token metadata/infrastructure (token followed by a non-value descriptor)
   result =
-    "(?i).*tokens?(type|kind|count|index|position|length|offset|endpoint|url|uri|bucket|rate|delimiter|separator|format|number|name|id|prefix|suffix|pattern|class|style).*"
-  or
-  // Secret metadata (secret followed by a non-value descriptor)
-  result =
-    "(?i).*secrets?(name|id|version|ref|arn|path|type|label|description|manager|client|provider|store|factory|properties).*"
+    [
+      "(?i).*(null|tokenizer).*", "tokenImage",
+      // Pagination/iteration tokens (e.g., AWS SDK pagination cursors, parser tokens)
+      "(?i).*(next|previous|current|page|continuation|cursor)tokens?.*",
+      // Token metadata/infrastructure (token followed by a non-value descriptor)
+      "(?i).*tokens?(type|kind|count|index|position|length|offset|endpoint|url|uri|bucket|rate|delimiter|separator|format|number|name|id|prefix|suffix|pattern|class|style).*",
+      // Secret metadata (secret followed by a non-value descriptor)
+      "(?i).*secrets?(name|id|version|ref|arn|path|type|label|description|manager|client|provider|store|factory|properties).*"
+    ]
 }
 
 /** An expression that might contain sensitive data. */
