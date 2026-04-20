@@ -316,7 +316,6 @@ private module Initializers {
 
 private module Exceptions {
   private import semmle.code.csharp.commons.Assertions
-  private import semmle.code.csharp.frameworks.System
 
   private class Overflowable extends UnaryOperation {
     Overflowable() {
@@ -327,7 +326,7 @@ private module Exceptions {
 
   /** Holds if `cfe` is a control flow element that may throw an exception. */
   predicate mayThrowException(ControlFlowElement cfe) {
-    exists(cfe.(TriedControlFlowElement).getAThrownException())
+    cfe.(TriedControlFlowElement).mayThrowException()
     or
     cfe instanceof Assertion
   }
@@ -340,66 +339,43 @@ private module Exceptions {
     }
 
     /**
-     * Gets an exception class that is potentially thrown by this element, if any.
+     * Holds if this element may potentially throw an exception.
      */
-    Class getAThrownException() {
-      this instanceof Overflowable and
-      result instanceof SystemOverflowExceptionClass
+    predicate mayThrowException() {
+      this instanceof Overflowable
       or
-      this.(CastExpr).getType() instanceof IntegralType and
-      result instanceof SystemOverflowExceptionClass
+      this.(CastExpr).getType() instanceof IntegralType
       or
-      invalidCastCandidate(this) and
-      result instanceof SystemInvalidCastExceptionClass
+      invalidCastCandidate(this)
       or
-      this instanceof Call and
-      result instanceof SystemExceptionClass
+      this instanceof Call
       or
       this =
         any(MemberAccess ma |
           not ma.isConditional() and
-          ma.getQualifier() = any(Expr e | not e instanceof TypeAccess) and
-          result instanceof SystemNullReferenceExceptionClass
+          ma.getQualifier() = any(Expr e | not e instanceof TypeAccess)
         )
       or
-      this instanceof DelegateCreation and
-      result instanceof SystemOutOfMemoryExceptionClass
+      this instanceof DelegateCreation
       or
-      this instanceof ArrayCreation and
-      result instanceof SystemOutOfMemoryExceptionClass
+      this instanceof ArrayCreation
       or
       this =
         any(AddOperation ae |
-          ae.getType() instanceof StringType and
-          result instanceof SystemOutOfMemoryExceptionClass
+          ae.getType() instanceof StringType
           or
-          ae.getType() instanceof IntegralType and
-          result instanceof SystemOverflowExceptionClass
+          ae.getType() instanceof IntegralType
         )
       or
-      this =
-        any(SubOperation se |
-          se.getType() instanceof IntegralType and
-          result instanceof SystemOverflowExceptionClass
-        )
+      this = any(SubOperation se | se.getType() instanceof IntegralType)
       or
-      this =
-        any(MulOperation me |
-          me.getType() instanceof IntegralType and
-          result instanceof SystemOverflowExceptionClass
-        )
+      this = any(MulOperation me | me.getType() instanceof IntegralType)
       or
-      this =
-        any(DivOperation de |
-          not de.getDenominator().getValue().toFloat() != 0 and
-          result instanceof SystemDivideByZeroExceptionClass
-        )
+      this = any(DivOperation de | not de.getDenominator().getValue().toFloat() != 0)
       or
-      this instanceof RemOperation and
-      result instanceof SystemDivideByZeroExceptionClass
+      this instanceof RemOperation
       or
-      this instanceof DynamicExpr and
-      result instanceof SystemExceptionClass
+      this instanceof DynamicExpr
     }
   }
 
