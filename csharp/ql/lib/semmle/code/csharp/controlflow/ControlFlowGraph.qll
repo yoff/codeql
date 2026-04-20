@@ -277,11 +277,12 @@ private module Initializers {
    */
   Expr initializedStaticMemberOrder(Constructor staticCtor, int i) {
     result =
-      rank[i + 1](Expr init, Location l |
+      rank[i + 1](Expr init, Location l, string filepath, int startline, int startcolumn |
         staticMemberInitializer(staticCtor, init) and
-        l = init.getLocation()
+        l = init.getLocation() and
+        l.hasLocationInfo(filepath, startline, startcolumn, _, _)
       |
-        init order by l.getStartLine(), l.getStartColumn(), l.getFile().getAbsolutePath()
+        init order by startline, startcolumn, filepath
       )
   }
 
@@ -292,12 +293,13 @@ private module Initializers {
   AssignExpr initializedInstanceMemberOrder(ObjectInitMethod obinit, CompilationExt comp, int i) {
     obinit.initializes(result) and
     result =
-      rank[i + 1](AssignExpr ae0, Location l |
+      rank[i + 1](AssignExpr ae0, Location l, string filepath, int startline, int startcolumn |
         obinit.initializes(ae0) and
         l = ae0.getLocation() and
+        l.hasLocationInfo(filepath, startline, startcolumn, _, _) and
         getCompilation(l.getFile()) = comp
       |
-        ae0 order by l.getStartLine(), l.getStartColumn(), l.getFile().getAbsolutePath()
+        ae0 order by startline, startcolumn, filepath
       )
   }
 

@@ -21,10 +21,8 @@
 
 import csharp
 private import semmle.code.csharp.commons.Assertions
-private import semmle.code.csharp.commons.Constants
 private import semmle.code.csharp.frameworks.System
 private import NonReturning
-private import SuccessorType
 
 private class Overflowable extends UnaryOperation {
   Overflowable() {

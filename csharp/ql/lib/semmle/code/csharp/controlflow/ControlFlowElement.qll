@@ -38,7 +38,7 @@ class ControlFlowElement extends ControlFlowElementOrCallable, @control_flow_ele
    */
   ControlFlowNodes::ElementNode getAControlFlowNode() { result = this.getControlFlowNode() }
 
-  /** Gets the control flow node for this element. */
+  /** Gets the control flow node for this element, if any. */
   ControlFlowNode getControlFlowNode() { result.injects(this) }
 
   /** Gets the basic block in which this element occurs. */
