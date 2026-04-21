@@ -3,6 +3,7 @@
  */
 
 import csharp
+private import semmle.code.csharp.commons.Collections
 private import semmle.code.csharp.frameworks.system.Net
 private import semmle.code.csharp.frameworks.system.Web
 private import semmle.code.csharp.frameworks.system.web.Http
@@ -115,8 +116,8 @@ class AspNetServiceRemoteFlowSource extends AspNetRemoteFlowSource, DataFlow::Pa
   override string getSourceType() { result = "ASP.NET web service input" }
 }
 
-private class CandidateMembersToTaint extends Member {
-  CandidateMembersToTaint() {
+private class CandidateMemberToTaint extends Member {
+  CandidateMemberToTaint() {
     this.isPublic() and
     not this.isStatic() and
     (
@@ -140,11 +141,11 @@ private class CandidateMembersToTaint extends Member {
  * Note that this also impacts uses of such types in other contexts.
  */
 private class AspNetRemoteFlowSourceMember extends TaintTracking::TaintedMember,
-  CandidateMembersToTaint
+  CandidateMemberToTaint
 {
   AspNetRemoteFlowSourceMember() {
     exists(Type t, Type t0 | t = this.getDeclaringType() |
-      (t = t0 or t = t0.(ArrayType).getElementType()) and
+      (t = t0 or t = t0.(CollectionType).getElementType()) and
       (
         t0 = any(AspNetRemoteFlowSourceMember m).getType()
         or
@@ -261,11 +262,11 @@ class AspNetCoreRoutingMethodParameter extends AspNetCoreRemoteFlowSource, DataF
  * properties.
  */
 private class AspNetCoreRemoteFlowSourceMember extends TaintTracking::TaintedMember,
-  CandidateMembersToTaint
+  CandidateMemberToTaint
 {
   AspNetCoreRemoteFlowSourceMember() {
     exists(Type t, Type t0 | t = this.getDeclaringType() |
-      (t = t0 or t = t0.(ArrayType).getElementType()) and
+      (t = t0 or t = t0.(CollectionType).getElementType()) and
       (
         t0 = any(AspNetCoreRemoteFlowSourceMember m).getType()
         or
