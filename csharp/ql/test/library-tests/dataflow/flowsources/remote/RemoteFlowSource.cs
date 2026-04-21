@@ -58,15 +58,21 @@ namespace RemoteFlowSource
 namespace AspRemoteFlowSource
 {
     using System.Web.Services;
+    using System.Collections.Generic;
 
     public class MySubData
     {
         public string SubDataProp { get; set; }
     }
 
-    public class MyElementSubData
+    public class ArrayElementData
     {
-        public string ElementSubDataProp { get; set; }
+        public string ArrayElementDataProp { get; set; }
+    }
+
+    public class ListElementData
+    {
+        public string ListElementDataProp { get; set; }
     }
 
     public class MyData
@@ -74,7 +80,8 @@ namespace AspRemoteFlowSource
         public string DataField;
         public string DataProp { get; set; }
         public MySubData SubData { get; set; }
-        public MyElementSubData[] Elements { get; set; }
+        public ArrayElementData[] Elements { get; set; }
+        public List<ListElementData> List;
     }
 
     public class MyDataElement
@@ -90,7 +97,8 @@ namespace AspRemoteFlowSource
         {
             Use(data.DataProp);
             Use(data.SubData.SubDataProp);
-            Use(data.Elements[0].ElementSubDataProp);
+            Use(data.Elements[0].ArrayElementDataProp);
+            Use(data.List[0].ListElementDataProp);
         }
 
         [WebMethod]
