@@ -308,7 +308,7 @@ module Ssa {
      */
     final AssignableRead getAFirstReadAtNode(ControlFlowNode cfn) {
       SsaImpl::firstReadSameVar(this, cfn) and
-      result.getAControlFlowNode() = cfn
+      result.getControlFlowNode() = cfn
     }
 
     /**
@@ -371,7 +371,7 @@ module Ssa {
      */
     deprecated final AssignableRead getALastReadAtNode(ControlFlowNode cfn) {
       SsaImpl::lastReadSameVar(this, cfn) and
-      result.getAControlFlowNode() = cfn
+      result.getControlFlowNode() = cfn
     }
 
     /**

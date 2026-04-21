@@ -30,5 +30,5 @@ from ParameterAccess access, CastExpr cast
 where
   access = cast.getAChild() and
   access.getTarget().getDeclaringElement() = access.getEnclosingCallable() and
-  nodeBeforeParameterAccess(access.getAControlFlowNode())
+  nodeBeforeParameterAccess(access.getControlFlowNode())
 select cast, "Equals() method does not check argument type."

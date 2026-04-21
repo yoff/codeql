@@ -18,5 +18,5 @@ where
   creation.getType() instanceof SystemTextStringBuilderClass and
   loopEntryNode.isBefore(loop.getBody()) and
   loop.getBody().getAChild*() = creation and
-  creation.getAControlFlowNode().postDominates(loopEntryNode)
+  creation.getControlFlowNode().postDominates(loopEntryNode)
 select creation, "Creating a 'StringBuilder' in a loop."

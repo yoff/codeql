@@ -22,7 +22,7 @@ predicate correctlySynchronized(CollectionMember c, Expr access) {
   (
     c.getType().(ValueOrRefType).getABaseType*().getName().matches("Concurrent%") or
     access.getEnclosingStmt().getParent*() instanceof LockStmt or
-    any(LockingCall call).getAControlFlowNode().getASuccessor+() = access.getAControlFlowNode()
+    any(LockingCall call).getControlFlowNode().getASuccessor+() = access.getControlFlowNode()
   )
 }
 

@@ -16,9 +16,7 @@ class ControlFlowElementOrCallable extends ExprOrStmtParent, TControlFlowElement
  * an expression.
  *
  * A control flow element can be mapped to a control flow node (`ControlFlowNode`)
- * via `getAControlFlowNode()`. There is a one-to-many relationship between
- * control flow elements and control flow nodes. This allows control flow
- * splitting, for example modeling the control flow through `finally` blocks.
+ * via `getControlFlowNode()`.
  */
 class ControlFlowElement extends ControlFlowElementOrCallable, @control_flow_element {
   /** Gets the enclosing callable of this element, if any. */
@@ -33,22 +31,26 @@ class ControlFlowElement extends ControlFlowElementOrCallable, @control_flow_ele
   }
 
   /**
+   * DEPRECATED: Use `getControlFlowNode()` instead.
+   *
    * Gets a control flow node for this element. That is, a node in the
    * control flow graph that corresponds to this element.
    */
-  ControlFlowNodes::ElementNode getAControlFlowNode() { result = this.getControlFlowNode() }
+  deprecated ControlFlowNodes::ElementNode getAControlFlowNode() {
+    result = this.getControlFlowNode()
+  }
 
   /** Gets the control flow node for this element, if any. */
   ControlFlowNode getControlFlowNode() { result.injects(this) }
 
   /** Gets the basic block in which this element occurs. */
-  BasicBlock getBasicBlock() { result = this.getAControlFlowNode().getBasicBlock() }
+  BasicBlock getBasicBlock() { result = this.getControlFlowNode().getBasicBlock() }
 
   /**
    * Holds if this element is live, that is this element can be reached
    * from the entry point of its enclosing callable.
    */
-  predicate isLive() { exists(this.getAControlFlowNode()) }
+  predicate isLive() { exists(this.getControlFlowNode()) }
 
   /** Holds if the current element is reachable from `src`. */
   // potentially very large predicate, so must be inlined
@@ -61,13 +63,13 @@ class ControlFlowElement extends ControlFlowElementOrCallable, @control_flow_ele
   ControlFlowElement getAReachableElement() {
     // Reachable in same basic block
     exists(BasicBlock bb, int i, int j |
-      bb.getNode(i) = this.getAControlFlowNode() and
-      bb.getNode(j) = result.getAControlFlowNode() and
+      bb.getNode(i) = this.getControlFlowNode() and
+      bb.getNode(j) = result.getControlFlowNode() and
       i < j
     )
     or
     // Reachable in different basic blocks
-    this.getAControlFlowNode().getBasicBlock().getASuccessor+().getANode() =
-      result.getAControlFlowNode()
+    this.getControlFlowNode().getBasicBlock().getASuccessor+().getANode() =
+      result.getControlFlowNode()
   }
 }

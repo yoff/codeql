@@ -10,13 +10,13 @@ predicate parameterReaches(Parameter p, ControlFlowNode cfn) {
     not mid =
       any(AssignableDefinition ad | ad.getTarget() = p and ad.isCertain())
           .getExpr()
-          .getAControlFlowNode() and
+          .getControlFlowNode() and
     cfn = mid.getASuccessor()
   )
 }
 
 predicate parameterUsePair(Parameter p, AssignableRead read) {
-  parameterReaches(p, read.getAControlFlowNode()) and
+  parameterReaches(p, read.getControlFlowNode()) and
   read.getTarget() = p
 }
 

@@ -1073,7 +1073,7 @@ module Internal {
       candidateAux(x, d, bb) and
       y =
         any(AccessOrCallExpr e |
-          e.getAControlFlowNode().getBasicBlock() = bb and
+          e.getControlFlowNode().getBasicBlock() = bb and
           e.getTarget() = d
         )
     )
@@ -1109,7 +1109,7 @@ module Internal {
       AccessOrCallExpr sub, GuardValue v
     ) {
       Stages::GuardsStage::forceCachingInSameStage() and
-      guardedCfn = guarded.getAControlFlowNode() and
+      guardedCfn = guarded.getControlFlowNode() and
       guardedBB = guardedCfn.getBasicBlock() and
       guardControls(g, guardedBB, v) and
       guardControlsSubSame(g, guardedBB, sub) and
@@ -1152,9 +1152,7 @@ module Internal {
     private predicate isGuardedByExpr0(
       AccessOrCallExpr guarded, Guard g, AccessOrCallExpr sub, GuardValue v
     ) {
-      forex(ControlFlowNode cfn | cfn = guarded.getAControlFlowNode() |
-        nodeIsGuardedBySameSubExpr(cfn, _, guarded, g, sub, v)
-      )
+      nodeIsGuardedBySameSubExpr(guarded.getControlFlowNode(), _, guarded, g, sub, v)
     }
 
     cached

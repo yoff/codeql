@@ -5,20 +5,20 @@ private import semmle.code.csharp.dataflow.internal.BaseSSA
 predicate defReaches(
   AssignableDefinition def, BaseSsa::SimpleLocalScopeVariable v, ControlFlowNode cfn
 ) {
-  def.getTarget() = v and cfn = def.getExpr().getAControlFlowNode().getASuccessor()
+  def.getTarget() = v and cfn = def.getExpr().getControlFlowNode().getASuccessor()
   or
   exists(ControlFlowNode mid | defReaches(def, v, mid) |
     not mid =
       any(AssignableDefinition ad | ad.getTarget() = v and ad.isCertain())
           .getExpr()
-          .getAControlFlowNode() and
+          .getControlFlowNode() and
     cfn = mid.getASuccessor()
   )
 }
 
 predicate defUsePair(AssignableDefinition def, AssignableRead read) {
   exists(Assignable a |
-    defReaches(def, a, read.getAControlFlowNode()) and
+    defReaches(def, a, read.getControlFlowNode()) and
     read.getTarget() = a
   )
 }

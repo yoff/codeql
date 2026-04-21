@@ -259,7 +259,7 @@ private predicate defReaches(Ssa::Definition def, ControlFlowNode cfn) {
   or
   exists(ControlFlowNode mid | defReaches(def, mid) |
     SsaImpl::adjacentReadPairSameVar(_, mid, cfn) and
-    not mid = any(Dereference d | d.isAlwaysNull(def.getSourceVariable())).getAControlFlowNode()
+    not mid = any(Dereference d | d.isAlwaysNull(def.getSourceVariable())).getControlFlowNode()
   )
 }
 
@@ -384,6 +384,6 @@ class Dereference extends G::DereferenceableExpr {
    */
   predicate isFirstAlwaysNull(Ssa::SourceVariable v) {
     this.isAlwaysNull(v) and
-    defReaches(v.getAnSsaDefinition(), this.getAControlFlowNode())
+    defReaches(v.getAnSsaDefinition(), this.getControlFlowNode())
   }
 }

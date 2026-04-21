@@ -23,7 +23,7 @@ Stmt findSuccessorStmt(ControlFlowNode n) {
 
 // Return a successor statement to s
 Stmt getASuccessorStmt(Stmt s) {
-  result = findSuccessorStmt(s.getAControlFlowNode().getASuccessor())
+  result = findSuccessorStmt(s.getControlFlowNode().getASuccessor())
 }
 
 class IfThenStmt extends IfStmt {

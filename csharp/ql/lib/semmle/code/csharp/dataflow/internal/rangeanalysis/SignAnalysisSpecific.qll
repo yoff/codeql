@@ -254,7 +254,7 @@ private module Impl {
   Guard getComparisonGuard(ComparisonExpr ce) { result = ce.getExpr() }
 
   private newtype TComparisonExpr =
-    MkComparisonExpr(ComparisonTest ct, ExprNode e) { e = ct.getExpr().getAControlFlowNode() }
+    MkComparisonExpr(ComparisonTest ct, ExprNode e) { e = ct.getExpr().getControlFlowNode() }
 
   /** A relational comparison */
   class ComparisonExpr extends MkComparisonExpr {

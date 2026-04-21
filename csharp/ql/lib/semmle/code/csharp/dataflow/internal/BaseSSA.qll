@@ -14,7 +14,7 @@ module BaseSsa {
   private predicate definitionAt(
     AssignableDefinition def, BasicBlock bb, int i, SsaInput::SourceVariable v
   ) {
-    bb.getNode(i) = def.getExpr().getAControlFlowNode() and
+    bb.getNode(i) = def.getExpr().getControlFlowNode() and
     v = def.getTarget() and
     // In cases like `(x, x) = (0, 1)`, we discard the first (dead) definition of `x`
     not exists(TupleAssignmentDefinition first, TupleAssignmentDefinition second | first = def |
@@ -95,7 +95,7 @@ module BaseSsa {
 
     predicate variableRead(BasicBlock bb, int i, SourceVariable v, boolean certain) {
       exists(AssignableRead read |
-        read.getAControlFlowNode() = bb.getNode(i) and
+        read.getControlFlowNode() = bb.getNode(i) and
         read.getTarget() = v and
         certain = true
       )
@@ -108,7 +108,7 @@ module BaseSsa {
     final AssignableRead getARead() {
       exists(BasicBlock bb, int i |
         SsaImpl::ssaDefReachesRead(_, this, bb, i) and
-        result.getAControlFlowNode() = bb.getNode(i)
+        result.getControlFlowNode() = bb.getNode(i)
       )
     }
 

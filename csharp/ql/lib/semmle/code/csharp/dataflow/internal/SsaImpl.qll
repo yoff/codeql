@@ -126,7 +126,7 @@ private module SourceVariableImpl {
    */
   predicate variableDefinition(BasicBlock bb, int i, Ssa::SourceVariable v, AssignableDefinition ad) {
     ad = v.getADefinition() and
-    ad.getExpr().getAControlFlowNode() = bb.getNode(i) and
+    ad.getExpr().getControlFlowNode() = bb.getNode(i) and
     // In cases like `(x, x) = (0, 1)`, we discard the first (dead) definition of `x`
     not exists(TupleAssignmentDefinition first, TupleAssignmentDefinition second | first = ad |
       second.getAssignment() = first.getAssignment() and
@@ -217,7 +217,7 @@ private module SourceVariableImpl {
       def.getTarget() = lv and
       lv.isRef() and
       lv = v.getAssignable() and
-      bb.getNode(i) = def.getExpr().getAControlFlowNode() and
+      bb.getNode(i) = def.getExpr().getControlFlowNode() and
       not def.getAssignment() instanceof LocalVariableDeclAndInitExpr
     )
   }
@@ -888,7 +888,7 @@ private module Cached {
       Impl::ssaDefReachesRead(v, def, bb, i) and
       variableReadActual(bb, i, v) and
       cfn = bb.getNode(i) and
-      result.getAControlFlowNode() = cfn
+      result.getControlFlowNode() = cfn
     )
   }
 

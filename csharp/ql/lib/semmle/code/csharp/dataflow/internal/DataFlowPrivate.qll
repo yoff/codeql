@@ -44,10 +44,10 @@ predicate isArgumentNode(ArgumentNode arg, DataFlowCall c, ArgumentPosition pos)
 private ControlFlowNode getAPrimaryConstructorParameterCfn(ParameterAccess pa) {
   pa.getTarget().getCallable() instanceof PrimaryConstructor and
   (
-    result = pa.(ParameterRead).getAControlFlowNode()
+    result = pa.(ParameterRead).getControlFlowNode()
     or
     pa =
-      any(AssignableDefinition def | result = def.getExpr().getAControlFlowNode()).getTargetAccess()
+      any(AssignableDefinition def | result = def.getExpr().getControlFlowNode()).getTargetAccess()
   )
 }
 
@@ -339,7 +339,7 @@ module VariableCapture {
 
       VariableWrite() {
         def.getTarget() = v.asLocalScopeVariable() and
-        this = def.getExpr().getAControlFlowNode()
+        this = def.getExpr().getControlFlowNode()
       }
 
       ControlFlowNode getRhs() { LocalFlow::defAssigns(def, this, _, result) }
@@ -552,7 +552,7 @@ module LocalFlow {
   ) {
     def.getSource() = value and
     valueCfn = value.getControlFlowNode() and
-    cfnDef = def.getExpr().getAControlFlowNode()
+    cfnDef = def.getExpr().getControlFlowNode()
   }
 
   private predicate defAssigns(ExprNode value, AssignableDefinitionNode defNode) {
@@ -1012,7 +1012,7 @@ private module Cached {
     TExprNode(ControlFlowNodes::ElementNode cfn) { exists(cfn.asExpr()) } or
     TSsaNode(SsaImpl::DataFlowIntegration::SsaNode node) or
     TAssignableDefinitionNode(AssignableDefinition def, ControlFlowNode cfn) {
-      cfn = def.getExpr().getAControlFlowNode()
+      cfn = def.getExpr().getControlFlowNode()
     } or
     TExplicitParameterNode(Parameter p, DataFlowCallable c) {
       p = c.asCallable(_).(CallableUsedInSource).getAParameter()
@@ -1055,7 +1055,7 @@ private module Cached {
         // needed for reverse stores; e.g. `x.f1.f2 = y` induces
         // a store step of `f1` into `x`
         exists(TExprPostUpdateNode upd, Expr read |
-          upd = TExprPostUpdateNode(read.getAControlFlowNode())
+          upd = TExprPostUpdateNode(read.getControlFlowNode())
         |
           fieldOrPropertyRead(e, _, read)
           or
@@ -1071,7 +1071,7 @@ private module Cached {
       sn.getSummarizedCallable() instanceof CallableUsedInSource
     } or
     TParamsArgumentNode(ControlFlowNode callCfn) {
-      callCfn = any(Call c | isParamsArg(c, _, _)).getAControlFlowNode()
+      callCfn = any(Call c | isParamsArg(c, _, _)).getControlFlowNode()
     } or
     TFlowInsensitiveFieldNode(FieldOrPropertyUsedInSource f) { f.isFieldLike() } or
     TFlowInsensitiveCapturedVariableNode(LocalScopeVariable v) { v.isCaptured() } or
@@ -1533,7 +1533,7 @@ private module ArgumentNodes {
     ParamsArgumentNode() { this = TParamsArgumentNode(callCfn) }
 
     private Parameter getParameter() {
-      callCfn = any(Call c | isParamsArg(c, _, result)).getAControlFlowNode()
+      callCfn = any(Call c | isParamsArg(c, _, result)).getControlFlowNode()
     }
 
     override predicate argumentOf(DataFlowCall call, ArgumentPosition pos) {
@@ -1619,7 +1619,7 @@ private module ReturnNodes {
     private ControlFlowNodes::ElementNode cfn;
     private YieldReturnStmt yrs;
 
-    YieldReturnNode() { this = TYieldReturnNode(cfn) and yrs.getExpr().getAControlFlowNode() = cfn }
+    YieldReturnNode() { this = TYieldReturnNode(cfn) and yrs.getExpr().getControlFlowNode() = cfn }
 
     YieldReturnStmt getYieldReturnStmt() { result = yrs }
 
@@ -2534,7 +2534,7 @@ module PostUpdateNodes {
   class ObjectCreationNode extends SourcePostUpdateNode, ExprNode, TExprNode {
     private ObjectCreation oc;
 
-    ObjectCreationNode() { this = TExprNode(oc.getAControlFlowNode()) }
+    ObjectCreationNode() { this = TExprNode(oc.getControlFlowNode()) }
 
     override Node getPreUpdateSourceNode() {
       exists(ControlFlowNodes::ElementNode cfn | this = TExprNode(cfn) |
@@ -2561,7 +2561,7 @@ module PostUpdateNodes {
 
     ObjectInitializerNode() {
       this = TObjectInitializerNode(cfn) and
-      cfn = oc.getAControlFlowNode()
+      cfn = oc.getControlFlowNode()
     }
 
     /** Gets the initializer to which this initializer node belongs. */

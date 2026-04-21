@@ -12,9 +12,7 @@ class SsaPhiNode = CS::Ssa::PhiNode;
 class BasicBlock = CS::BasicBlock;
 
 /** Gets a basic block in which SSA variable `v` is read. */
-BasicBlock getAReadBasicBlock(SsaVariable v) {
-  result = v.getARead().getAControlFlowNode().getBasicBlock()
-}
+BasicBlock getAReadBasicBlock(SsaVariable v) { result = v.getARead().getBasicBlock() }
 
 private class PhiInputEdgeBlock extends BasicBlock {
   PhiInputEdgeBlock() { this = any(SsaReadPositionPhiInputEdge edge).getOrigBlock() }
