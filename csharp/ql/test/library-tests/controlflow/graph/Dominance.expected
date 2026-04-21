@@ -4991,11 +4991,11 @@ dominance
 | Patterns.cs:8:9:18:9 | if (...) ... | Patterns.cs:8:13:8:23 | Before ... is ... |
 | Patterns.cs:8:13:8:13 | access to local variable o | Patterns.cs:8:13:8:23 | ... is ... |
 | Patterns.cs:8:13:8:23 | ... is ... | Patterns.cs:8:13:8:23 | After ... is ... [false] |
-| Patterns.cs:8:13:8:23 | ... is ... | Patterns.cs:8:13:8:23 | [match-true] ... is ... |
+| Patterns.cs:8:13:8:23 | ... is ... | Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... |
 | Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:12:14:18:9 | if (...) ... |
 | Patterns.cs:8:13:8:23 | After ... is ... [true] | Patterns.cs:9:9:11:9 | {...} |
 | Patterns.cs:8:13:8:23 | Before ... is ... | Patterns.cs:8:13:8:13 | access to local variable o |
-| Patterns.cs:8:13:8:23 | [match-true] ... is ... | Patterns.cs:8:18:8:23 | Int32 i1 |
+| Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... | Patterns.cs:8:18:8:23 | Int32 i1 |
 | Patterns.cs:8:18:8:23 | Int32 i1 | Patterns.cs:8:13:8:23 | After ... is ... [true] |
 | Patterns.cs:9:9:11:9 | {...} | Patterns.cs:10:13:10:43 | ...; |
 | Patterns.cs:10:13:10:42 | After call to method WriteLine | Patterns.cs:10:13:10:43 | After ...; |
@@ -5014,11 +5014,11 @@ dominance
 | Patterns.cs:12:14:18:9 | if (...) ... | Patterns.cs:12:18:12:31 | Before ... is ... |
 | Patterns.cs:12:18:12:18 | access to local variable o | Patterns.cs:12:18:12:31 | ... is ... |
 | Patterns.cs:12:18:12:31 | ... is ... | Patterns.cs:12:18:12:31 | After ... is ... [false] |
-| Patterns.cs:12:18:12:31 | ... is ... | Patterns.cs:12:18:12:31 | [match-true] ... is ... |
+| Patterns.cs:12:18:12:31 | ... is ... | Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... |
 | Patterns.cs:12:18:12:31 | After ... is ... [false] | Patterns.cs:16:14:18:9 | if (...) ... |
 | Patterns.cs:12:18:12:31 | After ... is ... [true] | Patterns.cs:13:9:15:9 | {...} |
 | Patterns.cs:12:18:12:31 | Before ... is ... | Patterns.cs:12:18:12:18 | access to local variable o |
-| Patterns.cs:12:18:12:31 | [match-true] ... is ... | Patterns.cs:12:23:12:31 | String s1 |
+| Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... | Patterns.cs:12:23:12:31 | String s1 |
 | Patterns.cs:12:23:12:31 | String s1 | Patterns.cs:12:18:12:31 | After ... is ... [true] |
 | Patterns.cs:13:9:15:9 | {...} | Patterns.cs:14:13:14:46 | ...; |
 | Patterns.cs:14:13:14:45 | After call to method WriteLine | Patterns.cs:14:13:14:46 | After ...; |
@@ -5037,10 +5037,10 @@ dominance
 | Patterns.cs:16:14:18:9 | if (...) ... | Patterns.cs:16:18:16:28 | Before ... is ... |
 | Patterns.cs:16:18:16:18 | access to local variable o | Patterns.cs:16:18:16:28 | ... is ... |
 | Patterns.cs:16:18:16:28 | ... is ... | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:16:18:16:28 | ... is ... | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
+| Patterns.cs:16:18:16:28 | ... is ... | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
 | Patterns.cs:16:18:16:28 | After ... is ... [true] | Patterns.cs:17:9:18:9 | {...} |
 | Patterns.cs:16:18:16:28 | Before ... is ... | Patterns.cs:16:18:16:18 | access to local variable o |
-| Patterns.cs:16:18:16:28 | [match-true] ... is ... | Patterns.cs:16:23:16:28 | Object v1 |
+| Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... | Patterns.cs:16:23:16:28 | Object v1 |
 | Patterns.cs:16:23:16:28 | Object v1 | Patterns.cs:16:18:16:28 | After ... is ... [true] |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:40:9:42:9 | switch (...) {...} |
 | Patterns.cs:20:9:38:9 | switch (...) {...} | Patterns.cs:20:17:20:17 | access to local variable o |
@@ -5135,10 +5135,10 @@ dominance
 | Patterns.cs:47:24:47:25 | Normal Exit | Patterns.cs:47:24:47:25 | Exit |
 | Patterns.cs:48:9:48:9 | access to parameter c | Patterns.cs:48:9:48:20 | ... is ... |
 | Patterns.cs:48:9:48:20 | ... is ... | Patterns.cs:48:9:48:20 | After ... is ... |
-| Patterns.cs:48:9:48:20 | ... is ... | Patterns.cs:48:9:48:20 | [match-true] ... is ... |
+| Patterns.cs:48:9:48:20 | ... is ... | Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... |
 | Patterns.cs:48:9:48:20 | After ... is ... | Patterns.cs:47:24:47:25 | Normal Exit |
 | Patterns.cs:48:9:48:20 | Before ... is ... | Patterns.cs:48:9:48:9 | access to parameter c |
-| Patterns.cs:48:9:48:20 | [match-true] ... is ... | Patterns.cs:48:14:48:20 | Before not ... |
+| Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... | Patterns.cs:48:14:48:20 | Before not ... |
 | Patterns.cs:48:14:48:20 | Before not ... | Patterns.cs:48:18:48:20 | a |
 | Patterns.cs:48:14:48:20 | not ... | Patterns.cs:48:14:48:20 | After not ... |
 | Patterns.cs:48:18:48:20 | a | Patterns.cs:48:14:48:20 | not ... |
@@ -5146,11 +5146,11 @@ dominance
 | Patterns.cs:50:24:50:25 | Normal Exit | Patterns.cs:50:24:50:25 | Exit |
 | Patterns.cs:51:9:51:9 | access to parameter c | Patterns.cs:51:9:51:21 | ... is ... |
 | Patterns.cs:51:9:51:21 | ... is ... | Patterns.cs:51:9:51:21 | After ... is ... [false] |
-| Patterns.cs:51:9:51:21 | ... is ... | Patterns.cs:51:9:51:21 | [match-true] ... is ... |
+| Patterns.cs:51:9:51:21 | ... is ... | Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... |
 | Patterns.cs:51:9:51:21 | After ... is ... [false] | Patterns.cs:51:34:51:39 | Before ... is ... |
 | Patterns.cs:51:9:51:21 | After ... is ... [true] | Patterns.cs:51:25:51:30 | Before ... is ... |
 | Patterns.cs:51:9:51:21 | Before ... is ... | Patterns.cs:51:9:51:9 | access to parameter c |
-| Patterns.cs:51:9:51:21 | [match-true] ... is ... | Patterns.cs:51:14:51:21 | Before not ... |
+| Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... | Patterns.cs:51:14:51:21 | Before not ... |
 | Patterns.cs:51:9:51:39 | ... ? ... : ... | Patterns.cs:51:9:51:21 | Before ... is ... |
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:50:24:50:25 | Normal Exit |
 | Patterns.cs:51:14:51:21 | After not ... | Patterns.cs:51:9:51:21 | After ... is ... [true] |
@@ -5159,22 +5159,22 @@ dominance
 | Patterns.cs:51:18:51:21 | null | Patterns.cs:51:14:51:21 | not ... |
 | Patterns.cs:51:25:51:25 | access to parameter c | Patterns.cs:51:25:51:30 | ... is ... |
 | Patterns.cs:51:25:51:30 | ... is ... | Patterns.cs:51:25:51:30 | After ... is ... |
-| Patterns.cs:51:25:51:30 | ... is ... | Patterns.cs:51:25:51:30 | [match-true] ... is ... |
+| Patterns.cs:51:25:51:30 | ... is ... | Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... |
 | Patterns.cs:51:25:51:30 | Before ... is ... | Patterns.cs:51:25:51:25 | access to parameter c |
-| Patterns.cs:51:25:51:30 | [match-true] ... is ... | Patterns.cs:51:30:51:30 | 1 |
+| Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... | Patterns.cs:51:30:51:30 | 1 |
 | Patterns.cs:51:34:51:34 | access to parameter c | Patterns.cs:51:34:51:39 | ... is ... |
 | Patterns.cs:51:34:51:39 | ... is ... | Patterns.cs:51:34:51:39 | After ... is ... |
-| Patterns.cs:51:34:51:39 | ... is ... | Patterns.cs:51:34:51:39 | [match-true] ... is ... |
+| Patterns.cs:51:34:51:39 | ... is ... | Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... |
 | Patterns.cs:51:34:51:39 | Before ... is ... | Patterns.cs:51:34:51:34 | access to parameter c |
-| Patterns.cs:51:34:51:39 | [match-true] ... is ... | Patterns.cs:51:39:51:39 | 2 |
+| Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... | Patterns.cs:51:39:51:39 | 2 |
 | Patterns.cs:53:24:53:25 | Entry | Patterns.cs:54:9:54:37 | Before ... is ... |
 | Patterns.cs:53:24:53:25 | Normal Exit | Patterns.cs:53:24:53:25 | Exit |
 | Patterns.cs:54:9:54:9 | access to parameter c | Patterns.cs:54:9:54:37 | ... is ... |
 | Patterns.cs:54:9:54:37 | ... is ... | Patterns.cs:54:9:54:37 | After ... is ... |
-| Patterns.cs:54:9:54:37 | ... is ... | Patterns.cs:54:9:54:37 | [match-true] ... is ... |
+| Patterns.cs:54:9:54:37 | ... is ... | Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... |
 | Patterns.cs:54:9:54:37 | After ... is ... | Patterns.cs:53:24:53:25 | Normal Exit |
 | Patterns.cs:54:9:54:37 | Before ... is ... | Patterns.cs:54:9:54:9 | access to parameter c |
-| Patterns.cs:54:9:54:37 | [match-true] ... is ... | Patterns.cs:54:14:54:37 | Before not ... |
+| Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... | Patterns.cs:54:14:54:37 | Before not ... |
 | Patterns.cs:54:14:54:37 | Before not ... | Patterns.cs:54:18:54:37 | Before { ... } |
 | Patterns.cs:54:14:54:37 | not ... | Patterns.cs:54:14:54:37 | After not ... |
 | Patterns.cs:54:18:54:25 | access to type Patterns | Patterns.cs:54:27:54:35 | Before { ... } |
@@ -5261,11 +5261,11 @@ dominance
 | Patterns.cs:85:26:85:27 | Normal Exit | Patterns.cs:85:26:85:27 | Exit |
 | Patterns.cs:85:39:85:39 | access to parameter i | Patterns.cs:85:39:85:53 | ... is ... |
 | Patterns.cs:85:39:85:53 | ... is ... | Patterns.cs:85:39:85:53 | After ... is ... [false] |
-| Patterns.cs:85:39:85:53 | ... is ... | Patterns.cs:85:39:85:53 | [match-true] ... is ... |
+| Patterns.cs:85:39:85:53 | ... is ... | Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... |
 | Patterns.cs:85:39:85:53 | After ... is ... [false] | Patterns.cs:85:67:85:69 | "2" |
 | Patterns.cs:85:39:85:53 | After ... is ... [true] | Patterns.cs:85:57:85:63 | "not 2" |
 | Patterns.cs:85:39:85:53 | Before ... is ... | Patterns.cs:85:39:85:39 | access to parameter i |
-| Patterns.cs:85:39:85:53 | [match-true] ... is ... | Patterns.cs:85:44:85:53 | Before ... or ... |
+| Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... | Patterns.cs:85:44:85:53 | Before ... or ... |
 | Patterns.cs:85:39:85:69 | ... ? ... : ... | Patterns.cs:85:39:85:53 | Before ... is ... |
 | Patterns.cs:85:39:85:69 | After ... ? ... : ... | Patterns.cs:85:26:85:27 | Normal Exit |
 | Patterns.cs:85:44:85:44 | 1 | Patterns.cs:85:49:85:53 | Before not ... |
@@ -5280,11 +5280,11 @@ dominance
 | Patterns.cs:87:26:87:27 | Normal Exit | Patterns.cs:87:26:87:27 | Exit |
 | Patterns.cs:87:39:87:39 | access to parameter i | Patterns.cs:87:39:87:54 | ... is ... |
 | Patterns.cs:87:39:87:54 | ... is ... | Patterns.cs:87:39:87:54 | After ... is ... [false] |
-| Patterns.cs:87:39:87:54 | ... is ... | Patterns.cs:87:39:87:54 | [match-true] ... is ... |
+| Patterns.cs:87:39:87:54 | ... is ... | Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... |
 | Patterns.cs:87:39:87:54 | After ... is ... [false] | Patterns.cs:87:64:87:70 | "not 1" |
 | Patterns.cs:87:39:87:54 | After ... is ... [true] | Patterns.cs:87:58:87:60 | "1" |
 | Patterns.cs:87:39:87:54 | Before ... is ... | Patterns.cs:87:39:87:39 | access to parameter i |
-| Patterns.cs:87:39:87:54 | [match-true] ... is ... | Patterns.cs:87:44:87:54 | Before ... and ... |
+| Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... | Patterns.cs:87:44:87:54 | Before ... and ... |
 | Patterns.cs:87:39:87:70 | ... ? ... : ... | Patterns.cs:87:39:87:54 | Before ... is ... |
 | Patterns.cs:87:39:87:70 | After ... ? ... : ... | Patterns.cs:87:26:87:27 | Normal Exit |
 | Patterns.cs:87:44:87:44 | 1 | Patterns.cs:87:50:87:54 | Before not ... |
@@ -5303,10 +5303,10 @@ dominance
 | Patterns.cs:95:9:98:9 | if (...) ... | Patterns.cs:95:13:95:40 | Before ... is ... |
 | Patterns.cs:95:13:95:16 | this access | Patterns.cs:95:13:95:40 | ... is ... |
 | Patterns.cs:95:13:95:40 | ... is ... | Patterns.cs:95:13:95:40 | After ... is ... [false] |
-| Patterns.cs:95:13:95:40 | ... is ... | Patterns.cs:95:13:95:40 | [match-true] ... is ... |
+| Patterns.cs:95:13:95:40 | ... is ... | Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... |
 | Patterns.cs:95:13:95:40 | After ... is ... [true] | Patterns.cs:96:9:98:9 | {...} |
 | Patterns.cs:95:13:95:40 | Before ... is ... | Patterns.cs:95:13:95:16 | this access |
-| Patterns.cs:95:13:95:40 | [match-true] ... is ... | Patterns.cs:95:21:95:40 | Before { ... } |
+| Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... | Patterns.cs:95:21:95:40 | Before { ... } |
 | Patterns.cs:95:21:95:40 | After { ... } | Patterns.cs:95:13:95:40 | After ... is ... [true] |
 | Patterns.cs:95:21:95:40 | After { ... } | Patterns.cs:95:21:95:40 | { ... } |
 | Patterns.cs:95:21:95:40 | Before { ... } | Patterns.cs:95:21:95:40 | Before { ... } |
@@ -5352,11 +5352,11 @@ dominance
 | PostDominance.cs:12:9:13:19 | if (...) ... | PostDominance.cs:12:13:12:21 | Before ... is ... |
 | PostDominance.cs:12:13:12:13 | access to parameter s | PostDominance.cs:12:13:12:21 | ... is ... |
 | PostDominance.cs:12:13:12:21 | ... is ... | PostDominance.cs:12:13:12:21 | After ... is ... [false] |
-| PostDominance.cs:12:13:12:21 | ... is ... | PostDominance.cs:12:13:12:21 | [match-true] ... is ... |
+| PostDominance.cs:12:13:12:21 | ... is ... | PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... |
 | PostDominance.cs:12:13:12:21 | After ... is ... [false] | PostDominance.cs:12:9:13:19 | After if (...) ... |
 | PostDominance.cs:12:13:12:21 | After ... is ... [true] | PostDominance.cs:13:13:13:19 | Before return ...; |
 | PostDominance.cs:12:13:12:21 | Before ... is ... | PostDominance.cs:12:13:12:13 | access to parameter s |
-| PostDominance.cs:12:13:12:21 | [match-true] ... is ... | PostDominance.cs:12:18:12:21 | null |
+| PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... | PostDominance.cs:12:18:12:21 | null |
 | PostDominance.cs:12:18:12:21 | null | PostDominance.cs:12:13:12:21 | After ... is ... [true] |
 | PostDominance.cs:13:13:13:19 | Before return ...; | PostDominance.cs:13:13:13:19 | return ...; |
 | PostDominance.cs:14:9:14:28 | After call to method WriteLine | PostDominance.cs:14:9:14:29 | After ...; |
@@ -5372,11 +5372,11 @@ dominance
 | PostDominance.cs:19:9:20:55 | if (...) ... | PostDominance.cs:19:13:19:21 | Before ... is ... |
 | PostDominance.cs:19:13:19:13 | access to parameter s | PostDominance.cs:19:13:19:21 | ... is ... |
 | PostDominance.cs:19:13:19:21 | ... is ... | PostDominance.cs:19:13:19:21 | After ... is ... [false] |
-| PostDominance.cs:19:13:19:21 | ... is ... | PostDominance.cs:19:13:19:21 | [match-true] ... is ... |
+| PostDominance.cs:19:13:19:21 | ... is ... | PostDominance.cs:19:13:19:21 | [MatchTrue] ... is ... |
 | PostDominance.cs:19:13:19:21 | After ... is ... [false] | PostDominance.cs:19:9:20:55 | After if (...) ... |
 | PostDominance.cs:19:13:19:21 | After ... is ... [true] | PostDominance.cs:20:13:20:55 | Before throw ...; |
 | PostDominance.cs:19:13:19:21 | Before ... is ... | PostDominance.cs:19:13:19:13 | access to parameter s |
-| PostDominance.cs:19:13:19:21 | [match-true] ... is ... | PostDominance.cs:19:18:19:21 | null |
+| PostDominance.cs:19:13:19:21 | [MatchTrue] ... is ... | PostDominance.cs:19:18:19:21 | null |
 | PostDominance.cs:19:18:19:21 | null | PostDominance.cs:19:13:19:21 | After ... is ... [true] |
 | PostDominance.cs:20:13:20:55 | Before throw ...; | PostDominance.cs:20:19:20:54 | Before object creation of type ArgumentNullException |
 | PostDominance.cs:20:13:20:55 | throw ...; | PostDominance.cs:17:10:17:11 | Exceptional Exit |
@@ -6066,10 +6066,10 @@ dominance
 | TypeAccesses.cs:7:9:7:25 | if (...) ... | TypeAccesses.cs:7:13:7:22 | Before ... is ... |
 | TypeAccesses.cs:7:13:7:13 | access to parameter o | TypeAccesses.cs:7:13:7:22 | ... is ... |
 | TypeAccesses.cs:7:13:7:22 | ... is ... | TypeAccesses.cs:7:13:7:22 | After ... is ... [false] |
-| TypeAccesses.cs:7:13:7:22 | ... is ... | TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... |
+| TypeAccesses.cs:7:13:7:22 | ... is ... | TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... |
 | TypeAccesses.cs:7:13:7:22 | After ... is ... [true] | TypeAccesses.cs:7:25:7:25 | ; |
 | TypeAccesses.cs:7:13:7:22 | Before ... is ... | TypeAccesses.cs:7:13:7:13 | access to parameter o |
-| TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... | TypeAccesses.cs:7:18:7:22 | Int32 j |
+| TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... | TypeAccesses.cs:7:18:7:22 | Int32 j |
 | TypeAccesses.cs:7:18:7:22 | Int32 j | TypeAccesses.cs:7:13:7:22 | After ... is ... [true] |
 | TypeAccesses.cs:8:9:8:28 | ... ...; | TypeAccesses.cs:8:13:8:27 | Before Type t = ... |
 | TypeAccesses.cs:8:9:8:28 | After ... ...; | TypeAccesses.cs:4:5:9:5 | After {...} |
@@ -12424,7 +12424,7 @@ postDominance
 | Patterns.cs:8:13:8:23 | ... is ... | Patterns.cs:8:13:8:13 | access to local variable o |
 | Patterns.cs:8:13:8:23 | After ... is ... [true] | Patterns.cs:8:18:8:23 | Int32 i1 |
 | Patterns.cs:8:13:8:23 | Before ... is ... | Patterns.cs:8:9:18:9 | if (...) ... |
-| Patterns.cs:8:18:8:23 | Int32 i1 | Patterns.cs:8:13:8:23 | [match-true] ... is ... |
+| Patterns.cs:8:18:8:23 | Int32 i1 | Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... |
 | Patterns.cs:9:9:11:9 | After {...} | Patterns.cs:10:13:10:43 | After ...; |
 | Patterns.cs:9:9:11:9 | {...} | Patterns.cs:8:13:8:23 | After ... is ... [true] |
 | Patterns.cs:10:13:10:42 | After call to method WriteLine | Patterns.cs:10:13:10:42 | call to method WriteLine |
@@ -12447,7 +12447,7 @@ postDominance
 | Patterns.cs:12:18:12:31 | ... is ... | Patterns.cs:12:18:12:18 | access to local variable o |
 | Patterns.cs:12:18:12:31 | After ... is ... [true] | Patterns.cs:12:23:12:31 | String s1 |
 | Patterns.cs:12:18:12:31 | Before ... is ... | Patterns.cs:12:14:18:9 | if (...) ... |
-| Patterns.cs:12:23:12:31 | String s1 | Patterns.cs:12:18:12:31 | [match-true] ... is ... |
+| Patterns.cs:12:23:12:31 | String s1 | Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... |
 | Patterns.cs:13:9:15:9 | After {...} | Patterns.cs:14:13:14:46 | After ...; |
 | Patterns.cs:13:9:15:9 | {...} | Patterns.cs:12:18:12:31 | After ... is ... [true] |
 | Patterns.cs:14:13:14:45 | After call to method WriteLine | Patterns.cs:14:13:14:45 | call to method WriteLine |
@@ -12470,7 +12470,7 @@ postDominance
 | Patterns.cs:16:18:16:28 | ... is ... | Patterns.cs:16:18:16:18 | access to local variable o |
 | Patterns.cs:16:18:16:28 | After ... is ... [true] | Patterns.cs:16:23:16:28 | Object v1 |
 | Patterns.cs:16:18:16:28 | Before ... is ... | Patterns.cs:16:14:18:9 | if (...) ... |
-| Patterns.cs:16:23:16:28 | Object v1 | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
+| Patterns.cs:16:23:16:28 | Object v1 | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
 | Patterns.cs:17:9:18:9 | {...} | Patterns.cs:16:18:16:28 | After ... is ... [true] |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:23:17:23:22 | break; |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:26:17:26:22 | break; |
@@ -12565,7 +12565,7 @@ postDominance
 | Patterns.cs:48:9:48:20 | After ... is ... | Patterns.cs:48:14:48:20 | After not ... |
 | Patterns.cs:48:9:48:20 | Before ... is ... | Patterns.cs:47:24:47:25 | Entry |
 | Patterns.cs:48:14:48:20 | After not ... | Patterns.cs:48:14:48:20 | not ... |
-| Patterns.cs:48:14:48:20 | Before not ... | Patterns.cs:48:9:48:20 | [match-true] ... is ... |
+| Patterns.cs:48:14:48:20 | Before not ... | Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... |
 | Patterns.cs:48:14:48:20 | not ... | Patterns.cs:48:18:48:20 | a |
 | Patterns.cs:48:18:48:20 | a | Patterns.cs:48:14:48:20 | Before not ... |
 | Patterns.cs:50:24:50:25 | Exit | Patterns.cs:50:24:50:25 | Normal Exit |
@@ -12578,7 +12578,7 @@ postDominance
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:25:51:30 | After ... is ... |
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:34:51:39 | After ... is ... |
 | Patterns.cs:51:14:51:21 | After not ... | Patterns.cs:51:14:51:21 | not ... |
-| Patterns.cs:51:14:51:21 | Before not ... | Patterns.cs:51:9:51:21 | [match-true] ... is ... |
+| Patterns.cs:51:14:51:21 | Before not ... | Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... |
 | Patterns.cs:51:14:51:21 | not ... | Patterns.cs:51:18:51:21 | null |
 | Patterns.cs:51:18:51:21 | null | Patterns.cs:51:14:51:21 | Before not ... |
 | Patterns.cs:51:25:51:25 | access to parameter c | Patterns.cs:51:25:51:30 | Before ... is ... |
@@ -12586,13 +12586,13 @@ postDominance
 | Patterns.cs:51:25:51:30 | After ... is ... | Patterns.cs:51:25:51:30 | ... is ... |
 | Patterns.cs:51:25:51:30 | After ... is ... | Patterns.cs:51:30:51:30 | 1 |
 | Patterns.cs:51:25:51:30 | Before ... is ... | Patterns.cs:51:9:51:21 | After ... is ... [true] |
-| Patterns.cs:51:30:51:30 | 1 | Patterns.cs:51:25:51:30 | [match-true] ... is ... |
+| Patterns.cs:51:30:51:30 | 1 | Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... |
 | Patterns.cs:51:34:51:34 | access to parameter c | Patterns.cs:51:34:51:39 | Before ... is ... |
 | Patterns.cs:51:34:51:39 | ... is ... | Patterns.cs:51:34:51:34 | access to parameter c |
 | Patterns.cs:51:34:51:39 | After ... is ... | Patterns.cs:51:34:51:39 | ... is ... |
 | Patterns.cs:51:34:51:39 | After ... is ... | Patterns.cs:51:39:51:39 | 2 |
 | Patterns.cs:51:34:51:39 | Before ... is ... | Patterns.cs:51:9:51:21 | After ... is ... [false] |
-| Patterns.cs:51:39:51:39 | 2 | Patterns.cs:51:34:51:39 | [match-true] ... is ... |
+| Patterns.cs:51:39:51:39 | 2 | Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... |
 | Patterns.cs:53:24:53:25 | Exit | Patterns.cs:53:24:53:25 | Normal Exit |
 | Patterns.cs:53:24:53:25 | Normal Exit | Patterns.cs:54:9:54:37 | After ... is ... |
 | Patterns.cs:54:9:54:9 | access to parameter c | Patterns.cs:54:9:54:37 | Before ... is ... |
@@ -12601,7 +12601,7 @@ postDominance
 | Patterns.cs:54:9:54:37 | After ... is ... | Patterns.cs:54:14:54:37 | After not ... |
 | Patterns.cs:54:9:54:37 | Before ... is ... | Patterns.cs:53:24:53:25 | Entry |
 | Patterns.cs:54:14:54:37 | After not ... | Patterns.cs:54:14:54:37 | not ... |
-| Patterns.cs:54:14:54:37 | Before not ... | Patterns.cs:54:9:54:37 | [match-true] ... is ... |
+| Patterns.cs:54:14:54:37 | Before not ... | Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... |
 | Patterns.cs:54:14:54:37 | not ... | Patterns.cs:54:18:54:37 | After { ... } |
 | Patterns.cs:54:18:54:25 | access to type Patterns | Patterns.cs:54:18:54:37 | Patterns u |
 | Patterns.cs:54:18:54:37 | After { ... } | Patterns.cs:54:18:54:37 | { ... } |
@@ -12692,7 +12692,7 @@ postDominance
 | Patterns.cs:85:44:85:44 | 1 | Patterns.cs:85:44:85:53 | Before ... or ... |
 | Patterns.cs:85:44:85:53 | ... or ... | Patterns.cs:85:49:85:53 | After not ... |
 | Patterns.cs:85:44:85:53 | After ... or ... | Patterns.cs:85:44:85:53 | ... or ... |
-| Patterns.cs:85:44:85:53 | Before ... or ... | Patterns.cs:85:39:85:53 | [match-true] ... is ... |
+| Patterns.cs:85:44:85:53 | Before ... or ... | Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... |
 | Patterns.cs:85:49:85:53 | After not ... | Patterns.cs:85:49:85:53 | not ... |
 | Patterns.cs:85:49:85:53 | Before not ... | Patterns.cs:85:44:85:44 | 1 |
 | Patterns.cs:85:49:85:53 | not ... | Patterns.cs:85:53:85:53 | 2 |
@@ -12711,7 +12711,7 @@ postDominance
 | Patterns.cs:87:44:87:44 | 1 | Patterns.cs:87:44:87:54 | Before ... and ... |
 | Patterns.cs:87:44:87:54 | ... and ... | Patterns.cs:87:50:87:54 | After not ... |
 | Patterns.cs:87:44:87:54 | After ... and ... | Patterns.cs:87:44:87:54 | ... and ... |
-| Patterns.cs:87:44:87:54 | Before ... and ... | Patterns.cs:87:39:87:54 | [match-true] ... is ... |
+| Patterns.cs:87:44:87:54 | Before ... and ... | Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... |
 | Patterns.cs:87:50:87:54 | After not ... | Patterns.cs:87:50:87:54 | not ... |
 | Patterns.cs:87:50:87:54 | Before not ... | Patterns.cs:87:44:87:44 | 1 |
 | Patterns.cs:87:50:87:54 | not ... | Patterns.cs:87:54:87:54 | 2 |
@@ -12731,7 +12731,7 @@ postDominance
 | Patterns.cs:95:13:95:40 | Before ... is ... | Patterns.cs:95:9:98:9 | if (...) ... |
 | Patterns.cs:95:21:95:40 | After { ... } | Patterns.cs:95:21:95:40 | { ... } |
 | Patterns.cs:95:21:95:40 | After { ... } | Patterns.cs:95:21:95:40 | { ... } |
-| Patterns.cs:95:21:95:40 | Before { ... } | Patterns.cs:95:13:95:40 | [match-true] ... is ... |
+| Patterns.cs:95:21:95:40 | Before { ... } | Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... |
 | Patterns.cs:95:21:95:40 | Before { ... } | Patterns.cs:95:21:95:40 | Before { ... } |
 | Patterns.cs:95:21:95:40 | { ... } | Patterns.cs:95:21:95:40 | After { ... } |
 | Patterns.cs:95:21:95:40 | { ... } | Patterns.cs:95:29:95:38 | After ... or ... |
@@ -12779,7 +12779,7 @@ postDominance
 | PostDominance.cs:12:13:12:21 | ... is ... | PostDominance.cs:12:13:12:13 | access to parameter s |
 | PostDominance.cs:12:13:12:21 | After ... is ... [true] | PostDominance.cs:12:18:12:21 | null |
 | PostDominance.cs:12:13:12:21 | Before ... is ... | PostDominance.cs:12:9:13:19 | if (...) ... |
-| PostDominance.cs:12:18:12:21 | null | PostDominance.cs:12:13:12:21 | [match-true] ... is ... |
+| PostDominance.cs:12:18:12:21 | null | PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... |
 | PostDominance.cs:13:13:13:19 | Before return ...; | PostDominance.cs:12:13:12:21 | After ... is ... [true] |
 | PostDominance.cs:13:13:13:19 | return ...; | PostDominance.cs:13:13:13:19 | Before return ...; |
 | PostDominance.cs:14:9:14:28 | After call to method WriteLine | PostDominance.cs:14:9:14:28 | call to method WriteLine |
@@ -12799,7 +12799,7 @@ postDominance
 | PostDominance.cs:19:13:19:21 | After ... is ... [false] | PostDominance.cs:19:13:19:21 | ... is ... |
 | PostDominance.cs:19:13:19:21 | After ... is ... [true] | PostDominance.cs:19:18:19:21 | null |
 | PostDominance.cs:19:13:19:21 | Before ... is ... | PostDominance.cs:19:9:20:55 | if (...) ... |
-| PostDominance.cs:19:18:19:21 | null | PostDominance.cs:19:13:19:21 | [match-true] ... is ... |
+| PostDominance.cs:19:18:19:21 | null | PostDominance.cs:19:13:19:21 | [MatchTrue] ... is ... |
 | PostDominance.cs:20:13:20:55 | Before throw ...; | PostDominance.cs:19:13:19:21 | After ... is ... [true] |
 | PostDominance.cs:20:13:20:55 | throw ...; | PostDominance.cs:20:19:20:54 | After object creation of type ArgumentNullException |
 | PostDominance.cs:20:19:20:54 | After object creation of type ArgumentNullException | PostDominance.cs:20:19:20:54 | object creation of type ArgumentNullException |
@@ -13475,7 +13475,7 @@ postDominance
 | TypeAccesses.cs:7:13:7:22 | ... is ... | TypeAccesses.cs:7:13:7:13 | access to parameter o |
 | TypeAccesses.cs:7:13:7:22 | After ... is ... [true] | TypeAccesses.cs:7:18:7:22 | Int32 j |
 | TypeAccesses.cs:7:13:7:22 | Before ... is ... | TypeAccesses.cs:7:9:7:25 | if (...) ... |
-| TypeAccesses.cs:7:18:7:22 | Int32 j | TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... |
+| TypeAccesses.cs:7:18:7:22 | Int32 j | TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... |
 | TypeAccesses.cs:7:25:7:25 | ; | TypeAccesses.cs:7:13:7:22 | After ... is ... [true] |
 | TypeAccesses.cs:8:9:8:28 | ... ...; | TypeAccesses.cs:7:9:7:25 | After if (...) ... |
 | TypeAccesses.cs:8:9:8:28 | After ... ...; | TypeAccesses.cs:8:13:8:27 | After Type t = ... |
@@ -17914,13 +17914,13 @@ blockDominance
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:5:10:5:11 | Entry |
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:8:9:18:9 | After if (...) ... |
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:8:13:8:23 | After ... is ... [false] |
-| Patterns.cs:5:10:5:11 | Entry | Patterns.cs:8:13:8:23 | [match-true] ... is ... |
+| Patterns.cs:5:10:5:11 | Entry | Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... |
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:12:14:18:9 | After if (...) ... |
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:12:18:12:31 | After ... is ... [false] |
-| Patterns.cs:5:10:5:11 | Entry | Patterns.cs:12:18:12:31 | [match-true] ... is ... |
+| Patterns.cs:5:10:5:11 | Entry | Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... |
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:16:14:18:9 | After if (...) ... |
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:5:10:5:11 | Entry | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
+| Patterns.cs:5:10:5:11 | Entry | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:20:9:38:9 | After switch (...) {...} |
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:22:13:22:23 | After case ...: [match] |
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:22:13:22:23 | After case ...: [no-match] |
@@ -17953,20 +17953,20 @@ blockDominance
 | Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:8:13:8:23 | After ... is ... [false] |
 | Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:12:14:18:9 | After if (...) ... |
 | Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:12:18:12:31 | After ... is ... [false] |
-| Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:12:18:12:31 | [match-true] ... is ... |
+| Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... |
 | Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:16:14:18:9 | After if (...) ... |
 | Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
-| Patterns.cs:8:13:8:23 | [match-true] ... is ... | Patterns.cs:8:13:8:23 | [match-true] ... is ... |
+| Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
+| Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... | Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... |
 | Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:12:14:18:9 | After if (...) ... |
 | Patterns.cs:12:18:12:31 | After ... is ... [false] | Patterns.cs:12:18:12:31 | After ... is ... [false] |
 | Patterns.cs:12:18:12:31 | After ... is ... [false] | Patterns.cs:16:14:18:9 | After if (...) ... |
 | Patterns.cs:12:18:12:31 | After ... is ... [false] | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:12:18:12:31 | After ... is ... [false] | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
-| Patterns.cs:12:18:12:31 | [match-true] ... is ... | Patterns.cs:12:18:12:31 | [match-true] ... is ... |
+| Patterns.cs:12:18:12:31 | After ... is ... [false] | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
+| Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... | Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... |
 | Patterns.cs:16:14:18:9 | After if (...) ... | Patterns.cs:16:14:18:9 | After if (...) ... |
 | Patterns.cs:16:18:16:28 | After ... is ... [false] | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:16:18:16:28 | [match-true] ... is ... | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
+| Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:20:9:38:9 | After switch (...) {...} |
 | Patterns.cs:22:13:22:23 | After case ...: [match] | Patterns.cs:22:13:22:23 | After case ...: [match] |
 | Patterns.cs:22:13:22:23 | After case ...: [no-match] | Patterns.cs:22:13:22:23 | After case ...: [no-match] |
@@ -18008,33 +18008,33 @@ blockDominance
 | Patterns.cs:33:13:33:24 | After case ...: [no-match] | Patterns.cs:33:13:33:24 | After case ...: [no-match] |
 | Patterns.cs:47:24:47:25 | Entry | Patterns.cs:47:24:47:25 | Entry |
 | Patterns.cs:47:24:47:25 | Entry | Patterns.cs:48:9:48:20 | After ... is ... |
-| Patterns.cs:47:24:47:25 | Entry | Patterns.cs:48:9:48:20 | [match-true] ... is ... |
+| Patterns.cs:47:24:47:25 | Entry | Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... |
 | Patterns.cs:48:9:48:20 | After ... is ... | Patterns.cs:48:9:48:20 | After ... is ... |
-| Patterns.cs:48:9:48:20 | [match-true] ... is ... | Patterns.cs:48:9:48:20 | [match-true] ... is ... |
+| Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... | Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... |
 | Patterns.cs:50:24:50:25 | Entry | Patterns.cs:50:24:50:25 | Entry |
 | Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:9:51:21 | After ... is ... [false] |
-| Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:9:51:21 | [match-true] ... is ... |
+| Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... |
 | Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:9:51:39 | After ... ? ... : ... |
 | Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:25:51:30 | After ... is ... |
-| Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:25:51:30 | [match-true] ... is ... |
+| Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... |
 | Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:34:51:39 | After ... is ... |
-| Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:34:51:39 | [match-true] ... is ... |
+| Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... |
 | Patterns.cs:51:9:51:21 | After ... is ... [false] | Patterns.cs:51:9:51:21 | After ... is ... [false] |
 | Patterns.cs:51:9:51:21 | After ... is ... [false] | Patterns.cs:51:34:51:39 | After ... is ... |
-| Patterns.cs:51:9:51:21 | After ... is ... [false] | Patterns.cs:51:34:51:39 | [match-true] ... is ... |
-| Patterns.cs:51:9:51:21 | [match-true] ... is ... | Patterns.cs:51:9:51:21 | [match-true] ... is ... |
-| Patterns.cs:51:9:51:21 | [match-true] ... is ... | Patterns.cs:51:25:51:30 | After ... is ... |
-| Patterns.cs:51:9:51:21 | [match-true] ... is ... | Patterns.cs:51:25:51:30 | [match-true] ... is ... |
+| Patterns.cs:51:9:51:21 | After ... is ... [false] | Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... |
+| Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... | Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... |
+| Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... | Patterns.cs:51:25:51:30 | After ... is ... |
+| Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... | Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... |
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:9:51:39 | After ... ? ... : ... |
 | Patterns.cs:51:25:51:30 | After ... is ... | Patterns.cs:51:25:51:30 | After ... is ... |
-| Patterns.cs:51:25:51:30 | [match-true] ... is ... | Patterns.cs:51:25:51:30 | [match-true] ... is ... |
+| Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... | Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... |
 | Patterns.cs:51:34:51:39 | After ... is ... | Patterns.cs:51:34:51:39 | After ... is ... |
-| Patterns.cs:51:34:51:39 | [match-true] ... is ... | Patterns.cs:51:34:51:39 | [match-true] ... is ... |
+| Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... | Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... |
 | Patterns.cs:53:24:53:25 | Entry | Patterns.cs:53:24:53:25 | Entry |
 | Patterns.cs:53:24:53:25 | Entry | Patterns.cs:54:9:54:37 | After ... is ... |
-| Patterns.cs:53:24:53:25 | Entry | Patterns.cs:54:9:54:37 | [match-true] ... is ... |
+| Patterns.cs:53:24:53:25 | Entry | Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... |
 | Patterns.cs:54:9:54:37 | After ... is ... | Patterns.cs:54:9:54:37 | After ... is ... |
-| Patterns.cs:54:9:54:37 | [match-true] ... is ... | Patterns.cs:54:9:54:37 | [match-true] ... is ... |
+| Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... | Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... |
 | Patterns.cs:56:26:56:27 | Entry | Patterns.cs:56:26:56:27 | Entry |
 | Patterns.cs:56:26:56:27 | Entry | Patterns.cs:58:16:62:9 | After ... switch { ... } |
 | Patterns.cs:56:26:56:27 | Entry | Patterns.cs:60:13:60:28 | After ... => ... [match] |
@@ -18078,41 +18078,41 @@ blockDominance
 | Patterns.cs:80:13:80:20 | After ... => ... [no-match] | Patterns.cs:80:13:80:20 | After ... => ... [no-match] |
 | Patterns.cs:85:26:85:27 | Entry | Patterns.cs:85:26:85:27 | Entry |
 | Patterns.cs:85:26:85:27 | Entry | Patterns.cs:85:39:85:53 | After ... is ... [false] |
-| Patterns.cs:85:26:85:27 | Entry | Patterns.cs:85:39:85:53 | [match-true] ... is ... |
+| Patterns.cs:85:26:85:27 | Entry | Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... |
 | Patterns.cs:85:26:85:27 | Entry | Patterns.cs:85:39:85:69 | After ... ? ... : ... |
 | Patterns.cs:85:39:85:53 | After ... is ... [false] | Patterns.cs:85:39:85:53 | After ... is ... [false] |
-| Patterns.cs:85:39:85:53 | [match-true] ... is ... | Patterns.cs:85:39:85:53 | [match-true] ... is ... |
+| Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... | Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... |
 | Patterns.cs:85:39:85:69 | After ... ? ... : ... | Patterns.cs:85:39:85:69 | After ... ? ... : ... |
 | Patterns.cs:87:26:87:27 | Entry | Patterns.cs:87:26:87:27 | Entry |
 | Patterns.cs:87:26:87:27 | Entry | Patterns.cs:87:39:87:54 | After ... is ... [false] |
-| Patterns.cs:87:26:87:27 | Entry | Patterns.cs:87:39:87:54 | [match-true] ... is ... |
+| Patterns.cs:87:26:87:27 | Entry | Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... |
 | Patterns.cs:87:26:87:27 | Entry | Patterns.cs:87:39:87:70 | After ... ? ... : ... |
 | Patterns.cs:87:39:87:54 | After ... is ... [false] | Patterns.cs:87:39:87:54 | After ... is ... [false] |
-| Patterns.cs:87:39:87:54 | [match-true] ... is ... | Patterns.cs:87:39:87:54 | [match-true] ... is ... |
+| Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... | Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... |
 | Patterns.cs:87:39:87:70 | After ... ? ... : ... | Patterns.cs:87:39:87:70 | After ... ? ... : ... |
 | Patterns.cs:93:17:93:19 | Entry | Patterns.cs:93:17:93:19 | Entry |
 | Patterns.cs:93:17:93:19 | Entry | Patterns.cs:95:9:98:9 | After if (...) ... |
 | Patterns.cs:93:17:93:19 | Entry | Patterns.cs:95:13:95:40 | After ... is ... [false] |
-| Patterns.cs:93:17:93:19 | Entry | Patterns.cs:95:13:95:40 | [match-true] ... is ... |
+| Patterns.cs:93:17:93:19 | Entry | Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... |
 | Patterns.cs:95:9:98:9 | After if (...) ... | Patterns.cs:95:9:98:9 | After if (...) ... |
 | Patterns.cs:95:13:95:40 | After ... is ... [false] | Patterns.cs:95:13:95:40 | After ... is ... [false] |
-| Patterns.cs:95:13:95:40 | [match-true] ... is ... | Patterns.cs:95:13:95:40 | [match-true] ... is ... |
+| Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... | Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... |
 | PostDominance.cs:3:7:3:19 | Entry | PostDominance.cs:3:7:3:19 | Entry |
 | PostDominance.cs:5:10:5:11 | Entry | PostDominance.cs:5:10:5:11 | Entry |
 | PostDominance.cs:10:10:10:11 | Entry | PostDominance.cs:10:10:10:11 | Entry |
 | PostDominance.cs:10:10:10:11 | Entry | PostDominance.cs:10:10:10:11 | Normal Exit |
 | PostDominance.cs:10:10:10:11 | Entry | PostDominance.cs:12:13:12:21 | After ... is ... [false] |
-| PostDominance.cs:10:10:10:11 | Entry | PostDominance.cs:12:13:12:21 | [match-true] ... is ... |
+| PostDominance.cs:10:10:10:11 | Entry | PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... |
 | PostDominance.cs:10:10:10:11 | Normal Exit | PostDominance.cs:10:10:10:11 | Normal Exit |
 | PostDominance.cs:12:13:12:21 | After ... is ... [false] | PostDominance.cs:12:13:12:21 | After ... is ... [false] |
-| PostDominance.cs:12:13:12:21 | [match-true] ... is ... | PostDominance.cs:12:13:12:21 | [match-true] ... is ... |
+| PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... | PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... |
 | PostDominance.cs:17:10:17:11 | Entry | PostDominance.cs:17:10:17:11 | Entry |
 | PostDominance.cs:17:10:17:11 | Entry | PostDominance.cs:17:10:17:11 | Exit |
 | PostDominance.cs:17:10:17:11 | Entry | PostDominance.cs:19:13:19:21 | After ... is ... [false] |
-| PostDominance.cs:17:10:17:11 | Entry | PostDominance.cs:19:13:19:21 | [match-true] ... is ... |
+| PostDominance.cs:17:10:17:11 | Entry | PostDominance.cs:19:13:19:21 | [MatchTrue] ... is ... |
 | PostDominance.cs:17:10:17:11 | Exit | PostDominance.cs:17:10:17:11 | Exit |
 | PostDominance.cs:19:13:19:21 | After ... is ... [false] | PostDominance.cs:19:13:19:21 | After ... is ... [false] |
-| PostDominance.cs:19:13:19:21 | [match-true] ... is ... | PostDominance.cs:19:13:19:21 | [match-true] ... is ... |
+| PostDominance.cs:19:13:19:21 | [MatchTrue] ... is ... | PostDominance.cs:19:13:19:21 | [MatchTrue] ... is ... |
 | Qualifiers.cs:1:7:1:16 | Entry | Qualifiers.cs:1:7:1:16 | Entry |
 | Qualifiers.cs:7:16:7:21 | Entry | Qualifiers.cs:7:16:7:21 | Entry |
 | Qualifiers.cs:8:23:8:34 | Entry | Qualifiers.cs:8:23:8:34 | Entry |
@@ -18473,10 +18473,10 @@ blockDominance
 | TypeAccesses.cs:3:10:3:10 | Entry | TypeAccesses.cs:3:10:3:10 | Entry |
 | TypeAccesses.cs:3:10:3:10 | Entry | TypeAccesses.cs:7:9:7:25 | After if (...) ... |
 | TypeAccesses.cs:3:10:3:10 | Entry | TypeAccesses.cs:7:13:7:22 | After ... is ... [false] |
-| TypeAccesses.cs:3:10:3:10 | Entry | TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... |
+| TypeAccesses.cs:3:10:3:10 | Entry | TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... |
 | TypeAccesses.cs:7:9:7:25 | After if (...) ... | TypeAccesses.cs:7:9:7:25 | After if (...) ... |
 | TypeAccesses.cs:7:13:7:22 | After ... is ... [false] | TypeAccesses.cs:7:13:7:22 | After ... is ... [false] |
-| TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... | TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... |
+| TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... | TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... |
 | VarDecls.cs:3:7:3:14 | Entry | VarDecls.cs:3:7:3:14 | Entry |
 | VarDecls.cs:5:18:5:19 | Entry | VarDecls.cs:5:18:5:19 | Entry |
 | VarDecls.cs:13:12:13:13 | Entry | VarDecls.cs:13:12:13:13 | Entry |
@@ -22029,40 +22029,40 @@ postBlockDominance
 | Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:5:10:5:11 | Entry |
 | Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:8:9:18:9 | After if (...) ... |
 | Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:8:13:8:23 | After ... is ... [false] |
-| Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:8:13:8:23 | [match-true] ... is ... |
+| Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... |
 | Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:12:14:18:9 | After if (...) ... |
 | Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:12:18:12:31 | After ... is ... [false] |
-| Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:12:18:12:31 | [match-true] ... is ... |
+| Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... |
 | Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:16:14:18:9 | After if (...) ... |
 | Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
+| Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
 | Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:8:13:8:23 | After ... is ... [false] |
-| Patterns.cs:8:13:8:23 | [match-true] ... is ... | Patterns.cs:8:13:8:23 | [match-true] ... is ... |
+| Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... | Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... |
 | Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:8:13:8:23 | After ... is ... [false] |
 | Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:12:14:18:9 | After if (...) ... |
 | Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:12:18:12:31 | After ... is ... [false] |
-| Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:12:18:12:31 | [match-true] ... is ... |
+| Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... |
 | Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:16:14:18:9 | After if (...) ... |
 | Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
+| Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
 | Patterns.cs:12:18:12:31 | After ... is ... [false] | Patterns.cs:12:18:12:31 | After ... is ... [false] |
-| Patterns.cs:12:18:12:31 | [match-true] ... is ... | Patterns.cs:12:18:12:31 | [match-true] ... is ... |
+| Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... | Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... |
 | Patterns.cs:16:14:18:9 | After if (...) ... | Patterns.cs:12:18:12:31 | After ... is ... [false] |
 | Patterns.cs:16:14:18:9 | After if (...) ... | Patterns.cs:16:14:18:9 | After if (...) ... |
 | Patterns.cs:16:14:18:9 | After if (...) ... | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:16:14:18:9 | After if (...) ... | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
+| Patterns.cs:16:14:18:9 | After if (...) ... | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
 | Patterns.cs:16:18:16:28 | After ... is ... [false] | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:16:18:16:28 | [match-true] ... is ... | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
+| Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:5:10:5:11 | Entry |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:8:9:18:9 | After if (...) ... |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:8:13:8:23 | After ... is ... [false] |
-| Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:8:13:8:23 | [match-true] ... is ... |
+| Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:12:14:18:9 | After if (...) ... |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:12:18:12:31 | After ... is ... [false] |
-| Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:12:18:12:31 | [match-true] ... is ... |
+| Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:16:14:18:9 | After if (...) ... |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:16:18:16:28 | After ... is ... [false] |
-| Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:16:18:16:28 | [match-true] ... is ... |
+| Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:20:9:38:9 | After switch (...) {...} |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:22:13:22:23 | After case ...: [match] |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:22:13:22:23 | After case ...: [no-match] |
@@ -22095,32 +22095,32 @@ postBlockDominance
 | Patterns.cs:47:24:47:25 | Entry | Patterns.cs:47:24:47:25 | Entry |
 | Patterns.cs:48:9:48:20 | After ... is ... | Patterns.cs:47:24:47:25 | Entry |
 | Patterns.cs:48:9:48:20 | After ... is ... | Patterns.cs:48:9:48:20 | After ... is ... |
-| Patterns.cs:48:9:48:20 | After ... is ... | Patterns.cs:48:9:48:20 | [match-true] ... is ... |
-| Patterns.cs:48:9:48:20 | [match-true] ... is ... | Patterns.cs:48:9:48:20 | [match-true] ... is ... |
+| Patterns.cs:48:9:48:20 | After ... is ... | Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... |
+| Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... | Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... |
 | Patterns.cs:50:24:50:25 | Entry | Patterns.cs:50:24:50:25 | Entry |
 | Patterns.cs:51:9:51:21 | After ... is ... [false] | Patterns.cs:51:9:51:21 | After ... is ... [false] |
-| Patterns.cs:51:9:51:21 | [match-true] ... is ... | Patterns.cs:51:9:51:21 | [match-true] ... is ... |
+| Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... | Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... |
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:50:24:50:25 | Entry |
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:9:51:21 | After ... is ... [false] |
-| Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:9:51:21 | [match-true] ... is ... |
+| Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... |
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:9:51:39 | After ... ? ... : ... |
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:25:51:30 | After ... is ... |
-| Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:25:51:30 | [match-true] ... is ... |
+| Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... |
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:34:51:39 | After ... is ... |
-| Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:34:51:39 | [match-true] ... is ... |
-| Patterns.cs:51:25:51:30 | After ... is ... | Patterns.cs:51:9:51:21 | [match-true] ... is ... |
+| Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... |
+| Patterns.cs:51:25:51:30 | After ... is ... | Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... |
 | Patterns.cs:51:25:51:30 | After ... is ... | Patterns.cs:51:25:51:30 | After ... is ... |
-| Patterns.cs:51:25:51:30 | After ... is ... | Patterns.cs:51:25:51:30 | [match-true] ... is ... |
-| Patterns.cs:51:25:51:30 | [match-true] ... is ... | Patterns.cs:51:25:51:30 | [match-true] ... is ... |
+| Patterns.cs:51:25:51:30 | After ... is ... | Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... |
+| Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... | Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... |
 | Patterns.cs:51:34:51:39 | After ... is ... | Patterns.cs:51:9:51:21 | After ... is ... [false] |
 | Patterns.cs:51:34:51:39 | After ... is ... | Patterns.cs:51:34:51:39 | After ... is ... |
-| Patterns.cs:51:34:51:39 | After ... is ... | Patterns.cs:51:34:51:39 | [match-true] ... is ... |
-| Patterns.cs:51:34:51:39 | [match-true] ... is ... | Patterns.cs:51:34:51:39 | [match-true] ... is ... |
+| Patterns.cs:51:34:51:39 | After ... is ... | Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... |
+| Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... | Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... |
 | Patterns.cs:53:24:53:25 | Entry | Patterns.cs:53:24:53:25 | Entry |
 | Patterns.cs:54:9:54:37 | After ... is ... | Patterns.cs:53:24:53:25 | Entry |
 | Patterns.cs:54:9:54:37 | After ... is ... | Patterns.cs:54:9:54:37 | After ... is ... |
-| Patterns.cs:54:9:54:37 | After ... is ... | Patterns.cs:54:9:54:37 | [match-true] ... is ... |
-| Patterns.cs:54:9:54:37 | [match-true] ... is ... | Patterns.cs:54:9:54:37 | [match-true] ... is ... |
+| Patterns.cs:54:9:54:37 | After ... is ... | Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... |
+| Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... | Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... |
 | Patterns.cs:56:26:56:27 | Entry | Patterns.cs:56:26:56:27 | Entry |
 | Patterns.cs:58:16:62:9 | After ... switch { ... } | Patterns.cs:56:26:56:27 | Entry |
 | Patterns.cs:58:16:62:9 | After ... switch { ... } | Patterns.cs:58:16:62:9 | After ... switch { ... } |
@@ -22156,39 +22156,39 @@ postBlockDominance
 | Patterns.cs:80:13:80:20 | After ... => ... [no-match] | Patterns.cs:80:13:80:20 | After ... => ... [no-match] |
 | Patterns.cs:85:26:85:27 | Entry | Patterns.cs:85:26:85:27 | Entry |
 | Patterns.cs:85:39:85:53 | After ... is ... [false] | Patterns.cs:85:39:85:53 | After ... is ... [false] |
-| Patterns.cs:85:39:85:53 | [match-true] ... is ... | Patterns.cs:85:39:85:53 | [match-true] ... is ... |
+| Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... | Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... |
 | Patterns.cs:85:39:85:69 | After ... ? ... : ... | Patterns.cs:85:26:85:27 | Entry |
 | Patterns.cs:85:39:85:69 | After ... ? ... : ... | Patterns.cs:85:39:85:53 | After ... is ... [false] |
-| Patterns.cs:85:39:85:69 | After ... ? ... : ... | Patterns.cs:85:39:85:53 | [match-true] ... is ... |
+| Patterns.cs:85:39:85:69 | After ... ? ... : ... | Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... |
 | Patterns.cs:85:39:85:69 | After ... ? ... : ... | Patterns.cs:85:39:85:69 | After ... ? ... : ... |
 | Patterns.cs:87:26:87:27 | Entry | Patterns.cs:87:26:87:27 | Entry |
 | Patterns.cs:87:39:87:54 | After ... is ... [false] | Patterns.cs:87:39:87:54 | After ... is ... [false] |
-| Patterns.cs:87:39:87:54 | [match-true] ... is ... | Patterns.cs:87:39:87:54 | [match-true] ... is ... |
+| Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... | Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... |
 | Patterns.cs:87:39:87:70 | After ... ? ... : ... | Patterns.cs:87:26:87:27 | Entry |
 | Patterns.cs:87:39:87:70 | After ... ? ... : ... | Patterns.cs:87:39:87:54 | After ... is ... [false] |
-| Patterns.cs:87:39:87:70 | After ... ? ... : ... | Patterns.cs:87:39:87:54 | [match-true] ... is ... |
+| Patterns.cs:87:39:87:70 | After ... ? ... : ... | Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... |
 | Patterns.cs:87:39:87:70 | After ... ? ... : ... | Patterns.cs:87:39:87:70 | After ... ? ... : ... |
 | Patterns.cs:93:17:93:19 | Entry | Patterns.cs:93:17:93:19 | Entry |
 | Patterns.cs:95:9:98:9 | After if (...) ... | Patterns.cs:93:17:93:19 | Entry |
 | Patterns.cs:95:9:98:9 | After if (...) ... | Patterns.cs:95:9:98:9 | After if (...) ... |
 | Patterns.cs:95:9:98:9 | After if (...) ... | Patterns.cs:95:13:95:40 | After ... is ... [false] |
-| Patterns.cs:95:9:98:9 | After if (...) ... | Patterns.cs:95:13:95:40 | [match-true] ... is ... |
+| Patterns.cs:95:9:98:9 | After if (...) ... | Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... |
 | Patterns.cs:95:13:95:40 | After ... is ... [false] | Patterns.cs:95:13:95:40 | After ... is ... [false] |
-| Patterns.cs:95:13:95:40 | [match-true] ... is ... | Patterns.cs:95:13:95:40 | [match-true] ... is ... |
+| Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... | Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... |
 | PostDominance.cs:3:7:3:19 | Entry | PostDominance.cs:3:7:3:19 | Entry |
 | PostDominance.cs:5:10:5:11 | Entry | PostDominance.cs:5:10:5:11 | Entry |
 | PostDominance.cs:10:10:10:11 | Entry | PostDominance.cs:10:10:10:11 | Entry |
 | PostDominance.cs:10:10:10:11 | Normal Exit | PostDominance.cs:10:10:10:11 | Entry |
 | PostDominance.cs:10:10:10:11 | Normal Exit | PostDominance.cs:10:10:10:11 | Normal Exit |
 | PostDominance.cs:10:10:10:11 | Normal Exit | PostDominance.cs:12:13:12:21 | After ... is ... [false] |
-| PostDominance.cs:10:10:10:11 | Normal Exit | PostDominance.cs:12:13:12:21 | [match-true] ... is ... |
+| PostDominance.cs:10:10:10:11 | Normal Exit | PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... |
 | PostDominance.cs:12:13:12:21 | After ... is ... [false] | PostDominance.cs:12:13:12:21 | After ... is ... [false] |
-| PostDominance.cs:12:13:12:21 | [match-true] ... is ... | PostDominance.cs:12:13:12:21 | [match-true] ... is ... |
+| PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... | PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... |
 | PostDominance.cs:17:10:17:11 | Entry | PostDominance.cs:17:10:17:11 | Entry |
 | PostDominance.cs:17:10:17:11 | Exit | PostDominance.cs:17:10:17:11 | Exit |
 | PostDominance.cs:19:13:19:21 | After ... is ... [false] | PostDominance.cs:17:10:17:11 | Entry |
 | PostDominance.cs:19:13:19:21 | After ... is ... [false] | PostDominance.cs:19:13:19:21 | After ... is ... [false] |
-| PostDominance.cs:19:13:19:21 | [match-true] ... is ... | PostDominance.cs:19:13:19:21 | [match-true] ... is ... |
+| PostDominance.cs:19:13:19:21 | [MatchTrue] ... is ... | PostDominance.cs:19:13:19:21 | [MatchTrue] ... is ... |
 | Qualifiers.cs:1:7:1:16 | Entry | Qualifiers.cs:1:7:1:16 | Entry |
 | Qualifiers.cs:7:16:7:21 | Entry | Qualifiers.cs:7:16:7:21 | Entry |
 | Qualifiers.cs:8:23:8:34 | Entry | Qualifiers.cs:8:23:8:34 | Entry |
@@ -22461,9 +22461,9 @@ postBlockDominance
 | TypeAccesses.cs:7:9:7:25 | After if (...) ... | TypeAccesses.cs:3:10:3:10 | Entry |
 | TypeAccesses.cs:7:9:7:25 | After if (...) ... | TypeAccesses.cs:7:9:7:25 | After if (...) ... |
 | TypeAccesses.cs:7:9:7:25 | After if (...) ... | TypeAccesses.cs:7:13:7:22 | After ... is ... [false] |
-| TypeAccesses.cs:7:9:7:25 | After if (...) ... | TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... |
+| TypeAccesses.cs:7:9:7:25 | After if (...) ... | TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... |
 | TypeAccesses.cs:7:13:7:22 | After ... is ... [false] | TypeAccesses.cs:7:13:7:22 | After ... is ... [false] |
-| TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... | TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... |
+| TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... | TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... |
 | VarDecls.cs:3:7:3:14 | Entry | VarDecls.cs:3:7:3:14 | Entry |
 | VarDecls.cs:5:18:5:19 | Entry | VarDecls.cs:5:18:5:19 | Entry |
 | VarDecls.cs:13:12:13:13 | Entry | VarDecls.cs:13:12:13:13 | Entry |

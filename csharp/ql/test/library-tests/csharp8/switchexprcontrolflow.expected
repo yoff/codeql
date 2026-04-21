@@ -284,11 +284,11 @@
 | patterns.cs:140:17:140:42 | After ... => ... [no-match] | patterns.cs:141:17:141:29 | ... => ... | semmle.label | successor |
 | patterns.cs:140:31:140:31 | access to local variable y | patterns.cs:140:31:140:37 | ... is ... | semmle.label | successor |
 | patterns.cs:140:31:140:37 | ... is ... | patterns.cs:140:31:140:37 | After ... is ... [false] | semmle.label | false |
-| patterns.cs:140:31:140:37 | ... is ... | patterns.cs:140:31:140:37 | [match-true] ... is ... | semmle.label | true |
+| patterns.cs:140:31:140:37 | ... is ... | patterns.cs:140:31:140:37 | [MatchTrue] ... is ... | semmle.label | true |
 | patterns.cs:140:31:140:37 | After ... is ... [false] | patterns.cs:141:17:141:29 | ... => ... | semmle.label | successor |
 | patterns.cs:140:31:140:37 | After ... is ... [true] | patterns.cs:140:42:140:42 | 4 | semmle.label | successor |
 | patterns.cs:140:31:140:37 | Before ... is ... | patterns.cs:140:31:140:31 | access to local variable y | semmle.label | successor |
-| patterns.cs:140:31:140:37 | [match-true] ... is ... | patterns.cs:140:36:140:37 | Before { ... } | semmle.label | successor |
+| patterns.cs:140:31:140:37 | [MatchTrue] ... is ... | patterns.cs:140:36:140:37 | Before { ... } | semmle.label | successor |
 | patterns.cs:140:36:140:37 | After { ... } | patterns.cs:140:31:140:37 | After ... is ... [true] | semmle.label | true |
 | patterns.cs:140:36:140:37 | Before { ... } | patterns.cs:140:36:140:37 | { ... } | semmle.label | successor |
 | patterns.cs:140:36:140:37 | { ... } | patterns.cs:140:36:140:37 | After { ... } | semmle.label | successor |

@@ -906,13 +906,13 @@
 | Patterns.cs:5:10:5:11 | Entry | Patterns.cs:8:13:8:23 | ... is ... | 13 |
 | Patterns.cs:8:9:18:9 | After if (...) ... | Patterns.cs:22:13:22:23 | case ...: | 4 |
 | Patterns.cs:8:13:8:23 | After ... is ... [false] | Patterns.cs:12:18:12:31 | ... is ... | 5 |
-| Patterns.cs:8:13:8:23 | [match-true] ... is ... | Patterns.cs:9:9:11:9 | After {...} | 18 |
+| Patterns.cs:8:13:8:23 | [MatchTrue] ... is ... | Patterns.cs:9:9:11:9 | After {...} | 18 |
 | Patterns.cs:12:14:18:9 | After if (...) ... | Patterns.cs:12:14:18:9 | After if (...) ... | 1 |
 | Patterns.cs:12:18:12:31 | After ... is ... [false] | Patterns.cs:16:18:16:28 | ... is ... | 5 |
-| Patterns.cs:12:18:12:31 | [match-true] ... is ... | Patterns.cs:13:9:15:9 | After {...} | 18 |
+| Patterns.cs:12:18:12:31 | [MatchTrue] ... is ... | Patterns.cs:13:9:15:9 | After {...} | 18 |
 | Patterns.cs:16:14:18:9 | After if (...) ... | Patterns.cs:16:14:18:9 | After if (...) ... | 1 |
 | Patterns.cs:16:18:16:28 | After ... is ... [false] | Patterns.cs:16:18:16:28 | After ... is ... [false] | 1 |
-| Patterns.cs:16:18:16:28 | [match-true] ... is ... | Patterns.cs:17:9:18:9 | {...} | 4 |
+| Patterns.cs:16:18:16:28 | [MatchTrue] ... is ... | Patterns.cs:17:9:18:9 | {...} | 4 |
 | Patterns.cs:20:9:38:9 | After switch (...) {...} | Patterns.cs:5:10:5:11 | Exit | 7 |
 | Patterns.cs:22:13:22:23 | After case ...: [match] | Patterns.cs:23:17:23:22 | break; | 4 |
 | Patterns.cs:22:13:22:23 | After case ...: [no-match] | Patterns.cs:24:13:24:36 | case ...: | 2 |
@@ -929,18 +929,18 @@
 | Patterns.cs:33:13:33:24 | After case ...: [no-match] | Patterns.cs:37:17:37:22 | break; | 11 |
 | Patterns.cs:47:24:47:25 | Entry | Patterns.cs:48:9:48:20 | ... is ... | 4 |
 | Patterns.cs:48:9:48:20 | After ... is ... | Patterns.cs:47:24:47:25 | Exit | 3 |
-| Patterns.cs:48:9:48:20 | [match-true] ... is ... | Patterns.cs:48:14:48:20 | After not ... | 5 |
+| Patterns.cs:48:9:48:20 | [MatchTrue] ... is ... | Patterns.cs:48:14:48:20 | After not ... | 5 |
 | Patterns.cs:50:24:50:25 | Entry | Patterns.cs:51:9:51:21 | ... is ... | 5 |
 | Patterns.cs:51:9:51:21 | After ... is ... [false] | Patterns.cs:51:34:51:39 | ... is ... | 4 |
-| Patterns.cs:51:9:51:21 | [match-true] ... is ... | Patterns.cs:51:25:51:30 | ... is ... | 9 |
+| Patterns.cs:51:9:51:21 | [MatchTrue] ... is ... | Patterns.cs:51:25:51:30 | ... is ... | 9 |
 | Patterns.cs:51:9:51:39 | After ... ? ... : ... | Patterns.cs:50:24:50:25 | Exit | 3 |
 | Patterns.cs:51:25:51:30 | After ... is ... | Patterns.cs:51:25:51:30 | After ... is ... | 1 |
-| Patterns.cs:51:25:51:30 | [match-true] ... is ... | Patterns.cs:51:30:51:30 | 1 | 2 |
+| Patterns.cs:51:25:51:30 | [MatchTrue] ... is ... | Patterns.cs:51:30:51:30 | 1 | 2 |
 | Patterns.cs:51:34:51:39 | After ... is ... | Patterns.cs:51:34:51:39 | After ... is ... | 1 |
-| Patterns.cs:51:34:51:39 | [match-true] ... is ... | Patterns.cs:51:39:51:39 | 2 | 2 |
+| Patterns.cs:51:34:51:39 | [MatchTrue] ... is ... | Patterns.cs:51:39:51:39 | 2 | 2 |
 | Patterns.cs:53:24:53:25 | Entry | Patterns.cs:54:9:54:37 | ... is ... | 4 |
 | Patterns.cs:54:9:54:37 | After ... is ... | Patterns.cs:53:24:53:25 | Exit | 3 |
-| Patterns.cs:54:9:54:37 | [match-true] ... is ... | Patterns.cs:54:14:54:37 | After not ... | 13 |
+| Patterns.cs:54:9:54:37 | [MatchTrue] ... is ... | Patterns.cs:54:14:54:37 | After not ... | 13 |
 | Patterns.cs:56:26:56:27 | Entry | Patterns.cs:60:13:60:28 | ... => ... | 6 |
 | Patterns.cs:58:16:62:9 | After ... switch { ... } | Patterns.cs:56:26:56:27 | Exit | 4 |
 | Patterns.cs:60:13:60:28 | After ... => ... [match] | Patterns.cs:60:22:60:28 | "not 1" | 6 |
@@ -961,26 +961,26 @@
 | Patterns.cs:80:13:80:20 | After ... => ... [no-match] | Patterns.cs:81:18:81:20 | "0" | 5 |
 | Patterns.cs:85:26:85:27 | Entry | Patterns.cs:85:39:85:53 | ... is ... | 5 |
 | Patterns.cs:85:39:85:53 | After ... is ... [false] | Patterns.cs:85:67:85:69 | "2" | 2 |
-| Patterns.cs:85:39:85:53 | [match-true] ... is ... | Patterns.cs:85:57:85:63 | "not 2" | 11 |
+| Patterns.cs:85:39:85:53 | [MatchTrue] ... is ... | Patterns.cs:85:57:85:63 | "not 2" | 11 |
 | Patterns.cs:85:39:85:69 | After ... ? ... : ... | Patterns.cs:85:26:85:27 | Exit | 3 |
 | Patterns.cs:87:26:87:27 | Entry | Patterns.cs:87:39:87:54 | ... is ... | 5 |
 | Patterns.cs:87:39:87:54 | After ... is ... [false] | Patterns.cs:87:64:87:70 | "not 1" | 2 |
-| Patterns.cs:87:39:87:54 | [match-true] ... is ... | Patterns.cs:87:58:87:60 | "1" | 11 |
+| Patterns.cs:87:39:87:54 | [MatchTrue] ... is ... | Patterns.cs:87:58:87:60 | "1" | 11 |
 | Patterns.cs:87:39:87:70 | After ... ? ... : ... | Patterns.cs:87:26:87:27 | Exit | 3 |
 | Patterns.cs:93:17:93:19 | Entry | Patterns.cs:95:13:95:40 | ... is ... | 6 |
 | Patterns.cs:95:9:98:9 | After if (...) ... | Patterns.cs:93:17:93:19 | Exit | 4 |
 | Patterns.cs:95:13:95:40 | After ... is ... [false] | Patterns.cs:95:13:95:40 | After ... is ... [false] | 1 |
-| Patterns.cs:95:13:95:40 | [match-true] ... is ... | Patterns.cs:96:9:98:9 | After {...} | 21 |
+| Patterns.cs:95:13:95:40 | [MatchTrue] ... is ... | Patterns.cs:96:9:98:9 | After {...} | 21 |
 | PostDominance.cs:3:7:3:19 | Entry | PostDominance.cs:3:7:3:19 | Exit | 11 |
 | PostDominance.cs:5:10:5:11 | Entry | PostDominance.cs:5:10:5:11 | Exit | 11 |
 | PostDominance.cs:10:10:10:11 | Entry | PostDominance.cs:12:13:12:21 | ... is ... | 6 |
 | PostDominance.cs:10:10:10:11 | Normal Exit | PostDominance.cs:10:10:10:11 | Exit | 2 |
 | PostDominance.cs:12:13:12:21 | After ... is ... [false] | PostDominance.cs:11:5:15:5 | After {...} | 9 |
-| PostDominance.cs:12:13:12:21 | [match-true] ... is ... | PostDominance.cs:13:13:13:19 | return ...; | 5 |
+| PostDominance.cs:12:13:12:21 | [MatchTrue] ... is ... | PostDominance.cs:13:13:13:19 | return ...; | 5 |
 | PostDominance.cs:17:10:17:11 | Entry | PostDominance.cs:19:13:19:21 | ... is ... | 6 |
 | PostDominance.cs:17:10:17:11 | Exit | PostDominance.cs:17:10:17:11 | Exit | 1 |
 | PostDominance.cs:19:13:19:21 | After ... is ... [false] | PostDominance.cs:17:10:17:11 | Normal Exit | 10 |
-| PostDominance.cs:19:13:19:21 | [match-true] ... is ... | PostDominance.cs:17:10:17:11 | Exceptional Exit | 10 |
+| PostDominance.cs:19:13:19:21 | [MatchTrue] ... is ... | PostDominance.cs:17:10:17:11 | Exceptional Exit | 10 |
 | Qualifiers.cs:1:7:1:16 | Entry | Qualifiers.cs:1:7:1:16 | Exit | 11 |
 | Qualifiers.cs:7:16:7:21 | Entry | Qualifiers.cs:7:16:7:21 | Exit | 4 |
 | Qualifiers.cs:8:23:8:34 | Entry | Qualifiers.cs:8:23:8:34 | Exit | 4 |
@@ -1114,7 +1114,7 @@
 | TypeAccesses.cs:3:10:3:10 | Entry | TypeAccesses.cs:7:13:7:22 | ... is ... | 26 |
 | TypeAccesses.cs:7:9:7:25 | After if (...) ... | TypeAccesses.cs:3:10:3:10 | Exit | 11 |
 | TypeAccesses.cs:7:13:7:22 | After ... is ... [false] | TypeAccesses.cs:7:13:7:22 | After ... is ... [false] | 1 |
-| TypeAccesses.cs:7:13:7:22 | [match-true] ... is ... | TypeAccesses.cs:7:25:7:25 | ; | 4 |
+| TypeAccesses.cs:7:13:7:22 | [MatchTrue] ... is ... | TypeAccesses.cs:7:25:7:25 | ; | 4 |
 | VarDecls.cs:3:7:3:14 | Entry | VarDecls.cs:3:7:3:14 | Exit | 11 |
 | VarDecls.cs:5:18:5:19 | Entry | VarDecls.cs:5:18:5:19 | Exit | 36 |
 | VarDecls.cs:13:12:13:13 | Entry | VarDecls.cs:13:12:13:13 | Exit | 23 |

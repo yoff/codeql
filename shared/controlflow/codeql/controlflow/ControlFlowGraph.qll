@@ -588,7 +588,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
 
     private string loopHeaderTag() { result = "[LoopHeader]" }
 
-    private string patternMatchTrueTag() { result = "[match-true]" }
+    private string patternMatchTrueTag() { result = "[MatchTrue]" }
 
     /**
      * Holds if an additional node tagged with `tag` should be created for

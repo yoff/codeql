@@ -31,11 +31,11 @@
 | CSharp7.cs:254:18:254:20 | "x" | CSharp7.cs:254:27:254:40 | Before ... is ... | semmle.label | successor |
 | CSharp7.cs:254:27:254:27 | access to local variable o | CSharp7.cs:254:27:254:40 | ... is ... | semmle.label | successor |
 | CSharp7.cs:254:27:254:40 | ... is ... | CSharp7.cs:254:27:254:40 | After ... is ... [false] | semmle.label | false |
-| CSharp7.cs:254:27:254:40 | ... is ... | CSharp7.cs:254:27:254:40 | [match-true] ... is ... | semmle.label | true |
+| CSharp7.cs:254:27:254:40 | ... is ... | CSharp7.cs:254:27:254:40 | [MatchTrue] ... is ... | semmle.label | true |
 | CSharp7.cs:254:27:254:40 | After ... is ... [false] | CSharp7.cs:257:13:257:36 | case ...: | semmle.label | successor |
 | CSharp7.cs:254:27:254:40 | After ... is ... [true] | CSharp7.cs:255:17:255:45 | ...; | semmle.label | successor |
 | CSharp7.cs:254:27:254:40 | Before ... is ... | CSharp7.cs:254:27:254:27 | access to local variable o | semmle.label | successor |
-| CSharp7.cs:254:27:254:40 | [match-true] ... is ... | CSharp7.cs:254:32:254:40 | String s4 | semmle.label | successor |
+| CSharp7.cs:254:27:254:40 | [MatchTrue] ... is ... | CSharp7.cs:254:32:254:40 | String s4 | semmle.label | successor |
 | CSharp7.cs:254:32:254:40 | String s4 | CSharp7.cs:254:27:254:40 | After ... is ... [true] | semmle.label | true |
 | CSharp7.cs:255:17:255:44 | After call to method WriteLine | CSharp7.cs:255:17:255:45 | After ...; | semmle.label | successor |
 | CSharp7.cs:255:17:255:44 | Before call to method WriteLine | CSharp7.cs:255:35:255:43 | Before $"..." | semmle.label | successor |
