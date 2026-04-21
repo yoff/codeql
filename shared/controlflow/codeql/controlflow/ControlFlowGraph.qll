@@ -1990,7 +1990,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
 
           /** Holds if `n` does not have a unique enclosing callable. */
           query predicate nonUniqueEnclosingCallable(AstNode n, int callables) {
-            callables = count(getEnclosingCallable(n)) and callables != 1
+            callables = strictcount(getEnclosingCallable(n)) and callables > 1
           }
 
           /**
