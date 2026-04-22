@@ -38,16 +38,16 @@ signature module AstSig<LocationSig Location> {
     Location getLocation();
   }
 
-  /** Gets the child of this AST node at the specified index. */
+  /** Gets the child of AST node `n` at the specified index. */
   AstNode getChild(AstNode n, int index);
 
-  /** Gets the immediately enclosing callable that contains this node. */
+  /** Gets the immediately enclosing callable that contains `node`. */
   Callable getEnclosingCallable(AstNode node);
 
   /** A callable, for example a function, method, constructor, or top-level script. */
   class Callable extends AstNode;
 
-  /** Gets the body of this callable, if any. */
+  /** Gets the body of callable `c`, if any. */
   AstNode callableGetBody(Callable c);
 
   /** A statement. */
@@ -454,6 +454,27 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
     default predicate successorValueImplies(ConditionalSuccessor t1, ConditionalSuccessor t2) {
       none()
     }
+
+    /**
+     * An additional context needed to identify the body parts of a callable.
+     *
+     * When not used, instantiate with the `Void` type.
+     */
+    class CallableBodyPartContext {
+      /** Gets a textual representation of this context. */
+      string toString();
+    }
+
+    /**
+     * Gets the `index`th part of the body of `c` in context `ctx`. The indices do not
+     * need to be consecutive nor start from a specific index.
+     *
+     * `callableGetBodyPart(c, _, _)` and `callableGetBody(c)` must never both hold
+     * for a given callable `c`.
+     */
+    default AstNode callableGetBodyPart(Callable c, CallableBodyPartContext ctx, int index) {
+      none()
+    }
   }
 
   /**
@@ -661,6 +682,34 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
      *   not step to it, since "after" represents normal termination).
      */
 
+    private predicate isCallableBodyPart(Callable c, AstNode n) {
+      n = callableGetBody(c) or n = Input1::callableGetBodyPart(c, _, _)
+    }
+
+    private AstNode getRankedBodyPart(Callable c, Input1::CallableBodyPartContext ctx, int rnk) {
+      result =
+        rank[rnk](AstNode child, int ix |
+          child = Input1::callableGetBodyPart(c, ctx, ix)
+        |
+          child order by ix
+        )
+    }
+
+    private AstNode getBodyEntry(Callable c) {
+      result = callableGetBody(c)
+      or
+      result = getRankedBodyPart(c, _, 1)
+    }
+
+    private AstNode getBodyExit(Callable c) {
+      result = callableGetBody(c)
+      or
+      exists(Input1::CallableBodyPartContext ctx, int last |
+        result = getRankedBodyPart(c, ctx, last) and
+        not exists(getRankedBodyPart(c, ctx, last + 1))
+      )
+    }
+
     cached
     private newtype TNode =
       TBeforeNode(AstNode n) { Input1::cfgCachedStageRef() and exists(getEnclosingCallable(n)) } or
@@ -677,9 +726,9 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
       TAdditionalNode(AstNode n, string tag) {
         additionalNode(n, tag, _) and exists(getEnclosingCallable(n))
       } or
-      TEntryNode(Callable c) { exists(callableGetBody(c)) } or
-      TAnnotatedExitNode(Callable c, Boolean normal) { exists(callableGetBody(c)) } or
-      TExitNode(Callable c) { exists(callableGetBody(c)) }
+      TEntryNode(Callable c) { isCallableBodyPart(c, _) } or
+      TAnnotatedExitNode(Callable c, Boolean normal) { isCallableBodyPart(c, _) } or
+      TExitNode(Callable c) { isCallableBodyPart(c, _) }
 
     private class NodeImpl extends TNode {
       /**
@@ -895,7 +944,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
     }
 
     /** The `PreControlFlowNode` at the entry point of a callable. */
-    final class EntryNodeImpl extends NodeImpl, TEntryNode {
+    final private class EntryNodeImpl extends NodeImpl, TEntryNode {
       private Callable c;
 
       EntryNodeImpl() { this = TEntryNode(c) }
@@ -1097,7 +1146,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
       private predicate endAbruptCompletion(AstNode ast, PreControlFlowNode n, AbruptCompletion c) {
         Input2::endAbruptCompletion(ast, n, c)
         or
-        exists(Callable callable | ast = callableGetBody(callable) |
+        exists(Callable callable | isCallableBodyPart(callable, ast) |
           c.getSuccessorType() instanceof ReturnSuccessor and
           n.(NormalExitNodeImpl).getEnclosingCallable() = callable
           or
@@ -1255,22 +1304,15 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         )
       }
 
-      private predicate hasSpecificCallableSteps(Callable c) {
-        exists(EntryNodeImpl entry | entry.getEnclosingCallable() = c and Input2::step(entry, _))
-      }
-
       /** Holds if there is a local non-abrupt step from `n1` to `n2`. */
       private predicate explicitStep(PreControlFlowNode n1, PreControlFlowNode n2) {
         Input2::step(n1, n2)
         or
         exists(Callable c |
-          // Allow language-specific overrides for the default entry and exit edges.
-          not hasSpecificCallableSteps(c) and
           n1.(EntryNodeImpl).getEnclosingCallable() = c and
-          n2.isBefore(callableGetBody(c))
+          n2.isBefore(getBodyEntry(c))
           or
-          not hasSpecificCallableSteps(c) and
-          n1.isAfter(callableGetBody(c)) and
+          n1.isAfter(getBodyExit(c)) and
           n2.(NormalExitNodeImpl).getEnclosingCallable() = c
           or
           n1.(AnnotatedExitNodeImpl).getEnclosingCallable() = c and
@@ -1650,9 +1692,17 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n1.isBefore(ast) and
           n2.isBefore(getRankedChild(ast, 1))
           or
-          exists(int i |
-            n1.isAfter(getRankedChild(ast, i)) and
-            n2.isBefore(getRankedChild(ast, i + 1))
+          exists(int i, AstNode prev, AstNode next |
+            n1.isAfter(prev) and
+            n2.isBefore(next)
+          |
+            prev = getRankedChild(ast, i) and
+            next = getRankedChild(ast, i + 1)
+            or
+            exists(Input1::CallableBodyPartContext ctx |
+              prev = getRankedBodyPart(ast, ctx, i) and
+              next = getRankedBodyPart(ast, ctx, i + 1)
+            )
           )
           or
           (
@@ -2127,6 +2177,14 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
            */
           query predicate selfLoop(ControlFlowNode node, SuccessorType t) {
             node.getASuccessor(t) = node
+          }
+
+          /**
+           * Holds if `c` is included in both `callableGetBody` and `callableGetBodyPart`.
+           */
+          query predicate bodyPartOverlap(Callable c) {
+            exists(callableGetBody(c)) and
+            exists(Input1::callableGetBodyPart(c, _, _))
           }
         }
       }
