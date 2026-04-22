@@ -11,5 +11,9 @@ where
   not exists(Ssa::ExplicitDefinition edef |
     edef.getADefinition() = def and
     edef.getARead() = ar
+  ) and
+  not exists(Ssa::ImplicitParameterDefinition edef |
+    edef.getParameter() = def.(AssignableDefinitions::ImplicitParameterDefinition).getParameter() and
+    edef.getARead() = ar
   )
 select ar, def
