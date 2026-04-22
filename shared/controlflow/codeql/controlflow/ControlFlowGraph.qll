@@ -469,8 +469,9 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
      * Gets the `index`th part of the body of `c` in context `ctx`. The indices do not
      * need to be consecutive nor start from a specific index.
      *
-     * `callableGetBodyPart(c, _, _)` and `callableGetBody(c)` must never both hold
-     * for a given callable `c`.
+     * This overrides the default CFG for a `Callable` with sequential evaluation
+     * of the body parts, in case a singleton `callableGetBody(c)` is inadequate
+     * to describe the child nodes of `c`.
      */
     default AstNode callableGetBodyPart(Callable c, CallableBodyPartContext ctx, int index) {
       none()
@@ -682,7 +683,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
      *   not step to it, since "after" represents normal termination).
      */
 
-    private predicate isCallableBodyPart(Callable c, AstNode n) {
+    private predicate callableHasBodyPart(Callable c, AstNode n) {
       n = callableGetBody(c) or n = Input1::callableGetBodyPart(c, _, _)
     }
 
@@ -696,13 +697,15 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
     }
 
     private AstNode getBodyEntry(Callable c) {
-      result = callableGetBody(c)
+      result = callableGetBody(c) and
+      not exists(getRankedBodyPart(c, _, _))
       or
       result = getRankedBodyPart(c, _, 1)
     }
 
     private AstNode getBodyExit(Callable c) {
-      result = callableGetBody(c)
+      result = callableGetBody(c) and
+      not exists(getRankedBodyPart(c, _, _))
       or
       exists(Input1::CallableBodyPartContext ctx, int last |
         result = getRankedBodyPart(c, ctx, last) and
@@ -726,9 +729,9 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
       TAdditionalNode(AstNode n, string tag) {
         additionalNode(n, tag, _) and exists(getEnclosingCallable(n))
       } or
-      TEntryNode(Callable c) { isCallableBodyPart(c, _) } or
-      TAnnotatedExitNode(Callable c, Boolean normal) { isCallableBodyPart(c, _) } or
-      TExitNode(Callable c) { isCallableBodyPart(c, _) }
+      TEntryNode(Callable c) { callableHasBodyPart(c, _) } or
+      TAnnotatedExitNode(Callable c, Boolean normal) { callableHasBodyPart(c, _) } or
+      TExitNode(Callable c) { callableHasBodyPart(c, _) }
 
     private class NodeImpl extends TNode {
       /**
@@ -1146,7 +1149,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
       private predicate endAbruptCompletion(AstNode ast, PreControlFlowNode n, AbruptCompletion c) {
         Input2::endAbruptCompletion(ast, n, c)
         or
-        exists(Callable callable | isCallableBodyPart(callable, ast) |
+        exists(Callable callable | callableHasBodyPart(callable, ast) |
           c.getSuccessorType() instanceof ReturnSuccessor and
           n.(NormalExitNodeImpl).getEnclosingCallable() = callable
           or
@@ -1311,6 +1314,11 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         exists(Callable c |
           n1.(EntryNodeImpl).getEnclosingCallable() = c and
           n2.isBefore(getBodyEntry(c))
+          or
+          exists(Input1::CallableBodyPartContext ctx, int i |
+            n1.isAfter(getRankedBodyPart(c, ctx, i)) and
+            n2.isBefore(getRankedBodyPart(c, ctx, i + 1))
+          )
           or
           n1.isAfter(getBodyExit(c)) and
           n2.(NormalExitNodeImpl).getEnclosingCallable() = c
@@ -1692,17 +1700,9 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n1.isBefore(ast) and
           n2.isBefore(getRankedChild(ast, 1))
           or
-          exists(int i, AstNode prev, AstNode next |
-            n1.isAfter(prev) and
-            n2.isBefore(next)
-          |
-            prev = getRankedChild(ast, i) and
-            next = getRankedChild(ast, i + 1)
-            or
-            exists(Input1::CallableBodyPartContext ctx |
-              prev = getRankedBodyPart(ast, ctx, i) and
-              next = getRankedBodyPart(ast, ctx, i + 1)
-            )
+          exists(int i |
+            n1.isAfter(getRankedChild(ast, i)) and
+            n2.isBefore(getRankedChild(ast, i + 1))
           )
           or
           (
@@ -2180,11 +2180,12 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           }
 
           /**
-           * Holds if `c` is included in both `callableGetBody` and `callableGetBodyPart`.
+           * Holds if `c` does not include `callableGetBody` in a non-empty `callableGetBodyPart`.
            */
           query predicate bodyPartOverlap(Callable c) {
             exists(callableGetBody(c)) and
-            exists(Input1::callableGetBodyPart(c, _, _))
+            exists(Input1::callableGetBodyPart(c, _, _)) and
+            not Input1::callableGetBodyPart(c, _, _) = callableGetBody(c)
           }
         }
       }

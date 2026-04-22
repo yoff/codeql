@@ -82,8 +82,7 @@ private module Ast implements AstSig<Location> {
 
   AstNode callableGetBody(Callable c) {
     not skipControlFlow(result) and
-    result = c.getBody() and
-    not c instanceof Constructor // handled in `callableGetBodyPart`
+    result = c.getBody()
   }
 
   class Stmt = CS::Stmt;
