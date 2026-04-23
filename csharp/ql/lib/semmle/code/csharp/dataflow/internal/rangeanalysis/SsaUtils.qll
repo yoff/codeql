@@ -7,7 +7,7 @@ private import Ssa
 private import RangeUtils
 private import ConstantUtils
 
-private class ExprNode = ControlFlow::Nodes::ExprNode;
+private class ExprNode = ControlFlowNodes::ExprNode;
 
 /** An SSA variable. */
 class SsaVariable extends Definition {
@@ -55,5 +55,5 @@ ExprNode ssaRead(Definition v, int delta) {
   or
   v.(ExplicitDefinition).getControlFlowNode().(ExprNode::Assignment) = result and delta = 0
   or
-  result.(ExprNode::AssignExpr).getRValue() = ssaRead(v, delta)
+  result.(ExprNode::AssignExpr).getRightOperand() = ssaRead(v, delta)
 }

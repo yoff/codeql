@@ -1,3 +1,18 @@
+## 9.0.4
+
+### Minor Analysis Improvements
+
+* The queries "Resolving XML external entity in user-controlled data" (`java/xxe`) and "Resolving XML external entity in user-controlled data from local source" (`java/xxe-local`) now recognize sinks in the Woodstox StAX library when `com.ctc.wstx.stax.WstxInputFactory` or `org.codehaus.stax2.XMLInputFactory2` are used directly.
+
+## 9.0.3
+
+### Minor Analysis Improvements
+
+* The `java/tainted-arithmetic` query no longer flags arithmetic expressions that are used directly as an operand of a comparison in `if`-condition bounds-checking patterns. For example, `if (off + len > array.length)` is now recognized as a bounds check rather than a potentially vulnerable computation, reducing false positives.
+* The `java/potentially-weak-cryptographic-algorithm` query no longer flags Elliptic Curve algorithms (`EC`, `ECDSA`, `ECDH`, `EdDSA`, `Ed25519`, `Ed448`, `XDH`, `X25519`, `X448`), HMAC-based algorithms (`HMACSHA1`, `HMACSHA256`, `HMACSHA384`, `HMACSHA512`), or PBKDF2 key derivation as potentially insecure. These are modern, secure algorithms recommended by NIST and other standards bodies. This will reduce the number of false positives for this query.
+* The first argument of the method `getInstance` of `java.security.Signature` is now modeled as a sink for `java/potentially-weak-cryptographic-algorithm`, `java/weak-cryptographic-algorithm` and `java/rsa-without-oaep`. This will increase the number of alerts for these queries.
+* Kotlin versions up to 2.3.20 are now supported.
+
 ## 9.0.2
 
 No user-facing changes.
