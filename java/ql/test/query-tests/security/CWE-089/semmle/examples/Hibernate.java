@@ -15,7 +15,11 @@ public class Hibernate {
     sharedSessionContract.createSQLQuery(source()); // $ sqlInjection
 
     queryProducer.createNativeQuery(source()); // $ sqlInjection
+    queryProducer.createNativeMutationQuery(source()); // $ sqlInjection
     queryProducer.createQuery(source()); // $ sqlInjection
+    queryProducer.createMutationQuery(source()); // $ sqlInjection
+    queryProducer.createSelectionQuery(source()); // $ sqlInjection
+    queryProducer.createSelectionQuery(source(), Object.class); // $ sqlInjection
     queryProducer.createSQLQuery(source()); // $ sqlInjection
   }
 }
