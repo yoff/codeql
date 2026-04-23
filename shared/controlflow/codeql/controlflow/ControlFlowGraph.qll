@@ -483,6 +483,8 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
    * by subsequent instatiation of `Make2`.
    */
   module Make1<InputSig1 Input1> {
+    private import codeql.util.DenseRank
+
     /**
      * Holds if `n` is executed in post-order or in-order. This means that an
      * additional node is created to represent `n` in the control flow graph.
@@ -687,14 +689,19 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
       n = callableGetBody(c) or n = Input1::callableGetBodyPart(c, _, _)
     }
 
-    private AstNode getRankedBodyPart(Callable c, Input1::CallableBodyPartContext ctx, int rnk) {
-      result =
-        rank[rnk](AstNode child, int ix |
-          child = Input1::callableGetBodyPart(c, ctx, ix)
-        |
-          child order by ix
-        )
+    private module BodyPartDenseRankInput implements DenseRankInputSig2 {
+      class C1 = Callable;
+
+      class C2 = Input1::CallableBodyPartContext;
+
+      class Ranked = AstNode;
+
+      int getRank(C1 c, C2 ctx, Ranked child) {
+        child = Input1::callableGetBodyPart(c, ctx, result)
+      }
     }
+
+    private predicate getRankedBodyPart = DenseRank2<BodyPartDenseRankInput>::denseRank/3;
 
     private AstNode getBodyEntry(Callable c) {
       result = callableGetBody(c) and
@@ -1247,9 +1254,15 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         )
       }
 
-      private Case getRankedCaseCfgOrder(Switch s, int rnk) {
-        result = rank[rnk](Case c, int i | getCaseControlFlowOrder(s, c) = i | c order by i)
+      private module CaseDenseRankInput implements DenseRankInputSig1 {
+        class C = Switch;
+
+        class Ranked = Case;
+
+        predicate getRank = getCaseControlFlowOrder/2;
       }
+
+      private predicate getRankedCaseCfgOrder = DenseRank1<CaseDenseRankInput>::denseRank/2;
 
       private int numberOfStmts(Switch s) { result = strictcount(s.getStmt(_)) }
 
@@ -1685,10 +1698,18 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         not explicitStep(any(PreControlFlowNode n | n.isBefore(ast)), _)
       }
 
-      private AstNode getRankedChild(AstNode parent, int rnk) {
-        defaultCfg(parent) and
-        result = rank[rnk](AstNode c, int ix | c = getChild(parent, ix) | c order by ix)
+      private module ChildDenseRankInput implements DenseRankInputSig1 {
+        class C = AstNode;
+
+        class Ranked = AstNode;
+
+        int getRank(C parent, Ranked child) {
+          defaultCfg(parent) and
+          child = getChild(parent, result)
+        }
       }
+
+      private predicate getRankedChild = DenseRank1<ChildDenseRankInput>::denseRank/2;
 
       /**
        * Holds if `n1` to `n2` is a default left-to-right evaluation step for
