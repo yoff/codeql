@@ -253,6 +253,20 @@ private module LivenessCaching implements LivenessCachingSig {
   predicate enabled() { any() }
 }
 
+private signature module DefinitionReachabilityCachingSig {
+  predicate enabled();
+}
+
+private module NoDefinitionReachabilityCaching implements DefinitionReachabilityCachingSig {
+  pragma[inline]
+  predicate enabled() { none() }
+}
+
+private module DefinitionReachabilityCaching implements DefinitionReachabilityCachingSig {
+  pragma[inline]
+  predicate enabled() { any() }
+}
+
 /**
  * Provides an SSA implementation.
  *
@@ -272,7 +286,7 @@ private module LivenessCaching implements LivenessCachingSig {
  */
 private module MakeImpl<
   LocationSig Location, BB::CfgSig<Location> Cfg, InputSig<Location, Cfg::BasicBlock> Input,
-  LivenessCachingSig CacheLiveness>
+  LivenessCachingSig CacheLiveness, DefinitionReachabilityCachingSig CacheDefinitionReachability>
 {
   private import Cfg
   private import Input
@@ -530,7 +544,9 @@ private module MakeImpl<
      * Holds if the SSA definition `def` reaches rank index `rnk` in its own
      * basic block `bb`.
      */
-    predicate ssaDefReachesRank(BasicBlock bb, Definition def, int rnk, SourceVariable v) {
+    private predicate ssaDefReachesRankUncached(
+      BasicBlock bb, Definition def, int rnk, SourceVariable v
+    ) {
       exists(int i |
         rnk = refRank(bb, i, v, Def()) and
         def.definesAt(v, bb, i)
@@ -538,6 +554,28 @@ private module MakeImpl<
       or
       ssaDefReachesRank(bb, def, rnk - 1, v) and
       rnk = refRank(bb, _, v, Read())
+    }
+
+    cached
+    private predicate ssaDefReachesRankCached(
+      BasicBlock bb, Definition def, int rnk, SourceVariable v
+    ) {
+      exists(int i |
+        rnk = refRank(bb, i, v, Def()) and
+        def.definesAt(v, bb, i)
+      )
+      or
+      ssaDefReachesRank(bb, def, rnk - 1, v) and
+      rnk = refRank(bb, _, v, Read())
+    }
+
+    pragma[inline]
+    predicate ssaDefReachesRank(BasicBlock bb, Definition def, int rnk, SourceVariable v) {
+      not CacheDefinitionReachability::enabled() and
+      ssaDefReachesRankUncached(bb, def, rnk, v)
+      or
+      CacheDefinitionReachability::enabled() and
+      ssaDefReachesRankCached(bb, def, rnk, v)
     }
 
     /**
@@ -557,7 +595,9 @@ private module MakeImpl<
      * SSA definition of `v`.
      */
     pragma[nomagic]
-    predicate ssaDefReachesEndOfBlock(BasicBlock bb, Definition def, SourceVariable v) {
+    private predicate ssaDefReachesEndOfBlockUncached(
+      BasicBlock bb, Definition def, SourceVariable v
+    ) {
       exists(int last |
         last = maxRefRank(pragma[only_bind_into](bb), pragma[only_bind_into](v)) and
         ssaDefReachesRank(bb, def, last, v) and
@@ -574,6 +614,36 @@ private module MakeImpl<
         ssaDefReachesEndOfBlock(idom, def, v) and
         liveThrough(idom, bb, v)
       )
+    }
+
+    pragma[nomagic]
+    cached
+    private predicate ssaDefReachesEndOfBlockCached(BasicBlock bb, Definition def, SourceVariable v) {
+      exists(int last |
+        last = maxRefRank(pragma[only_bind_into](bb), pragma[only_bind_into](v)) and
+        ssaDefReachesRank(bb, def, last, v) and
+        liveAtExit(bb, v)
+      )
+      or
+      exists(BasicBlock idom |
+        // The construction of SSA form ensures that each read of a variable is
+        // dominated by its definition. An SSA definition therefore reaches a
+        // control flow node if it is the _closest_ SSA definition that dominates
+        // the node. If two definitions dominate a node then one must dominate the
+        // other, so therefore the definition of _closest_ is given by the dominator
+        // tree. Thus, reaching definitions can be calculated in terms of dominance.
+        ssaDefReachesEndOfBlock(idom, def, v) and
+        liveThrough(idom, bb, v)
+      )
+    }
+
+    pragma[inline]
+    predicate ssaDefReachesEndOfBlock(BasicBlock bb, Definition def, SourceVariable v) {
+      not CacheDefinitionReachability::enabled() and
+      ssaDefReachesEndOfBlockUncached(bb, def, v)
+      or
+      CacheDefinitionReachability::enabled() and
+      ssaDefReachesEndOfBlockCached(bb, def, v)
     }
 
     /**
@@ -2236,7 +2306,7 @@ private module MakeImpl<
 module Make<
   LocationSig Location, BB::CfgSig<Location> Cfg, InputSig<Location, Cfg::BasicBlock> Input>
 {
-  import MakeImpl<Location, Cfg, Input, NoLivenessCaching>
+  import MakeImpl<Location, Cfg, Input, NoLivenessCaching, NoDefinitionReachabilityCaching>
 }
 
 /**
@@ -2247,5 +2317,17 @@ module Make<
 module MakeWithCachedLiveness<
   LocationSig Location, BB::CfgSig<Location> Cfg, InputSig<Location, Cfg::BasicBlock> Input>
 {
-  import MakeImpl<Location, Cfg, Input, LivenessCaching>
+  import MakeImpl<Location, Cfg, Input, LivenessCaching, NoDefinitionReachabilityCaching>
+}
+
+/**
+ * Provides an SSA implementation that caches complete source-variable liveness and
+ * definition-reachability relations.
+ *
+ * Use this when the same SSA instantiation is exposed through multiple cached API stages.
+ */
+module MakeWithCachedLivenessAndDefinitionReachability<
+  LocationSig Location, BB::CfgSig<Location> Cfg, InputSig<Location, Cfg::BasicBlock> Input>
+{
+  import MakeImpl<Location, Cfg, Input, LivenessCaching, DefinitionReachabilityCaching>
 }
