@@ -239,6 +239,34 @@ signature module SsaSig<
   }
 }
 
+private signature module LivenessCachingSig {
+  predicate enabled();
+}
+
+private module NoLivenessCaching implements LivenessCachingSig {
+  pragma[inline]
+  predicate enabled() { none() }
+}
+
+private module LivenessCaching implements LivenessCachingSig {
+  pragma[inline]
+  predicate enabled() { any() }
+}
+
+private signature module DefinitionReachabilityCachingSig {
+  predicate enabled();
+}
+
+private module NoDefinitionReachabilityCaching implements DefinitionReachabilityCachingSig {
+  pragma[inline]
+  predicate enabled() { none() }
+}
+
+private module DefinitionReachabilityCaching implements DefinitionReachabilityCachingSig {
+  pragma[inline]
+  predicate enabled() { any() }
+}
+
 /**
  * Provides an SSA implementation.
  *
@@ -256,8 +284,9 @@ signature module SsaSig<
  * NB: If this predicate is exposed, it should be cached.
  * ```
  */
-module Make<
-  LocationSig Location, BB::CfgSig<Location> Cfg, InputSig<Location, Cfg::BasicBlock> Input>
+private module MakeImpl<
+  LocationSig Location, BB::CfgSig<Location> Cfg, InputSig<Location, Cfg::BasicBlock> Input,
+  LivenessCachingSig CacheLiveness, DefinitionReachabilityCachingSig CacheDefinitionReachability>
 {
   private import Cfg
   private import Input
@@ -386,7 +415,21 @@ module Make<
     /**
      * Holds if source variable `v` is live at the end of basic block `bb`.
      */
-    predicate liveAtExit(BasicBlock bb, SourceVariable v) { liveAtEntry(bb.getASuccessor(), v) }
+    private predicate liveAtExitUncached(BasicBlock bb, SourceVariable v) {
+      liveAtEntry(bb.getASuccessor(), v)
+    }
+
+    cached
+    private predicate liveAtExitCached(BasicBlock bb, SourceVariable v) {
+      liveAtEntry(bb.getASuccessor(), v)
+    }
+
+    pragma[inline]
+    predicate liveAtExit(BasicBlock bb, SourceVariable v) {
+      not CacheLiveness::enabled() and liveAtExitUncached(bb, v)
+      or
+      CacheLiveness::enabled() and liveAtExitCached(bb, v)
+    }
 
     /**
      * Holds if variable `v` is live in basic block `bb` at rank `rnk`.
@@ -501,7 +544,9 @@ module Make<
      * Holds if the SSA definition `def` reaches rank index `rnk` in its own
      * basic block `bb`.
      */
-    predicate ssaDefReachesRank(BasicBlock bb, Definition def, int rnk, SourceVariable v) {
+    private predicate ssaDefReachesRankUncached(
+      BasicBlock bb, Definition def, int rnk, SourceVariable v
+    ) {
       exists(int i |
         rnk = refRank(bb, i, v, Def()) and
         def.definesAt(v, bb, i)
@@ -509,6 +554,28 @@ module Make<
       or
       ssaDefReachesRank(bb, def, rnk - 1, v) and
       rnk = refRank(bb, _, v, Read())
+    }
+
+    cached
+    private predicate ssaDefReachesRankCached(
+      BasicBlock bb, Definition def, int rnk, SourceVariable v
+    ) {
+      exists(int i |
+        rnk = refRank(bb, i, v, Def()) and
+        def.definesAt(v, bb, i)
+      )
+      or
+      ssaDefReachesRank(bb, def, rnk - 1, v) and
+      rnk = refRank(bb, _, v, Read())
+    }
+
+    pragma[inline]
+    predicate ssaDefReachesRank(BasicBlock bb, Definition def, int rnk, SourceVariable v) {
+      not CacheDefinitionReachability::enabled() and
+      ssaDefReachesRankUncached(bb, def, rnk, v)
+      or
+      CacheDefinitionReachability::enabled() and
+      ssaDefReachesRankCached(bb, def, rnk, v)
     }
 
     /**
@@ -528,7 +595,9 @@ module Make<
      * SSA definition of `v`.
      */
     pragma[nomagic]
-    predicate ssaDefReachesEndOfBlock(BasicBlock bb, Definition def, SourceVariable v) {
+    private predicate ssaDefReachesEndOfBlockUncached(
+      BasicBlock bb, Definition def, SourceVariable v
+    ) {
       exists(int last |
         last = maxRefRank(pragma[only_bind_into](bb), pragma[only_bind_into](v)) and
         ssaDefReachesRank(bb, def, last, v) and
@@ -545,6 +614,36 @@ module Make<
         ssaDefReachesEndOfBlock(idom, def, v) and
         liveThrough(idom, bb, v)
       )
+    }
+
+    pragma[nomagic]
+    cached
+    private predicate ssaDefReachesEndOfBlockCached(BasicBlock bb, Definition def, SourceVariable v) {
+      exists(int last |
+        last = maxRefRank(pragma[only_bind_into](bb), pragma[only_bind_into](v)) and
+        ssaDefReachesRank(bb, def, last, v) and
+        liveAtExit(bb, v)
+      )
+      or
+      exists(BasicBlock idom |
+        // The construction of SSA form ensures that each read of a variable is
+        // dominated by its definition. An SSA definition therefore reaches a
+        // control flow node if it is the _closest_ SSA definition that dominates
+        // the node. If two definitions dominate a node then one must dominate the
+        // other, so therefore the definition of _closest_ is given by the dominator
+        // tree. Thus, reaching definitions can be calculated in terms of dominance.
+        ssaDefReachesEndOfBlock(idom, def, v) and
+        liveThrough(idom, bb, v)
+      )
+    }
+
+    pragma[inline]
+    predicate ssaDefReachesEndOfBlock(BasicBlock bb, Definition def, SourceVariable v) {
+      not CacheDefinitionReachability::enabled() and
+      ssaDefReachesEndOfBlockUncached(bb, def, v)
+      or
+      CacheDefinitionReachability::enabled() and
+      ssaDefReachesEndOfBlockCached(bb, def, v)
     }
 
     /**
@@ -2201,4 +2300,34 @@ module Make<
       )
     }
   }
+}
+
+/** Provides the default demand-specialized SSA implementation. */
+module Make<
+  LocationSig Location, BB::CfgSig<Location> Cfg, InputSig<Location, Cfg::BasicBlock> Input>
+{
+  import MakeImpl<Location, Cfg, Input, NoLivenessCaching, NoDefinitionReachabilityCaching>
+}
+
+/**
+ * Provides an SSA implementation that caches the complete source-variable liveness relation.
+ *
+ * Use this when the same SSA instantiation is exposed through multiple cached API stages.
+ */
+module MakeWithCachedLiveness<
+  LocationSig Location, BB::CfgSig<Location> Cfg, InputSig<Location, Cfg::BasicBlock> Input>
+{
+  import MakeImpl<Location, Cfg, Input, LivenessCaching, NoDefinitionReachabilityCaching>
+}
+
+/**
+ * Provides an SSA implementation that caches complete source-variable liveness and
+ * definition-reachability relations.
+ *
+ * Use this when the same SSA instantiation is exposed through multiple cached API stages.
+ */
+module MakeWithCachedLivenessAndDefinitionReachability<
+  LocationSig Location, BB::CfgSig<Location> Cfg, InputSig<Location, Cfg::BasicBlock> Input>
+{
+  import MakeImpl<Location, Cfg, Input, LivenessCaching, DefinitionReachabilityCaching>
 }
