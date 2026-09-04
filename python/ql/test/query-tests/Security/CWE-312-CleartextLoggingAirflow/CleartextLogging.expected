@@ -1,0 +1,111 @@
+#select
+| airflow/api_internal/internal_api_call.py:17:15:17:44 | Attribute() | airflow/api_internal/internal_api_call.py:7:16:7:29 | get_password() | airflow/api_internal/internal_api_call.py:17:15:17:44 | Attribute() | This expression logs $@ as clear text. | airflow/api_internal/internal_api_call.py:7:16:7:29 | get_password() | sensitive data (password) |
+| airflow/api_internal/internal_api_call.py:19:15:19:51 | Attribute() | airflow/api_internal/internal_api_call.py:7:16:7:29 | get_password() | airflow/api_internal/internal_api_call.py:19:15:19:51 | Attribute() | This expression logs $@ as clear text. | airflow/api_internal/internal_api_call.py:7:16:7:29 | get_password() | sensitive data (password) |
+| airflow/cli/commands/task_command.py:10:11:10:52 | Fstring | airflow/cli/commands/task_command.py:8:32:8:39 | password | airflow/cli/commands/task_command.py:10:11:10:52 | Fstring | This expression logs $@ as clear text. | airflow/cli/commands/task_command.py:8:32:8:39 | password | sensitive data (password) |
+| airflow/cli/commands/task_command.py:11:11:11:33 | Fstring | airflow/cli/commands/task_command.py:8:32:8:39 | password | airflow/cli/commands/task_command.py:11:11:11:33 | Fstring | This expression logs $@ as clear text. | airflow/cli/commands/task_command.py:8:32:8:39 | password | sensitive data (password) |
+| airflow/cli/commands/task_command.py:18:30:18:37 | other_ti | airflow/cli/commands/task_command.py:14:18:14:25 | password | airflow/cli/commands/task_command.py:18:30:18:37 | other_ti | This expression logs $@ as clear text. | airflow/cli/commands/task_command.py:14:18:14:25 | password | sensitive data (password) |
+| airflow/cli/commands/task_command.py:19:34:19:41 | password | airflow/cli/commands/task_command.py:14:18:14:25 | password | airflow/cli/commands/task_command.py:19:34:19:41 | password | This expression logs $@ as clear text. | airflow/cli/commands/task_command.py:14:18:14:25 | password | sensitive data (password) |
+| airflow/cli/commands/task_command.py:21:45:21:63 | connection_password | airflow/cli/commands/task_command.py:20:27:20:45 | Attribute | airflow/cli/commands/task_command.py:21:45:21:63 | connection_password | This expression logs $@ as clear text. | airflow/cli/commands/task_command.py:20:27:20:45 | Attribute | sensitive data (password) |
+| airflow/executors/executor_loader.py:17:15:17:65 | Attribute() | airflow/executors/executor_loader.py:7:16:7:29 | get_password() | airflow/executors/executor_loader.py:17:15:17:65 | Attribute() | This expression logs $@ as clear text. | airflow/executors/executor_loader.py:7:16:7:29 | get_password() | sensitive data (password) |
+| airflow/executors/executor_loader.py:19:15:19:64 | Attribute() | airflow/executors/executor_loader.py:7:16:7:29 | get_password() | airflow/executors/executor_loader.py:19:15:19:64 | Attribute() | This expression logs $@ as clear text. | airflow/executors/executor_loader.py:7:16:7:29 | get_password() | sensitive data (password) |
+| airflow/models/xcom.py:14:13:14:15 | key | airflow/models/xcom.py:6:18:6:25 | password | airflow/models/xcom.py:14:13:14:15 | key | This expression logs $@ as clear text. | airflow/models/xcom.py:6:18:6:25 | password | sensitive data (password) |
+| airflow/models/xcom.py:19:41:19:48 | or | airflow/models/xcom.py:6:18:6:25 | password | airflow/models/xcom.py:19:41:19:48 | or | This expression logs $@ as clear text. | airflow/models/xcom.py:6:18:6:25 | password | sensitive data (password) |
+| airflow/models/xcom.py:20:40:20:47 | password | airflow/models/xcom.py:6:18:6:25 | password | airflow/models/xcom.py:20:40:20:47 | password | This expression logs $@ as clear text. | airflow/models/xcom.py:6:18:6:25 | password | sensitive data (password) |
+| airflow/serialization/serialized_objects.py:10:41:10:48 | other_qn | airflow/serialization/serialized_objects.py:6:32:6:39 | password | airflow/serialization/serialized_objects.py:10:41:10:48 | other_qn | This expression logs $@ as clear text. | airflow/serialization/serialized_objects.py:6:32:6:39 | password | sensitive data (password) |
+| airflow/serialization/serialized_objects.py:11:40:11:47 | password | airflow/serialization/serialized_objects.py:6:32:6:39 | password | airflow/serialization/serialized_objects.py:11:40:11:47 | password | This expression logs $@ as clear text. | airflow/serialization/serialized_objects.py:6:32:6:39 | password | sensitive data (password) |
+| airflow/serialization/serialized_objects.py:18:56:18:71 | other_class_path | airflow/serialization/serialized_objects.py:14:48:14:55 | password | airflow/serialization/serialized_objects.py:18:56:18:71 | other_class_path | This expression logs $@ as clear text. | airflow/serialization/serialized_objects.py:14:48:14:55 | password | sensitive data (password) |
+| airflow/serialization/serialized_objects.py:19:38:19:45 | password | airflow/serialization/serialized_objects.py:14:48:14:55 | password | airflow/serialization/serialized_objects.py:19:38:19:45 | password | This expression logs $@ as clear text. | airflow/serialization/serialized_objects.py:14:48:14:55 | password | sensitive data (password) |
+| airflow/settings.py:13:7:13:52 | Attribute() | airflow/settings.py:7:16:7:29 | get_password() | airflow/settings.py:13:7:13:52 | Attribute() | This expression logs $@ as clear text. | airflow/settings.py:7:16:7:29 | get_password() | sensitive data (password) |
+| airflow/settings.py:15:7:15:54 | Attribute() | airflow/settings.py:7:16:7:29 | get_password() | airflow/settings.py:15:7:15:54 | Attribute() | This expression logs $@ as clear text. | airflow/settings.py:7:16:7:29 | get_password() | sensitive data (password) |
+| airflow/utils/db.py:11:47:11:54 | password | airflow/utils/db.py:8:15:8:22 | password | airflow/utils/db.py:11:47:11:54 | password | This expression logs $@ as clear text. | airflow/utils/db.py:8:15:8:22 | password | sensitive data (password) |
+| airflow/utils/db.py:14:40:14:42 | err | airflow/utils/db.py:8:15:8:22 | password | airflow/utils/db.py:14:40:14:42 | err | This expression logs $@ as clear text. | airflow/utils/db.py:8:15:8:22 | password | sensitive data (password) |
+| airflow/utils/db.py:16:35:16:37 | err | airflow/utils/db.py:8:15:8:22 | password | airflow/utils/db.py:16:35:16:37 | err | This expression logs $@ as clear text. | airflow/utils/db.py:8:15:8:22 | password | sensitive data (password) |
+| airflow/utils/db.py:17:34:17:41 | password | airflow/utils/db.py:8:15:8:22 | password | airflow/utils/db.py:17:34:17:41 | password | This expression logs $@ as clear text. | airflow/utils/db.py:8:15:8:22 | password | sensitive data (password) |
+edges
+| airflow/api_internal/internal_api_call.py:7:16:7:29 | get_password() | airflow/api_internal/internal_api_call.py:17:15:17:44 | Attribute() | provenance |  |
+| airflow/api_internal/internal_api_call.py:7:16:7:29 | get_password() | airflow/api_internal/internal_api_call.py:19:15:19:51 | Attribute() | provenance |  |
+| airflow/cli/commands/task_command.py:8:32:8:39 | password | airflow/cli/commands/task_command.py:10:11:10:52 | Fstring | provenance |  |
+| airflow/cli/commands/task_command.py:8:32:8:39 | password | airflow/cli/commands/task_command.py:11:11:11:33 | Fstring | provenance |  |
+| airflow/cli/commands/task_command.py:14:18:14:25 | password | airflow/cli/commands/task_command.py:17:5:17:12 | other_ti | provenance |  |
+| airflow/cli/commands/task_command.py:14:18:14:25 | password | airflow/cli/commands/task_command.py:19:34:19:41 | password | provenance |  |
+| airflow/cli/commands/task_command.py:17:5:17:12 | other_ti | airflow/cli/commands/task_command.py:18:30:18:37 | other_ti | provenance |  |
+| airflow/cli/commands/task_command.py:20:5:20:23 | connection_password | airflow/cli/commands/task_command.py:21:45:21:63 | connection_password | provenance |  |
+| airflow/cli/commands/task_command.py:20:27:20:45 | Attribute | airflow/cli/commands/task_command.py:20:5:20:23 | connection_password | provenance |  |
+| airflow/executors/executor_loader.py:7:16:7:29 | get_password() | airflow/executors/executor_loader.py:17:15:17:65 | Attribute() | provenance |  |
+| airflow/executors/executor_loader.py:7:16:7:29 | get_password() | airflow/executors/executor_loader.py:19:15:19:64 | Attribute() | provenance |  |
+| airflow/models/xcom.py:6:18:6:25 | password | airflow/models/xcom.py:7:9:7:11 | key | provenance |  |
+| airflow/models/xcom.py:6:18:6:25 | password | airflow/models/xcom.py:10:9:10:14 | run_id | provenance |  |
+| airflow/models/xcom.py:6:18:6:25 | password | airflow/models/xcom.py:19:41:19:48 | or | provenance |  |
+| airflow/models/xcom.py:6:18:6:25 | password | airflow/models/xcom.py:20:40:20:47 | password | provenance |  |
+| airflow/models/xcom.py:7:9:7:11 | key | airflow/models/xcom.py:14:13:14:15 | key | provenance |  |
+| airflow/models/xcom.py:10:9:10:14 | run_id | airflow/models/xcom.py:19:41:19:48 | or | provenance |  |
+| airflow/serialization/serialized_objects.py:6:32:6:39 | password | airflow/serialization/serialized_objects.py:9:9:9:16 | other_qn | provenance |  |
+| airflow/serialization/serialized_objects.py:6:32:6:39 | password | airflow/serialization/serialized_objects.py:11:40:11:47 | password | provenance |  |
+| airflow/serialization/serialized_objects.py:9:9:9:16 | other_qn | airflow/serialization/serialized_objects.py:10:41:10:48 | other_qn | provenance |  |
+| airflow/serialization/serialized_objects.py:14:48:14:55 | password | airflow/serialization/serialized_objects.py:17:9:17:24 | other_class_path | provenance |  |
+| airflow/serialization/serialized_objects.py:14:48:14:55 | password | airflow/serialization/serialized_objects.py:19:38:19:45 | password | provenance |  |
+| airflow/serialization/serialized_objects.py:17:9:17:24 | other_class_path | airflow/serialization/serialized_objects.py:18:56:18:71 | other_class_path | provenance |  |
+| airflow/settings.py:7:16:7:29 | get_password() | airflow/settings.py:13:7:13:52 | Attribute() | provenance |  |
+| airflow/settings.py:7:16:7:29 | get_password() | airflow/settings.py:15:7:15:54 | Attribute() | provenance |  |
+| airflow/utils/db.py:8:15:8:22 | password | airflow/utils/db.py:11:47:11:54 | password | provenance |  |
+| airflow/utils/db.py:8:15:8:22 | password | airflow/utils/db.py:13:21:13:28 | password | provenance |  |
+| airflow/utils/db.py:8:15:8:22 | password | airflow/utils/db.py:15:17:15:24 | password | provenance |  |
+| airflow/utils/db.py:8:15:8:22 | password | airflow/utils/db.py:17:34:17:41 | password | provenance |  |
+| airflow/utils/db.py:13:13:13:15 | err | airflow/utils/db.py:14:40:14:42 | err | provenance |  |
+| airflow/utils/db.py:13:13:13:15 | err [List element] | airflow/utils/db.py:14:40:14:42 | err | provenance |  |
+| airflow/utils/db.py:13:20:13:29 | List [List element] | airflow/utils/db.py:13:13:13:15 | err | provenance |  |
+| airflow/utils/db.py:13:20:13:29 | List [List element] | airflow/utils/db.py:13:13:13:15 | err [List element] | provenance |  |
+| airflow/utils/db.py:13:21:13:28 | password | airflow/utils/db.py:13:20:13:29 | List [List element] | provenance |  |
+| airflow/utils/db.py:15:9:15:11 | err | airflow/utils/db.py:16:35:16:37 | err | provenance |  |
+| airflow/utils/db.py:15:9:15:11 | err [List element] | airflow/utils/db.py:16:35:16:37 | err | provenance |  |
+| airflow/utils/db.py:15:16:15:25 | List [List element] | airflow/utils/db.py:15:9:15:11 | err | provenance |  |
+| airflow/utils/db.py:15:16:15:25 | List [List element] | airflow/utils/db.py:15:9:15:11 | err [List element] | provenance |  |
+| airflow/utils/db.py:15:17:15:24 | password | airflow/utils/db.py:15:16:15:25 | List [List element] | provenance |  |
+nodes
+| airflow/api_internal/internal_api_call.py:7:16:7:29 | get_password() | semmle.label | get_password() |
+| airflow/api_internal/internal_api_call.py:17:15:17:44 | Attribute() | semmle.label | Attribute() |
+| airflow/api_internal/internal_api_call.py:19:15:19:51 | Attribute() | semmle.label | Attribute() |
+| airflow/cli/commands/task_command.py:8:32:8:39 | password | semmle.label | password |
+| airflow/cli/commands/task_command.py:10:11:10:52 | Fstring | semmle.label | Fstring |
+| airflow/cli/commands/task_command.py:11:11:11:33 | Fstring | semmle.label | Fstring |
+| airflow/cli/commands/task_command.py:14:18:14:25 | password | semmle.label | password |
+| airflow/cli/commands/task_command.py:17:5:17:12 | other_ti | semmle.label | other_ti |
+| airflow/cli/commands/task_command.py:18:30:18:37 | other_ti | semmle.label | other_ti |
+| airflow/cli/commands/task_command.py:19:34:19:41 | password | semmle.label | password |
+| airflow/cli/commands/task_command.py:20:5:20:23 | connection_password | semmle.label | connection_password |
+| airflow/cli/commands/task_command.py:20:27:20:45 | Attribute | semmle.label | Attribute |
+| airflow/cli/commands/task_command.py:21:45:21:63 | connection_password | semmle.label | connection_password |
+| airflow/executors/executor_loader.py:7:16:7:29 | get_password() | semmle.label | get_password() |
+| airflow/executors/executor_loader.py:17:15:17:65 | Attribute() | semmle.label | Attribute() |
+| airflow/executors/executor_loader.py:19:15:19:64 | Attribute() | semmle.label | Attribute() |
+| airflow/models/xcom.py:6:18:6:25 | password | semmle.label | password |
+| airflow/models/xcom.py:7:9:7:11 | key | semmle.label | key |
+| airflow/models/xcom.py:10:9:10:14 | run_id | semmle.label | run_id |
+| airflow/models/xcom.py:14:13:14:15 | key | semmle.label | key |
+| airflow/models/xcom.py:19:41:19:48 | or | semmle.label | or |
+| airflow/models/xcom.py:20:40:20:47 | password | semmle.label | password |
+| airflow/serialization/serialized_objects.py:6:32:6:39 | password | semmle.label | password |
+| airflow/serialization/serialized_objects.py:9:9:9:16 | other_qn | semmle.label | other_qn |
+| airflow/serialization/serialized_objects.py:10:41:10:48 | other_qn | semmle.label | other_qn |
+| airflow/serialization/serialized_objects.py:11:40:11:47 | password | semmle.label | password |
+| airflow/serialization/serialized_objects.py:14:48:14:55 | password | semmle.label | password |
+| airflow/serialization/serialized_objects.py:17:9:17:24 | other_class_path | semmle.label | other_class_path |
+| airflow/serialization/serialized_objects.py:18:56:18:71 | other_class_path | semmle.label | other_class_path |
+| airflow/serialization/serialized_objects.py:19:38:19:45 | password | semmle.label | password |
+| airflow/settings.py:7:16:7:29 | get_password() | semmle.label | get_password() |
+| airflow/settings.py:13:7:13:52 | Attribute() | semmle.label | Attribute() |
+| airflow/settings.py:15:7:15:54 | Attribute() | semmle.label | Attribute() |
+| airflow/utils/db.py:8:15:8:22 | password | semmle.label | password |
+| airflow/utils/db.py:11:47:11:54 | password | semmle.label | password |
+| airflow/utils/db.py:13:13:13:15 | err | semmle.label | err |
+| airflow/utils/db.py:13:13:13:15 | err [List element] | semmle.label | err [List element] |
+| airflow/utils/db.py:13:20:13:29 | List [List element] | semmle.label | List [List element] |
+| airflow/utils/db.py:13:21:13:28 | password | semmle.label | password |
+| airflow/utils/db.py:14:40:14:42 | err | semmle.label | err |
+| airflow/utils/db.py:15:9:15:11 | err | semmle.label | err |
+| airflow/utils/db.py:15:9:15:11 | err [List element] | semmle.label | err [List element] |
+| airflow/utils/db.py:15:16:15:25 | List [List element] | semmle.label | List [List element] |
+| airflow/utils/db.py:15:17:15:24 | password | semmle.label | password |
+| airflow/utils/db.py:16:35:16:37 | err | semmle.label | err |
+| airflow/utils/db.py:17:34:17:41 | password | semmle.label | password |
+subpaths
