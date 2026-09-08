@@ -1,0 +1,16 @@
+certain_read_mismatch_count
+| 0 |
+end_of_block_mismatch_count
+| 0 |
+phi_input_mismatch_count
+| 0 |
+uncertain_input_mismatch_count
+| 0 |
+adapter_use_mismatch_count
+| 0 |
+synthetic_exit_bypass_count
+| 14 |
+facade_exit_read_count
+| 0 |
+ordinary_exit_overlap_count
+| 0 |

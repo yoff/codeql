@@ -92,7 +92,7 @@ module ImportResolution {
     // uncertain SSA definition for every name in the importing scope. The
     // immediately preceding definition is still potentially the value of the
     // module export.
-    SsaImpl::Impl::uncertainWriteDefinitionInput(defTo, defFrom)
+    defFrom = defTo.(SsaImpl::Ssa::SsaUncertainWrite).getPriorDefinition()
     // Note: legacy ESSA refinement-step (e.g. for `foo.bar = X`) is
     // not modelled in the new SSA beyond the cases handled above.
   }

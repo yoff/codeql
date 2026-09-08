@@ -256,7 +256,7 @@ private module SsaImplInput implements SsaImplCommon::InputSig<Py::Location, Cfg
   }
 }
 
-import SsaImplCommon::MakeWithCachedLivenessAndDefinitionReachability<Py::Location, CfgImpl::Cfg, SsaImplInput> as Impl
+import SsaImplCommon::Make<Py::Location, CfgImpl::Cfg, SsaImplInput> as Impl
 
 // Matching the cases in `SsaImplInput.variableWrite` above
 newtype TVariableWrite =
@@ -335,13 +335,13 @@ private module SsaInput implements Impl::SsaInputSig {
 
 module Ssa = Impl::MakeSsa<SsaInput>;
 
-final class Definition = Impl::Definition;
+final class Definition = Ssa::SsaDefinition;
 
-final class WriteDefinition = Impl::WriteDefinition;
+final class WriteDefinition = Ssa::SsaWriteDefinition;
 
-final class UncertainWriteDefinition = Impl::UncertainWriteDefinition;
+final class UncertainWriteDefinition = Ssa::SsaUncertainWrite;
 
-final class PhiNode = Impl::PhiNode;
+final class PhiNode = Ssa::SsaPhiDefinition;
 
 // ===========================================================================
 // ESSA-shaped adapter layer
@@ -524,7 +524,7 @@ class PhiFunction extends PhiNode {
    * the phi from one of its predecessor blocks). Mirrors legacy
    * ESSA's `PhiFunction.getAnInput()`.
    */
-  Ssa::SsaDefinition getAnInput() { Impl::phiHasInputFromBlock(this, result, _) }
+  Ssa::SsaDefinition getAnInput() { result = this.(Ssa::SsaPhiDefinition).getAnInput() }
 }
 
 /** An ESSA definition (legacy-shaped). */
@@ -539,6 +539,19 @@ class EssaVariable extends Ssa::SsaDefinition {
   Ssa::SsaDefinition getDefinition() { result = this }
 
   /**
+   * Gets a synthetic normal-exit use of this definition. These uses have no
+   * `SsaInput::Expr`, so they cannot be exposed by `SsaDefinition.getARead()`.
+   */
+  cached
+  private Cfg::ControlFlowNode getASyntheticExitUse() {
+    exists(CfgImpl::BasicBlock bb, int i |
+      Impl::ssaDefReachesRead(this.getSourceVariable(), this, bb, i) and
+      bb.getNode(i) = result and
+      result.isNormalExit()
+    )
+  }
+
+  /**
    * Gets a CFG node where this definition is used. Includes regular
    * `Name` reads as well as the synthetic scope-exit "use" registered
    * via `SsaImplInput::variableRead` — mirrors legacy ESSA's
@@ -546,10 +559,9 @@ class EssaVariable extends Ssa::SsaDefinition {
    * from `SsaSourceVariable`.
    */
   Cfg::ControlFlowNode getAUse() {
-    exists(CfgImpl::BasicBlock bb, int i |
-      Impl::ssaDefReachesRead(this.getSourceVariable(), this, bb, i) and
-      bb.getNode(i) = result
-    )
+    result.getNode() = this.(Ssa::SsaDefinition).getARead().asExpr()
+    or
+    result = this.getASyntheticExitUse()
   }
 
   /** Gets the (textual) name of the underlying variable. */
