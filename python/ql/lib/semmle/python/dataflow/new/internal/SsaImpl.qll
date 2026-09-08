@@ -524,9 +524,7 @@ class PhiFunction extends PhiNode {
    * the phi from one of its predecessor blocks). Mirrors legacy
    * ESSA's `PhiFunction.getAnInput()`.
    */
-  Ssa::SsaDefinition getAnInput() {
-    result = this.(Ssa::SsaPhiDefinition).getAnInput()
-  }
+  Ssa::SsaDefinition getAnInput() { result = this.(Ssa::SsaPhiDefinition).getAnInput() }
 }
 
 /** An ESSA definition (legacy-shaped). */
@@ -544,7 +542,8 @@ class EssaVariable extends Ssa::SsaDefinition {
    * Gets a synthetic normal-exit use of this definition. These uses have no
    * `SsaInput::Expr`, so they cannot be exposed by `SsaDefinition.getARead()`.
    */
-  private cached Cfg::ControlFlowNode getASyntheticExitUse() {
+  cached
+  private Cfg::ControlFlowNode getASyntheticExitUse() {
     exists(CfgImpl::BasicBlock bb, int i |
       Impl::ssaDefReachesRead(this.getSourceVariable(), this, bb, i) and
       bb.getNode(i) = result and
