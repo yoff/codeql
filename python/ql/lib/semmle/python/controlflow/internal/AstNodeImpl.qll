@@ -1633,12 +1633,14 @@ private module Input implements InputSig1, InputSig2 {
    * its normal evaluation (not via an explicit `raise`/`assert`, which are
    * modeled separately).
    *
-   * The set mirrors what the legacy CFG used to flag implicitly: function
-   * calls (anything can raise), attribute access (`AttributeError`),
-   * subscript access (`IndexError`/`KeyError`/`TypeError`), arithmetic and
-   * comparison operators (`TypeError`/`ZeroDivisionError`), imports
-   * (`ImportError`/`ModuleNotFoundError`), and generator/coroutine
-   * suspension points (`await`/`yield`/`yield from`).
+   * This experimental DCA variant excludes ordinary function calls to measure
+   * the performance and precision cost of conservatively treating every call
+   * as potentially throwing. Other implicit exception sources remain modeled:
+   * attribute access (`AttributeError`), subscript access
+   * (`IndexError`/`KeyError`/`TypeError`), arithmetic and comparison operators
+   * (`TypeError`/`ZeroDivisionError`), imports
+   * (`ImportError`/`ModuleNotFoundError`), and generator/coroutine suspension
+   * points (`await`/`yield`/`yield from`).
    *
    * Bare `Name` reads are intentionally excluded — modeling every name
    * read as `mayThrow` would explode CFG edge count for negligible
@@ -1646,8 +1648,6 @@ private module Input implements InputSig1, InputSig2 {
    * operands they evaluate contribute their own exception edges.
    */
   private predicate exprMayThrow(Py::Expr e) {
-    e instanceof Py::Call
-    or
     e instanceof Py::Attribute
     or
     e instanceof Py::Subscript
