@@ -1621,6 +1621,12 @@ private module Input implements InputSig1, InputSig2 {
 
   class CallableContext = Void;
 
+  Ast::AstNode transparentEntry(Ast::AstNode n) { none() }
+
+  Ast::AstNode transparentExit(Ast::AstNode n) { none() }
+
+  predicate mergeAfterWithIn(Ast::AstNode n) { n instanceof Ast::AttributeExpr }
+
   predicate inConditionalContext(Ast::AstNode n, ConditionKind kind) {
     kind.isBoolean() and
     n = any(Ast::AssertStmt a).getTest()

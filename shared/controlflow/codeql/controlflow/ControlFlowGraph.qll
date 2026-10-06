@@ -476,6 +476,15 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
      */
     default predicate postOrInOrder(AstNode n) { none() }
 
+    /** Gets the entry node whose CFG position replaces transparent wrapper `n`. */
+    default AstNode transparentEntry(AstNode n) { none() }
+
+    /** Gets the exit node whose CFG position replaces transparent wrapper `n`. */
+    default AstNode transparentExit(AstNode n) { none() }
+
+    /** Holds if the post-order operation node also represents normal completion of `n`. */
+    default predicate mergeAfterWithIn(AstNode n) { none() }
+
     /**
      * Holds if an additional node tagged with `tag` should be created for
      * `n`. Edges targeting such nodes are labeled with `t` and therefore `t`
@@ -572,6 +581,17 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
       not n instanceof ConditionalExpr and
       not n instanceof Switch and
       not n instanceof Case
+    }
+
+    private predicate transparentNode(AstNode n) {
+      exists(Input1::transparentEntry(n)) and exists(Input1::transparentExit(n))
+    }
+
+    private predicate mergeAfterWithIn(AstNode n) {
+      Input1::mergeAfterWithIn(n) and
+      postOrInOrder(n) and
+      not inConditionalContext(n, _) and
+      not transparentNode(n)
     }
 
     /**
@@ -854,18 +874,23 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
 
     cached
     private newtype TNode =
-      TBeforeNode(AstNode n) { Input1::cfgCachedStageRef() and hasCfg(n) } or
-      TAstNode(AstNode n) { postOrInOrder(n) and hasCfg(n) } or
+      TBeforeNode(AstNode n) {
+        Input1::cfgCachedStageRef() and hasCfg(n) and not transparentNode(n)
+      } or
+      TAstNode(AstNode n) { postOrInOrder(n) and hasCfg(n) and not transparentNode(n) } or
       TAfterValueNode(AstNode n, ConditionalSuccessor t) {
         inConditionalContext(n, t.getKind()) and
         hasCfg(n) and
+        not transparentNode(n) and
         not constantCondition(n, t.getDual())
       } or
       TAfterNode(AstNode n) {
         hasCfg(n) and
         not inConditionalContext(n, _) and
         not cannotTerminateNormally(n) and
-        not simpleLeafNode(n)
+        not simpleLeafNode(n) and
+        not transparentNode(n) and
+        not mergeAfterWithIn(n)
       } or
       TAdditionalNode(AstNode n, string tag) { additionalNode(n, tag, _) and hasCfg(n) } or
       TEntryNode(Callable c) { callableHasBodyPart(c, _) } or
@@ -877,7 +902,11 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
        * Holds if this is the node representing the point in the control flow
        * before the execution of `n`.
        */
-      predicate isBefore(AstNode n) { this = TBeforeNode(n) }
+      predicate isBefore(AstNode n) {
+        this = TBeforeNode(n) and not transparentNode(n)
+        or
+        transparentNode(n) and this.isBefore(Input1::transparentEntry(n))
+      }
 
       /**
        * Holds if this is a node representing the point in the control flow
@@ -892,6 +921,10 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         this = TAfterValueNode(n, _)
         or
         this = TBeforeNode(n) and simpleLeafNode(n)
+        or
+        mergeAfterWithIn(n) and this = TAstNode(n)
+        or
+        transparentNode(n) and this.isAfter(Input1::transparentExit(n))
       }
 
       /**
@@ -910,6 +943,8 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         this = TAfterNode(n) and exists(t)
         or
         this = TBeforeNode(n) and simpleLeafNode(n) and exists(t)
+        or
+        mergeAfterWithIn(n) and this = TAstNode(n) and exists(t)
         or
         this = TAfterValueNode(n, t)
         or
@@ -973,7 +1008,10 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
        * given AST node.
        */
       predicate injects(AstNode n) {
-        if postOrInOrder(n) then this = TAstNode(n) else this = TBeforeNode(n)
+        transparentNode(n) and this.injects(Input1::transparentEntry(n))
+        or
+        not transparentNode(n) and
+        (if postOrInOrder(n) then this = TAstNode(n) else this = TBeforeNode(n))
       }
 
       /** Gets the statement this control flow node uniquely represents, if any. */
@@ -1912,6 +1950,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
        */
       private predicate defaultCfg(AstNode ast) {
         hasCfg(ast) and
+        not transparentNode(ast) and
         not explicitStep(any(PreControlFlowNode n | n.isBefore(ast)), _)
       }
 
@@ -1957,6 +1996,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           or
           n1.isIn(ast) and
           n2.isAfter(ast) and
+          not mergeAfterWithIn(ast) and
           not beginAbruptCompletion(ast, n1, _, true)
         )
       }
