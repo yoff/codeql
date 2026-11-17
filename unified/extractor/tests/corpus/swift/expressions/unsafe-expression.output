@@ -15,8 +15,8 @@ sourceFile
               leftBrace: {
               rightBrace: }
               statements:
-          name: identifier "doWork"
           modifiers:
+          name: identifier "doWork"
           signature:
             functionSignature
               parameterClause:
@@ -41,11 +41,15 @@ sourceFile
 
 ---
 
-top_level
+top_level source="⟨body⟩"
   body:
-    block
+    block source="⟨stmt⟩\n⟨stmt⟩"
       stmt:
-        function_declaration
-          name_node: identifier "doWork"
-          body: block "func doWork() {}"
-        unsupported_node "unsafe doWork()"
+        function_declaration source="func ⟨name_node⟩() ⟨body⟩"
+          name_node: identifier "doWork" source="doWork"
+          body: block "{}" source="{}"
+        unary_expr source="⟨operator⟩ ⟨operand⟩"
+          operand:
+            call_expr source="⟨callee⟩()"
+              callee: identifier "doWork" source="doWork"
+          operator: prefix_operator "unsafe" source="unsafe"

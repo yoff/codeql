@@ -1,4 +1,6 @@
 private import python
+private import semmle.python.controlflow.internal.Cfg as Cfg
+private import semmle.python.dataflow.new.internal.SsaImpl as SsaImpl
 private import semmle.python.dataflow.new.DataFlow
 private import semmle.python.dataflow.new.internal.DataFlowPrivate as DataFlowPrivate
 private import FlowSummaryImpl as FlowSummaryImpl
@@ -94,7 +96,7 @@ import Cached
  * and isn't a big problem in practice.
  */
 predicate concatStep(DataFlow::CfgNode nodeFrom, DataFlow::CfgNode nodeTo) {
-  exists(BinaryExprNode add | add = nodeTo.getNode() |
+  exists(Cfg::BinaryExprNode add | add = nodeTo.getNode() |
     add.getOp() instanceof Add and add.getAnOperand() = nodeFrom.getNode()
   )
 }
@@ -103,12 +105,12 @@ predicate concatStep(DataFlow::CfgNode nodeFrom, DataFlow::CfgNode nodeTo) {
  * Holds if taint can flow from `nodeFrom` to `nodeTo` with a step related to subscripting.
  */
 predicate subscriptStep(DataFlow::CfgNode nodeFrom, DataFlow::CfgNode nodeTo) {
-  nodeTo.getNode().(SubscriptNode).getObject() = nodeFrom.getNode()
+  nodeTo.getNode().(Cfg::SubscriptNode).getObject() = nodeFrom.getNode()
 }
 
 /**
- * Holds if taint can flow from `nodeFrom` to `nodeTo` with a step related to string
- * manipulation.
+ * Holds if taint can flow from `nodeFrom` to `nodeTo` by manipulating string-like
+ * data, including text strings, byte strings, and byte arrays.
  *
  * Note that since we cannot easily distinguish when something is a string, this can
  * also make taint flow on `<non string>.replace(foo, bar)`.
@@ -119,15 +121,27 @@ predicate stringManipulation(DataFlow::CfgNode nodeFrom, DataFlow::CfgNode nodeT
     (
       call = API::builtin(["str", "bytes", "unicode"]).getACall()
       or
-      call.getFunction().asCfgNode().(NameNode).getId() in ["str", "bytes", "unicode"]
+      call.getFunction().asCfgNode().(Cfg::NameNode).getId() in ["str", "bytes", "unicode"]
     ) and
     nodeFrom in [call.getArg(0), call.getArgByName("object")]
   )
   or
+  // Bytearray construction and byte extraction.
+  exists(DataFlow::CallCfgNode call | call = nodeTo |
+    call = API::builtin("bytearray").getACall() and
+    nodeFrom in [call.getArg(0), call.getArgByName("source")]
+    or
+    call.(DataFlow::MethodCallNode).calls(nodeFrom, "take_bytes")
+    or
+    // Unbound calls: bytearray.take_bytes(buffer).
+    call = API::builtin("bytearray").getMember("take_bytes").getACall() and
+    nodeFrom = call.getArg(0)
+  )
+  or
   // String methods. Note that this doesn't recognize `meth = "foo".upper; meth()`
-  exists(CallNode call, string method_name, ControlFlowNode object |
+  exists(Cfg::CallNode call, string method_name, Cfg::ControlFlowNode object |
     call = nodeTo.getNode() and
-    object = call.getFunction().(AttrNode).getObject(method_name)
+    object = call.getFunction().(Cfg::AttrNode).getObject(method_name)
   |
     nodeFrom.getNode() = object and
     method_name in [
@@ -153,7 +167,7 @@ predicate stringManipulation(DataFlow::CfgNode nodeFrom, DataFlow::CfgNode nodeT
   )
   or
   // % formatting
-  exists(BinaryExprNode fmt | fmt = nodeTo.getNode() |
+  exists(Cfg::BinaryExprNode fmt | fmt = nodeTo.getNode() |
     fmt.getOp() instanceof Mod and
     (
       fmt.getLeft() = nodeFrom.getNode()
@@ -163,7 +177,7 @@ predicate stringManipulation(DataFlow::CfgNode nodeFrom, DataFlow::CfgNode nodeT
   )
   or
   // string multiplication -- `"foo" * 10`
-  exists(BinaryExprNode mult | mult = nodeTo.getNode() |
+  exists(Cfg::BinaryExprNode mult | mult = nodeTo.getNode() |
     mult.getOp() instanceof Mult and
     mult.getLeft() = nodeFrom.getNode()
   )
@@ -210,8 +224,8 @@ predicate awaitStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
  * the variable `f` is tainted if the result of `open("foo")` is tainted.
  */
 predicate asyncWithStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
-  exists(With with, ControlFlowNode contextManager, ControlFlowNode var |
-    var = any(WithDefinition wd).getDefiningNode()
+  exists(With with, Cfg::ControlFlowNode contextManager, Cfg::ControlFlowNode var |
+    var = any(SsaImpl::WithDefinition wd).getDefiningNode()
   |
     nodeFrom.(DataFlow::CfgNode).getNode() = contextManager and
     nodeTo.(DataFlow::CfgNode).getNode() = var and

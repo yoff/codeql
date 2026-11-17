@@ -6,6 +6,7 @@ overlay[local?]
 module;
 
 private import python
+private import semmle.python.controlflow.internal.Cfg as Cfg
 private import semmle.python.dataflow.new.DataFlow
 private import semmle.python.dataflow.new.TaintTracking
 private import semmle.python.dataflow.new.RemoteFlowSources
@@ -1246,7 +1247,7 @@ module StdlibPrivate {
   /** An additional taint step for calls to `os.path.join` */
   private class OsPathJoinCallAdditionalTaintStep extends TaintTracking::AdditionalTaintStep {
     override predicate step(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
-      exists(CallNode call |
+      exists(Cfg::CallNode call |
         nodeTo.asCfgNode() = call and
         call = OS::OsPath::join().getACall().asCfgNode() and
         call.getAnArg() = nodeFrom.asCfgNode()
@@ -1317,13 +1318,13 @@ module StdlibPrivate {
           // run, so if we're able to, we only mark the first element as the command
           // (and not the arguments to the command).
           //
-          result.asCfgNode() = arg_args.asCfgNode().(SequenceNode).getElement(0)
+          result.asCfgNode() = arg_args.asCfgNode().(Cfg::SequenceNode).getElement(0)
           or
           // Either the "args" argument is not a sequence (which is valid) or we where
           // just not able to figure it out. Simply mark the "args" argument as the
           // command.
           //
-          not arg_args.asCfgNode() instanceof SequenceNode and
+          not arg_args.asCfgNode() instanceof Cfg::SequenceNode and
           result = arg_args
         )
       )
@@ -1542,7 +1543,7 @@ module StdlibPrivate {
    * See https://docs.python.org/3/library/functions.html#eval
    */
   private class BuiltinsEvalCall extends CodeExecution::Range, DataFlow::CallCfgNode {
-    override CallNode node;
+    override Cfg::CallNode node;
 
     BuiltinsEvalCall() { this = API::builtin("eval").getACall() }
 
@@ -1761,6 +1762,59 @@ module StdlibPrivate {
   }
 
   // ---------------------------------------------------------------------------
+  // binascii
+  // ---------------------------------------------------------------------------
+  /** A call to a supported encoding function in the `binascii` module. */
+  private class BinasciiEncodeCall extends Encoding::Range, DataFlow::CallCfgNode {
+    string codec;
+
+    BinasciiEncodeCall() {
+      codec in ["base32", "base85", "ascii85"] and
+      this = API::moduleImport("binascii").getMember("b2a_" + codec).getACall()
+    }
+
+    override DataFlow::Node getAnInput() {
+      result = this.getArg(0)
+      or
+      codec in ["base32", "base85"] and
+      result = this.getArgByName("alphabet")
+    }
+
+    override DataFlow::Node getOutput() { result = this }
+
+    override string getFormat() {
+      result in ["Base32", "Base85", "Ascii85"] and
+      result.toLowerCase() = codec
+    }
+  }
+
+  /** A call to a supported decoding function in the `binascii` module. */
+  private class BinasciiDecodeCall extends Decoding::Range, DataFlow::CallCfgNode {
+    string codec;
+
+    BinasciiDecodeCall() {
+      codec in ["base32", "base85", "ascii85"] and
+      this = API::moduleImport("binascii").getMember("a2b_" + codec).getACall()
+    }
+
+    override predicate mayExecuteInput() { none() }
+
+    override DataFlow::Node getAnInput() {
+      result = this.getArg(0)
+      or
+      codec in ["base32", "base85"] and
+      result = this.getArgByName("alphabet")
+    }
+
+    override DataFlow::Node getOutput() { result = this }
+
+    override string getFormat() {
+      result in ["Base32", "Base85", "Ascii85"] and
+      result.toLowerCase() = codec
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // json
   // ---------------------------------------------------------------------------
   /** Gets a reference to the `json` module. */
@@ -1923,7 +1977,7 @@ module StdlibPrivate {
           nodeFrom = instance().getAValueReachableFromSource() and
           nodeTo = [getvalueRef(), getfirstRef(), getlistRef()].getAValueReachableFromSource()
           or
-          nodeFrom.asCfgNode() = nodeTo.asCfgNode().(CallNode).getFunction() and
+          nodeFrom.asCfgNode() = nodeTo.asCfgNode().(Cfg::CallNode).getFunction() and
           (
             nodeFrom = getvalueRef().getAValueReachableFromSource() and
             nodeTo = getvalueResult().asSource()
@@ -1939,7 +1993,7 @@ module StdlibPrivate {
           nodeFrom in [
               instance().getAValueReachableFromSource(), fieldList().getAValueReachableFromSource()
             ] and
-          nodeTo.asCfgNode().(SubscriptNode).getObject() = nodeFrom.asCfgNode()
+          nodeTo.asCfgNode().(Cfg::SubscriptNode).getObject() = nodeFrom.asCfgNode()
           or
           // Attributes on Field
           nodeFrom = field().getAValueReachableFromSource() and
@@ -2035,6 +2089,34 @@ module StdlibPrivate {
       override DataFlow::Node getNameArg() { result = this.getArg(0) }
 
       override DataFlow::Node getValueArg() { result = this.getArg(1) }
+
+      override predicate nameAllowsNewline() { any() }
+
+      override predicate valueAllowsNewline() { any() }
+    }
+
+    /** Additional response headers supplied by construction or instance assignment. */
+    private class ExtraHeadersWrite extends Http::Server::ResponseHeaderBulkWrite::Range {
+      DataFlow::Node headers;
+
+      ExtraHeadersWrite() {
+        exists(API::Node cls |
+          cls =
+            API::moduleImport("http")
+                .getMember("server")
+                .getMember("SimpleHTTPRequestHandler")
+                .getASubclass*()
+        |
+          this = cls.getACall() and
+          headers = this.(DataFlow::CallCfgNode).getArgByName("extra_response_headers")
+          or
+          this.(DataFlow::AttrWrite)
+              .writes([cls.getAnInstance(), cls.getAMember().getSelfParameter()]
+                    .getAValueReachableFromSource(), "extra_response_headers", headers)
+        )
+      }
+
+      override DataFlow::Node getBulkArg() { result = headers }
 
       override predicate nameAllowsNewline() { any() }
 
@@ -2254,8 +2336,8 @@ module StdlibPrivate {
       DataFlow::CfgNode
     {
       WsgirefSimpleServerApplicationReturn() {
-        exists(WsgirefSimpleServerApplication requestHandler, Return ret |
-          ret.getScope() = requestHandler and
+        exists(Return ret |
+          ret.getScope() = any(WsgirefSimpleServerApplication requestHandler) and
           node.getNode() = ret.getValue()
         )
       }
@@ -2338,9 +2420,9 @@ module StdlibPrivate {
         DataFlow::Node value;
 
         HeaderWriteSubscript() {
-          exists(SubscriptNode subscript |
+          exists(Cfg::SubscriptNode subscript |
             this.asCfgNode() = subscript and
-            value.asCfgNode() = subscript.(DefinitionNode).getValue() and
+            value.asCfgNode() = subscript.(Cfg::DefinitionNode).getValue() and
             name.asCfgNode() = subscript.getIndex() and
             subscript.getObject() = instance().asCfgNode()
           )
@@ -2682,7 +2764,7 @@ module StdlibPrivate {
     or
     // Data injection
     //   Special handling of the `/` operator
-    exists(BinaryExprNode slash, DataFlow::Node pathOperand, DataFlow::TypeTracker t2 |
+    exists(Cfg::BinaryExprNode slash, DataFlow::Node pathOperand, DataFlow::TypeTracker t2 |
       slash.getOp() instanceof Div and
       pathOperand.asCfgNode() = slash.getAnOperand() and
       pathlibPath(t2).flowsTo(pathOperand) and
@@ -2807,7 +2889,7 @@ module StdlibPrivate {
       pathlibPath().flowsTo(nodeTo) and
       (
         // Special handling of the `/` operator
-        exists(BinaryExprNode slash, DataFlow::Node pathOperand |
+        exists(Cfg::BinaryExprNode slash, DataFlow::Node pathOperand |
           slash.getOp() instanceof Div and
           pathOperand.asCfgNode() = slash.getAnOperand() and
           pathlibPath().flowsTo(pathOperand)
@@ -3105,12 +3187,15 @@ module StdlibPrivate {
    */
   private class RegexExecutionMethod extends string {
     RegexExecutionMethod() {
-      this in ["match", "fullmatch", "search", "split", "findall", "finditer", "sub", "subn"]
+      this in [
+          "match", "prefixmatch", "fullmatch", "search", "split", "findall", "finditer", "sub",
+          "subn"
+        ]
     }
 
     /** Gets the index of the argument representing the string to be searched by a regex. */
     int getStringArgIndex() {
-      this in ["match", "fullmatch", "search", "split", "findall", "finditer"] and
+      this in ["match", "prefixmatch", "fullmatch", "search", "split", "findall", "finditer"] and
       result = 1
       or
       this in ["sub", "subn"] and
@@ -3244,7 +3329,7 @@ module StdlibPrivate {
           this = "compiled re.Match"
         )
       |
-        result = re.getMember(["match", "search", "fullmatch"]).getACall()
+        result = re.getMember(["match", "prefixmatch", "search", "fullmatch"]).getACall()
       )
     }
 
@@ -4222,6 +4307,21 @@ module StdlibPrivate {
     }
   }
 
+  /** A flow summary for `frozendict`. */
+  class FrozendictSummary extends SummarizedCallable::Range {
+    FrozendictSummary() { this = "builtins.frozendict" }
+
+    override DataFlow::CallCfgNode getACall() { result = API::builtin("frozendict").getACall() }
+
+    override DataFlow::ArgumentNode getACallback() {
+      result = API::builtin("frozendict").getAValueReachableFromSource()
+    }
+
+    override predicate propagatesFlow(string input, string output, boolean preservesValue) {
+      any(DictSummary s).propagatesFlow(input, output, preservesValue)
+    }
+  }
+
   /** A flow summary for `list`. */
   class ListSummary extends SummarizedCallable::Range {
     ListSummary() { this = "builtins.list" }
@@ -4572,9 +4672,9 @@ module StdlibPrivate {
     }
 
     override predicate propagatesFlow(string input, string output, boolean preservesValue) {
-      exists(CallNode c, string name, ControlFlowNode n, DataFlow::AttributeContent ac |
-        c.getFunction().(NameNode).getId() = "replace" or
-        c.getFunction().(AttrNode).getName() = "replace"
+      exists(Cfg::CallNode c, string name, Cfg::ControlFlowNode n, DataFlow::AttributeContent ac |
+        c.getFunction().(Cfg::NameNode).getId() = "replace" or
+        c.getFunction().(Cfg::AttrNode).getName() = "replace"
       |
         n = c.getArgByName(name) and
         ac.getAttribute() = name and
@@ -5176,10 +5276,10 @@ module StdlibPrivate {
  * See https://docs.python.org/3.9/library/stdtypes.html#str.startswith
  */
 private class StartswithCall extends Path::SafeAccessCheck::Range {
-  StartswithCall() { this.(CallNode).getFunction().(AttrNode).getName() = "startswith" }
+  StartswithCall() { this.(Cfg::CallNode).getFunction().(Cfg::AttrNode).getName() = "startswith" }
 
-  override predicate checks(ControlFlowNode node, boolean branch) {
-    node = this.(CallNode).getFunction().(AttrNode).getObject() and
+  override predicate checks(Cfg::ControlFlowNode node, boolean branch) {
+    node = this.(Cfg::CallNode).getFunction().(Cfg::AttrNode).getObject() and
     branch = true
   }
 }

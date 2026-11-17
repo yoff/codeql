@@ -9,6 +9,7 @@ module;
 import go
 private import codeql.ssa.Ssa as SsaImplCommon
 private import semmle.go.controlflow.BasicBlocks as BasicBlocks
+private import semmle.go.controlflow.ControlFlowGraphImpl
 
 private class BasicBlock = BasicBlocks::BasicBlock;
 
@@ -38,7 +39,7 @@ private module Internal {
   /** Holds if the `i`th node of `bb` in function `f` is an entry node. */
   private predicate entryNode(FuncDef f, BasicBlock bb, int i) {
     f = bb.getScope() and
-    bb.getNode(i).isEntryNode()
+    bb.getNode(i).(ControlFlow::Node).isEntryNode()
   }
 
   /**
@@ -110,7 +111,7 @@ private module Internal {
       v.isCaptured() and
       exists(FuncDef f |
         f = bb.getScope() and
-        bb.getLastNode().isExitNode() and
+        bb.getLastNode().(ControlFlow::Node).isExitNode() and
         i = bb.length() - 1 and
         certain = false
       |
@@ -122,11 +123,44 @@ private module Internal {
         any(IR::Instruction def | def.writes(v, _)).getRoot() = f
       )
     }
+
+    cached
+    predicate ssaCachedStageRevRef() { Ssa::ssaCachedStageRevRef1() }
   }
 }
 
 import Internal
-import SsaImplCommon::Make<Location, BasicBlocks::Cfg, SsaInput> as Impl
+import SsaImplCommon::Make<Location, CfgImpl::Cfg, SsaInput> as Impl
+
+private module PublicSsaInput implements Impl::SsaInputSig {
+  private import go as G
+
+  class Expr = G::Expr;
+
+  class Parameter = G::Parameter;
+
+  class VariableWrite extends IR::WriteInstruction {
+    Expr asExpr() { none() }
+
+    Expr getValue() { result = this.getRhs().(IR::EvalInstruction).getExpr() }
+
+    predicate isParameterInit(Parameter p) { this = IR::initParamInstruction(p) }
+  }
+
+  predicate explicitWrite(VariableWrite w, BasicBlock bb, int i, SsaSourceVariable v) {
+    w = bb.getNode(i) and
+    defAt(bb, i, v)
+  }
+
+  predicate explicitRead(Expr e, SsaSourceVariable v) { IR::evalExprInstruction(e).reads(v) }
+}
+
+module Ssa = Impl::MakeSsa<PublicSsaInput>;
+
+/** Gets the control-flow root containing `def`. */
+ControlFlow::Root getSsaDefinitionRoot(Ssa::SsaDefinition def) {
+  result = def.getBasicBlock().getScope()
+}
 
 final class Definition = Impl::Definition;
 
@@ -139,32 +173,23 @@ final class PhiNode = Impl::PhiNode;
 module Consistency = Impl::Consistency;
 
 /**
- * NB: This predicate should be cached.
- *
  * Holds if the SSA definition of `v` at `def` reaches a read at index `i` in
  * basic block `bb`.
  */
-cached
 predicate ssaDefReachesRead(SsaSourceVariable v, Definition def, BasicBlock bb, int i) {
   Impl::ssaDefReachesRead(v, def, bb, i)
 }
 
 /**
- * NB: This predicate should be cached.
- *
  * Holds if the SSA definition of `v` at `def` reaches the end of basic block `bb`.
  */
-cached
 predicate ssaDefReachesEndOfBlock(BasicBlock bb, Definition def, SsaSourceVariable v) {
   Impl::ssaDefReachesEndOfBlock(bb, def, v)
 }
 
 /**
- * NB: This predicate should be cached.
- *
  * Holds if `inp` is an input to the phi node `phi` along the edge originating in `bb`.
  */
-cached
 predicate phiHasInputFromBlock(PhiNode phi, Definition inp, BasicBlock bb) {
   Impl::phiHasInputFromBlock(phi, inp, bb)
 }

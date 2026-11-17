@@ -2,7 +2,8 @@ use std::fs;
 use std::path::Path;
 
 use codeql_extractor::extractor::desugaring;
-use yeast::{dump::dump_ast, dump::dump_ast_with_type_errors};
+use yeast::OutputAst as Ast;
+use yeast::dump::{DumpOptions, dump_ast, dump_ast_with_type_errors_and_options};
 
 #[path = "../src/languages/mod.rs"]
 mod languages;
@@ -16,8 +17,7 @@ struct CorpusCase {
 
 fn update_mode_enabled() -> bool {
     std::env::var("UNIFIED_UPDATE_CORPUS")
-        .map(|v| matches!(v.to_ascii_lowercase().as_str(), "1" | "true" | "yes" | "on"))
-        .unwrap_or(false)
+        .is_ok_and(|v| matches!(v.to_ascii_lowercase().as_str(), "1" | "true" | "yes" | "on"))
 }
 
 /// Parse a corpus `.output` file. The file holds a single test case made of
@@ -61,7 +61,7 @@ fn render_corpus(case: &CorpusCase) -> String {
 
 /// Parse `input` through the language's parser and desugar it, returning the
 /// mapped AST.
-fn run_desugaring(lang: &desugaring::LanguageSpec, input: &str) -> Result<yeast::Ast, String> {
+fn run_desugaring(lang: &desugaring::LanguageSpec, input: &str) -> Result<Ast, String> {
     let parsed = (lang.parser)(input.as_bytes())?;
     lang.desugarer
         .run_from_ast(parsed.ast)
@@ -114,6 +114,7 @@ fn corpus_dir() -> std::path::PathBuf {
 }
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn test_corpus() {
     let update_mode = update_mode_enabled();
     let all_languages = languages::all_language_specs();
@@ -123,7 +124,7 @@ fn test_corpus() {
         let output_schema = yeast::node_types_yaml::schema_from_yaml(languages::OUTPUT_AST_SCHEMA)
             .expect("Failed to parse OUTPUT_AST_SCHEMA YAML");
 
-        let lang_corpus_dir = corpus_dir.join(&lang.prefix);
+        let lang_corpus_dir = corpus_dir.join(lang.prefix);
         if !lang_corpus_dir.exists() {
             continue;
         }
@@ -141,13 +142,12 @@ fn test_corpus() {
             // The canonical test case lives in the `.swift` file and is the
             // source of truth. An `.output` file without a `.swift` sibling is
             // an orphan: there is nothing to drive it from.
-            if !swift_path.exists() {
-                panic!(
-                    "Found {} with no corresponding test case; add {} or remove the output file",
-                    output_path.display(),
-                    swift_path.display()
-                );
-            }
+            assert!(
+                swift_path.exists(),
+                "Found {} with no corresponding test case; add {} or remove the output file",
+                output_path.display(),
+                swift_path.display()
+            );
 
             let swift_input = fs::read_to_string(&swift_path)
                 .unwrap_or_else(|e| panic!("Failed to read {}: {e}", swift_path.display()))
@@ -190,7 +190,7 @@ fn test_corpus() {
                     ));
                 }
                 // Ensure the AST passes below operate on the source of truth.
-                let case_input = swift_input.clone();
+                let case_input = swift_input;
 
                 match dump_raw_parse(&lang, &case_input) {
                     Err(e) => {
@@ -223,11 +223,15 @@ fn test_corpus() {
                         ));
                     }
                     Ok(actual) => {
-                        let actual_dump = dump_ast_with_type_errors(
+                        let actual_dump = dump_ast_with_type_errors_and_options(
                             &actual,
                             actual.get_root(),
                             &case_input,
                             &output_schema,
+                            &DumpOptions {
+                                show_abridged_source: true,
+                                ..DumpOptions::default()
+                            },
                         );
                         if update_mode {
                             case.expected = actual_dump.trim().to_string();

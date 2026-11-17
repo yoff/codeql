@@ -8,7 +8,7 @@ import semmle.python.dataflow.new.internal.DataFlowPublic
 import semmle.python.ApiGraphs
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.frameworks.Stdlib
-import semmle.python.dataflow.new.RemoteFlowSources
+private import semmle.python.controlflow.internal.Cfg as Cfg
 
 /**
  * Handle those three cases of Tarfile opens:
@@ -41,8 +41,8 @@ class AllTarfileOpens extends API::CallNode {
 
 module UnsafeUnpackConfig implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-    // A source coming from a remote location
-    source instanceof RemoteFlowSource
+    // A source enabled by the active threat model
+    source instanceof ActiveThreatModelSource
     or
     // A source coming from a CLI argparse module
     // see argparse: https://docs.python.org/3/library/argparse.html
@@ -111,8 +111,8 @@ module UnsafeUnpackConfig implements DataFlow::ConfigSig {
         call = atfo.getReturn().getMember("extractall").getACall() and
         arg = call.getArgByName("members") and
         if
-          arg.asCfgNode() instanceof NameConstantNode or
-          arg.asCfgNode() instanceof ListNode
+          arg.asCfgNode() instanceof Cfg::NameConstantNode or
+          arg.asCfgNode() instanceof Cfg::ListNode
         then sink = call.getObject()
         else
           if arg.(MethodCallNode).getMethodName() = "getmembers"

@@ -5,7 +5,6 @@ use crate::trap::{DiagnosticSeverity, TrapFile, TrapId};
 use crate::trap::{Label, TrapClass};
 use ra_ap_base_db::EditionedFileId;
 use ra_ap_hir::Semantics;
-use ra_ap_hir::db::ExpandDatabase;
 use ra_ap_hir_expand::builtin::{BuiltinDeriveExpander, find_builtin_derive};
 use ra_ap_hir_expand::span_map::ExpansionSpanMap;
 use ra_ap_hir_expand::{ExpandResult, ExpandTo, HirFileId, InFile, map_node_range_up_rooted};
@@ -21,6 +20,8 @@ use ra_ap_syntax::{
 use ra_ap_syntax_bridge::{
     DocCommentDesugarMode, syntax_node_to_token_tree, token_tree_to_syntax_node,
 };
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 
 impl Emission<ast::Item> for Translator<'_> {
     fn pre_emit(&mut self, node: &ast::Item) -> Option<Label<generated::Item>> {
@@ -123,15 +124,16 @@ pub enum SourceKind {
     Library,
 }
 
-pub struct Translator<'a> {
+pub struct Translator<'db> {
     pub trap: TrapFile,
-    path: &'a str,
+    path: PathBuf,
     label: Label<generated::File>,
     line_index: LineIndex,
     file_id: Option<EditionedFileId>,
-    pub semantics: Option<&'a Semantics<'a, RootDatabase>>,
+    pub semantics: Option<&'db Semantics<'db, RootDatabase>>,
     source_kind: SourceKind,
     pub(crate) macro_context_depth: usize,
+    parenthesized_expr_attrs: HashMap<SyntaxNode, Vec<Label<generated::AnyAttr>>>,
     diagnostic_count: usize,
     /// When emitting a reconstructed built-in derive expansion, holds the span map of the
     /// synthesized syntax tree. Those nodes are not registered in the semantics cache, so
@@ -144,24 +146,25 @@ const UNKNOWN_LOCATION: (LineCol, LineCol) =
 
 const DIAGNOSTIC_LIMIT_PER_FILE: usize = 100;
 
-impl<'a> Translator<'a> {
+impl<'db> Translator<'db> {
     pub fn new(
         trap: TrapFile,
-        path: &'a str,
+        path: &Path,
         label: Label<generated::File>,
         line_index: LineIndex,
-        semantic_info: Option<&FileSemanticInformation<'a>>,
+        semantic_info: Option<&FileSemanticInformation<'db>>,
         source_kind: SourceKind,
-    ) -> Translator<'a> {
+    ) -> Translator<'db> {
         Translator {
             trap,
-            path,
+            path: path.to_path_buf(),
             label,
             line_index,
             file_id: semantic_info.map(|i| i.file_id),
             semantics: semantic_info.map(|i| i.semantics),
             source_kind,
             macro_context_depth: 0,
+            parenthesized_expr_attrs: HashMap::new(),
             diagnostic_count: 0,
             builtin_derive_span_map: None,
         }
@@ -186,7 +189,7 @@ impl<'a> Translator<'a> {
         Some((start, end))
     }
 
-    pub fn text_range_for_node(&mut self, node: &impl ast::AstNode) -> Option<TextRange> {
+    pub fn text_range_for_node(&self, node: &impl ast::AstNode) -> Option<TextRange> {
         if let Some(span_map) = self.builtin_derive_span_map.as_ref() {
             // Nodes synthesized by a reconstructed built-in derive expansion are not in the
             // semantics cache; resolve their original source range through the expansion span map.
@@ -199,17 +202,13 @@ impl<'a> Translator<'a> {
         if let Some(semantics) = self.semantics.as_ref() {
             let file_range = semantics.original_range(node.syntax());
             let file_id = self.file_id?;
-            if file_id == file_range.file_id {
-                Some(file_range.range)
-            } else {
-                None
-            }
+            (file_id == file_range.file_id).then_some(file_range.range)
         } else {
             Some(node.syntax().text_range())
         }
     }
 
-    fn location_for_node(&mut self, node: &impl ast::AstNode) -> Option<(LineCol, LineCol)> {
+    fn location_for_node(&self, node: &impl ast::AstNode) -> Option<(LineCol, LineCol)> {
         self.text_range_for_node(node)
             .and_then(|r| self.location(r))
     }
@@ -224,7 +223,7 @@ impl<'a> Translator<'a> {
                 UNKNOWN_LOCATION,
             ),
             Some((start, end)) => self.trap.emit_location(self.label, label, start, end),
-        };
+        }
     }
     pub fn emit_location_token(
         &mut self,
@@ -239,7 +238,7 @@ impl<'a> Translator<'a> {
         {
             let token_range = clipped_range + parent_range2.start() - parent_range.start();
             if let Some((start, end)) = self.location(token_range) {
-                self.trap.emit_location(self.label, label, start, end)
+                self.trap.emit_location(self.label, label, start, end);
             }
         }
     }
@@ -293,7 +292,7 @@ impl<'a> Translator<'a> {
         dispatch_to_tracing!(
             severity,
             "{}:{}:{}: {}",
-            self.path,
+            self.path.display(),
             start.line + 1,
             start.col + 1,
             &full_message,
@@ -372,7 +371,7 @@ impl<'a> Translator<'a> {
         if let Some(value) = semantics
             .hir_file_for(expanded)
             .macro_file()
-            .and_then(|macro_call_id| semantics.db.parse_macro_expansion_error(macro_call_id))
+            .and_then(|macro_call_id| macro_call_id.parse_macro_expansion_error(semantics.db))
         {
             if let Some(err) = &value.err {
                 let error = err.render_to_string(semantics.db);
@@ -381,14 +380,13 @@ impl<'a> Translator<'a> {
                     == hir_file_id.file_id().map(|f| f.file_id(semantics.db))
                 {
                     let location = err.span().range
-                        + semantics
-                            .db
-                            .ast_id_map(hir_file_id)
+                        + hir_file_id
+                            .ast_id_map(semantics.db)
                             .get_erased(err.span().anchor.ast_id)
                             .text_range()
                             .start();
                     self.emit_parse_error(node, &SyntaxError::new(error.message, location));
-                };
+                }
             }
             for err in value.value.iter() {
                 self.emit_parse_error(node, err);
@@ -454,7 +452,7 @@ impl<'a> Translator<'a> {
                 self.emit_parse_error(mcall, &SyntaxError::new(
                     format!(
                         "macro expansion failed: the macro '{}' expands to {:?} but a {:?} was expected",
-                        mcall.path().map(|p| p.to_string()).unwrap_or_default(),
+                        mcall.path().map_or_default(|p| p.to_string()),
                         kind, expand_to
                     ),
                     range.unwrap_or_else(|| TextRange::empty(TextSize::from(0))),
@@ -468,7 +466,7 @@ impl<'a> Translator<'a> {
                 &SyntaxError::new(
                     format!(
                         "macro expansion failed for '{}'",
-                        mcall.path().map(|p| p.to_string()).unwrap_or_default()
+                        mcall.path().map_or_default(|p| p.to_string())
                     ),
                     range.unwrap_or_else(|| TextRange::empty(TextSize::from(0))),
                 ),
@@ -489,17 +487,14 @@ impl<'a> Translator<'a> {
     pub(crate) fn should_be_excluded(&self, item: &impl ast::HasAttrs) -> bool {
         self.semantics.is_some_and(|sema| {
             item.attrs().any(|attr| {
-                let meta = match attr.meta() {
-                    Some(meta) => meta,
-                    None => return false,
+                let Some(meta) = attr.meta() else {
+                    return false;
                 };
-                let cfg_meta = match ast::CfgMeta::cast(meta.syntax().clone()) {
-                    Some(cfg_meta) => cfg_meta,
-                    None => return false,
+                let Some(cfg_meta) = ast::CfgMeta::cast(meta.syntax().clone()) else {
+                    return false;
                 };
-                let cfg_predicate = match cfg_meta.cfg_predicate() {
-                    Some(pred) => pred,
-                    None => return false,
+                let Some(cfg_predicate) = cfg_meta.cfg_predicate() else {
+                    return false;
                 };
                 let cfg_expr = ra_ap_cfg::CfgExpr::parse_from_ast(cfg_predicate);
                 // Resolve the crate the item belongs to so its `cfg` options can be checked.
@@ -515,15 +510,62 @@ impl<'a> Translator<'a> {
                             None => return false,
                         }
                     }
-                    HirFileId::MacroFile(macro_call) => sema
-                        .db
-                        .lookup_intern_macro_call(macro_call)
-                        .krate
-                        .cfg_options(sema.db),
+                    HirFileId::MacroFile(macro_call) => {
+                        macro_call.loc(sema.db).krate.cfg_options(sema.db)
+                    }
                 };
                 cfg_options.check(&cfg_expr) == Some(false)
             })
         })
+    }
+
+    pub(crate) fn emit_parenthesized_expr(
+        &mut self,
+        node: &ast::ParenExpr,
+    ) -> Option<Label<generated::Expr>> {
+        if self.should_be_excluded(node) {
+            return None;
+        }
+
+        let mut attrs = self.take_parenthesized_expr_attrs(node.syntax());
+        attrs.extend(
+            node.attrs_with_doc()
+                .filter_map(|attr| self.emit_any_attr(&attr)),
+        );
+        let result = node.expr().and_then(|expr| {
+            let syntax = expr.syntax().clone();
+            self.parenthesized_expr_attrs
+                .entry(syntax.clone())
+                .or_default()
+                .extend(attrs);
+            let result = self.emit_expr(&expr);
+            self.parenthesized_expr_attrs.remove(&syntax);
+            result
+        });
+        if let Some(label) = result {
+            self.emit_tokens(node, label.into(), node.syntax().children_with_tokens());
+        }
+        result
+    }
+
+    pub(crate) fn emit_parenthesized_pat(
+        &mut self,
+        node: &ast::ParenPat,
+    ) -> Option<Label<generated::Pat>> {
+        let result = node.pat().and_then(|pat| self.emit_pat(&pat));
+        if let Some(label) = result {
+            self.emit_tokens(node, label.into(), node.syntax().children_with_tokens());
+        }
+        result
+    }
+
+    pub(crate) fn take_parenthesized_expr_attrs(
+        &mut self,
+        node: &SyntaxNode,
+    ) -> Vec<Label<generated::AnyAttr>> {
+        self.parenthesized_expr_attrs
+            .remove(node)
+            .unwrap_or_default()
     }
 
     pub(crate) fn should_skip_bodies(&self) -> bool {
@@ -550,14 +592,14 @@ impl<'a> Translator<'a> {
                 .and_then(ast::Type::cast)
                 .and_then(|t| self.emit_type(&t))
             {
-                generated::PathSegment::emit_type_repr(label, t, &mut self.trap.writer)
+                generated::PathSegment::emit_type_repr(label, t, &mut self.trap.writer);
             }
             if let Some(t) = type_refs
                 .next()
                 .and_then(ast::PathType::cast)
                 .and_then(|t| self.emit_path_type(&t))
             {
-                generated::PathSegment::emit_trait_type_repr(label, t, &mut self.trap.writer)
+                generated::PathSegment::emit_trait_type_repr(label, t, &mut self.trap.writer);
             }
             // moreover as we're skipping emission of TypeAnchor, we need to attach its comments to
             // this path segment
@@ -755,11 +797,11 @@ impl<'a> Translator<'a> {
         let semantics = self.semantics?;
         let db = semantics.db;
         let file_id = semantics.hir_file_for(adt.syntax());
-        let span_map = db.span_map(file_id);
+        let span_map = file_id.span_map(db);
         let call_site = span_map.span_for_range(adt.syntax().text_range());
         let input = syntax_node_to_token_tree(
             adt.syntax(),
-            span_map.as_ref(),
+            span_map,
             call_site,
             DocCommentDesugarMode::ProcMacro,
         );

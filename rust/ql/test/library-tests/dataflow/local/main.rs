@@ -146,8 +146,8 @@ fn tuple_mutation() {
 fn tuple_nested() {
     let a = (3, source(59));
     let b = (a, 3);
-    sink(b.0 .0);
-    sink(b.0 .1); // $ hasValueFlow=59
+    sink(b.0.0);
+    sink(b.0.1); // $ hasValueFlow=59
     sink(b.1);
 }
 
@@ -517,23 +517,28 @@ fn iterators() {
     let vs = [source(91), 2, 3, 4];
 
     sink(vs[0]); // $ hasValueFlow=91
-    sink(*vs.iter().next().unwrap()); // $ MISSING: hasValueFlow=91
-    sink(*vs.iter().nth(0).unwrap()); // $ MISSING: hasValueFlow=91
+    sink(*vs.iter().next().unwrap()); // $ hasValueFlow=91
+    sink(*vs.iter().nth(0).unwrap()); // $ hasValueFlow=91
 
     for v in vs {
         sink(v); // $ hasValueFlow=91
     }
     for &v in vs.iter() {
-        sink(v); // $ MISSING: hasValueFlow=91
+        sink(v); // $ hasValueFlow=91
     }
 
     let vs2: Vec<&i64> = vs.iter().collect();
     for &v in vs2 {
-        sink(v); // $ MISSING: hasValueFlow=91
+        sink(v); // $ hasValueFlow=91
     }
 
-    vs.iter().map(|x| sink(*x)); // $ MISSING: hasValueFlow=91
-    vs.iter().for_each(|x| sink(*x)); // $ MISSING: hasValueFlow=91
+    let captured = source(92);
+
+    vs.iter().map(|x| sink(*x)); // $ hasValueFlow=91
+    vs.iter().for_each(|x| {
+        sink(*x); // $ hasValueFlow=91
+        sink(captured) // $ hasValueFlow=92
+    });
 
     for v in vs.into_iter() {
         sink(v); // $ MISSING: hasValueFlow=91
@@ -542,11 +547,11 @@ fn iterators() {
     let mut vs_mut = [source(92), 2, 3, 4];
 
     sink(vs_mut[0]); // $ hasValueFlow=92
-    sink(*vs_mut.iter().next().unwrap()); // $ MISSING: hasValueFlow=92
-    sink(*vs_mut.iter().nth(0).unwrap()); // $ MISSING: hasValueFlow=92
+    sink(*vs_mut.iter().next().unwrap()); // $ hasValueFlow=92
+    sink(*vs_mut.iter().nth(0).unwrap()); // $ hasValueFlow=92
 
     for &mut v in vs_mut.iter_mut() {
-        sink(v); // $ MISSING: hasValueFlow=92
+        sink(v); // $ hasValueFlow=92
     }
 }
 

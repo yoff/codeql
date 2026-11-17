@@ -1,13 +1,22 @@
 /**
  * Provides classes for reasoning about lexically scoped names and references to these.
  */
+overlay[local?]
+module;
 
 private import unified
 private import unified as U
 private import codeql.namebinding.LocalNameBinding
 private import codeql.unified.internal.NameBindingPlugin
+private import codeql.unified.internal.StaticNameBinding
 
 private module LocalNameBindingInput implements LocalNameBindingInputSig<Location> {
+  predicate cacheRevRef() {
+    (bindingContext(_, _, _) implies any())
+    or
+    (implicitDeclInScope(_, _, _) implies any())
+  }
+
   class AstNode = U::AstNode;
 
   private class LogicalAndRoot extends LogicalAndExpr {
@@ -63,58 +72,26 @@ private module LocalNameBindingInput implements LocalNameBindingInputSig<Locatio
   }
 
   private AstNode getChild1(AstNode n, int index) {
-    result = n.(Block).getStmt(index) and
-    not n instanceof BlockWithGuardStmts
-    or
     result = n.(BlockWithGuardStmts).getTranslatedChild(index)
     or
     result = n.(LogicalAndRoot).getNthLeaf(index)
     or
-    exists(PatternGuardExpr guard | n = guard |
-      index = 0 and result = guard.getPattern()
-      or
-      index = 1 and result = guard.getValue()
-    )
-    or
-    exists(IfExpr expr | n = expr |
-      index = 0 and result = expr.getCondition()
-      or
-      index = 1 and result = expr.getThen()
-      or
-      index = 2 and result = expr.getElse()
-    )
-    or
-    exists(VariableDeclaration decl | n = decl |
-      index = 0 and result = decl.getPattern()
-      or
-      index = 1 and result = decl.getType()
-      or
-      index = 2 and result = decl.getValue()
-    )
-    or
-    index = 0 and
-    relocatedClassMember(n, result)
-  }
-
-  /**
-   * Holds if `member` is moved onto a child of `className` instead of the class itself,
-   * so the member name is not in scope in the base types and type parameter constraints.
-   */
-  private predicate relocatedClassMember(Identifier className, Member member) {
+    // Move members under the name node of its class, so the member name is not in scope
+    // in the base types and type parameter constraints.
     exists(ClassLikeDeclaration cls |
-      className = cls.getNameNode() and
-      member = cls.getAMember()
+      n = cls.getNameNode() and
+      result = cls.getAMember() and
+      index = 0
     )
   }
 
   AstNode getChild(AstNode n, int index) {
     result = getChild1(n, index)
     or
-    not exists(getChild1(n, _)) and
+    not result = getChild1(_, _) and
     not n instanceof LogicalAndExpr and // also ignore intermediate nodes within a 'logical and' tree
     not n instanceof GuardIfStmt and
-    not relocatedClassMember(_, result) and
-    index = 0 and
+    index = result.getParentIndex() and
     result = n.getAFieldOrChild()
   }
 
@@ -145,6 +122,8 @@ private module LocalNameBindingInput implements LocalNameBindingInputSig<Locatio
     override AstNode getElse() { none() }
   }
 
+  predicate isUnscopedConditional(Conditional cond) { cond.(IfExpr).isConditionalCompilation() }
+
   abstract class SiblingShadowingDecl extends AstNode {
     abstract AstNode getPattern();
 
@@ -167,8 +146,6 @@ private module LocalNameBindingInput implements LocalNameBindingInputSig<Locatio
 
   private class LocalVariableDeclarationSiblingShadowingDecl extends SiblingShadowingDecl instanceof LocalVariableDeclaration
   {
-    LocalVariableDeclarationSiblingShadowingDecl() { not this instanceof TopLevelStmt }
-
     override Expr getPattern() { result = LocalVariableDeclaration.super.getPattern() }
 
     override AstNode getRhs() { result = LocalVariableDeclaration.super.getValue() }
@@ -197,7 +174,9 @@ private module LocalNameBindingInput implements LocalNameBindingInputSig<Locatio
     any(NameBindingPlugin p).isNonPattern(e)
   }
 
+  cached
   additional predicate bindingContext(AstNode pattern, AstNode scope, AstNode declaration) {
+    LocalNameBindingOutput::CachedStage::ref() and
     not isNonPattern(pattern) and
     (
       exists(SiblingShadowingDecl decl |
@@ -219,8 +198,17 @@ private module LocalNameBindingInput implements LocalNameBindingInputSig<Locatio
         declaration = func
       )
       or
-      exists(Parameter param |
-        scope = param.getParent() and // TODO: add SourceCallable and use .getParameter() instead
+      exists(Parameter param, Callable callable |
+        callable = param.getDeclaringCallable() and
+        (
+          // Scope to the body so parameter defaults cannot see the parameter list
+          // TODO: Use a plugin for languages where parameter defaults can reference earlier parameters
+          scope = callable.getBody()
+          or
+          // For bodyless functions, choose an arbitrary scope
+          not exists(callable.getBody()) and
+          scope = param
+        ) and
         pattern = param.getPattern() and
         declaration = param
       )
@@ -274,6 +262,12 @@ private module LocalNameBindingInput implements LocalNameBindingInputSig<Locatio
         declaration = decl
       )
       or
+      exists(ConstructorDeclaration decl |
+        getChild(scope, _) = decl and
+        pattern = decl.getNameNode() and
+        declaration = decl
+      )
+      or
       exists(ImportDeclaration imprt |
         getChild(scope, _) = imprt and
         pattern = imprt.getPattern() and
@@ -322,12 +316,27 @@ private module LocalNameBindingInput implements LocalNameBindingInputSig<Locatio
     )
   }
 
-  predicate implicitDeclInScope(string name, AstNode scope) {
-    none()
-    // TODO: self
+  cached
+  additional predicate implicitDeclInScope(string name, AstNode scope, boolean isLocalVariable) {
+    LocalNameBindingOutput::CachedStage::ref() and
+    exists(Callable callable |
+      isLocalVariable = true and
+      name = any(NameBindingPlugin p).getImplicitReceiverParameterName(callable) and
+      scope = callable
+    )
+    or
+    exists(ClassLikeDeclaration cls |
+      isLocalVariable = false and
+      name = any(NameBindingPlugin p).getStaticSelfName(cls) and
+      scope = cls
+    )
   }
 
-  predicate accessCand(AstNode n, string name) { n.(PotentialLocalNameAccess).getName() = name }
+  predicate implicitDeclInScope(string name, AstNode scope) { implicitDeclInScope(name, scope, _) }
+
+  predicate accessCand(AstNode n, string name) {
+    n.(PotentialLocalNameAccess).getName() = name and not n instanceof NameBinding
+  }
 
   predicate uncertainScope(AstNode scope) {
     // Classes can have uncertain members due to unqualified access to inherited members.
@@ -340,9 +349,20 @@ private module LocalNameBindingInput implements LocalNameBindingInputSig<Locatio
   }
 }
 
-import LocalNameBindingInput
+predicate bindingContext = LocalNameBindingInput::bindingContext/3;
 
 module LocalNameBindingOutput = LocalNameBinding<Location, LocalNameBindingInput>;
+
+private LocalNameBindingOutput::Local resolveId(AstNode n) {
+  // For names in binding position, always resolve to the scope set by the bindingContext predicate
+  exists(AstNode scope |
+    bindingContext(n, scope, _) and
+    result.hasNameAndScope(n.(Identifier).getValue(), scope)
+  )
+  or
+  not bindingContext(n, _, _) and
+  result = n.(LocalNameBindingOutput::LocalAccess).getLocal()
+}
 
 module Public {
   /**
@@ -357,22 +377,127 @@ module Public {
 
     /** Gets the name of this local, as a string. */
     string getName() { result = super.getName() }
+
+    /** Gets an access to this entity, through its lexically scoped name. */
+    LocalNameAccess getAnAccess() { result.getLocalName() = this }
+
+    /** Gets a name binding that declares this local name. */
+    NameBinding getABinding() { result.getLocalName() = this }
   }
 
-  /** A name node that appears as the declaration site of a name, such as the `x` in `let x = 123`. */
-  class NameDeclaration extends Identifier {
-    NameDeclaration() { LocalNameBindingInput::bindingContext(this, _, _) }
+  /** An identifier appearing in a name-binding position, such as the `x` in `let x = 123`. */
+  class NameBinding extends Identifier {
+    NameBinding() { bindingContext(this, _, _) }
 
     /** Gets the statement-like node declaring this name, such as a `VariableDeclaration` or `CatchClause`. */
-    AstNode getDeclaration() { LocalNameBindingInput::bindingContext(this, _, result) }
+    AstNode getDeclaration() { bindingContext(this, _, result) }
 
     /** Gets the name being declared. */
     string getName() { result = this.getValue() }
 
     /** Gets the representative for the local name introduced by this declaration. */
-    LocalName getLocalName() { result = this.(LocalNameBindingOutput::LocalAccess).getLocal() }
+    LocalName getLocalName() { result = resolveId(this) }
+  }
+
+  final class LocalVariable = LocalVariableImpl;
+
+  /** A representative for a lexically scoped local variable. */
+  abstract private class LocalVariableImpl extends LocalName {
+    /** Gets the callable containing the declaration of this local variable. */
+    abstract Callable getDeclaringCallable();
+
+    /** Holds if this local variable is captured, that is, it is accessed from another callable than the one declaring it. */
+    predicate isCaptured() {
+      this.getAnAccess().getEnclosingCallable() != this.getDeclaringCallable()
+    }
+
+    /**
+     * Holds if this local variable represents an implicit receiver parameter of the given callable.
+     */
+    abstract predicate isImplicitReceiverParameter(Callable c);
+  }
+
+  private class ExplicitLocalVariable extends LocalVariableImpl {
+    ExplicitLocalVariable() {
+      exists(AstNode decl |
+        decl = this.getABinding().getDeclaration() and
+        not isInstanceMember(decl) and
+        not isStaticMember(decl)
+      |
+        decl instanceof VariableDeclaration or
+        decl instanceof FunctionDeclaration or // treat functions as values
+        decl instanceof AccessorDeclaration or
+        decl instanceof Parameter or
+        decl instanceof ForEachStmt or
+        decl instanceof PatternGuardExpr or
+        decl instanceof CatchClause or
+        decl instanceof SwitchCase
+      )
+    }
+
+    override Callable getDeclaringCallable() { result = this.getABinding().getEnclosingCallable() }
+
+    override predicate isImplicitReceiverParameter(Callable c) { none() }
+  }
+
+  private class ImplicitLocalVariable extends LocalVariableImpl instanceof LocalNameBindingOutput::ImplicitLocal
+  {
+    AstNode scope;
+    string name;
+
+    ImplicitLocalVariable() {
+      // For implicitly-declared locals we can't expect to find a binding. Check 'implicitDeclInScope' directly.
+      super.hasNameAndScope(name, scope) and
+      LocalNameBindingInput::implicitDeclInScope(name, scope, true)
+    }
+
+    override Callable getDeclaringCallable() {
+      result = scope
+      or
+      not scope instanceof Callable and
+      result = scope.getEnclosingCallable()
+    }
+
+    override predicate isImplicitReceiverParameter(Callable c) {
+      name = any(NameBindingPlugin p).getImplicitReceiverParameterName(scope) and
+      scope = c
+    }
+  }
+
+  private AccessorDeclaration getAnAccessor(LocalVariable v) {
+    v.getABinding() = result.getNameNode() and
+    (result instanceof GetterDeclaration or result instanceof SetterDeclaration)
+  }
+
+  /** A local variable defined by a getter/setter pair, which does not store a value on its own. */
+  final class ComputedLocalVariable extends LocalVariable {
+    ComputedLocalVariable() { exists(getAnAccessor(this)) }
+
+    /** Gets the getter or setter for this computed variable. */
+    AccessorDeclaration getAnAccessor() { result = getAnAccessor(this) }
+
+    /** Gets the getter for this computed variable. */
+    GetterDeclaration getGetterDeclaration() { result = getAnAccessor(this) }
+
+    /** Gets the setter for this computed variable. */
+    SetterDeclaration getSetterDeclaration() { result = getAnAccessor(this) }
+  }
+
+  /** An access to a locally-declared name. */
+  class LocalNameAccess extends PotentialLocalNameAccess {
+    LocalNameAccess() { not this instanceof UnqualifiedMemberAccess }
+  }
+
+  /** An access to a local variable. */
+  class LocalVariableAccess extends LocalNameAccess {
+    LocalVariableAccess() { this.getLocalName() instanceof LocalVariable }
+
+    /** Gets the local variable being accessed. Alias for `getLocalName()`. */
+    LocalVariable getLocalVariable() { result = this.getLocalName() }
   }
 }
+
+final class PotentialLocalNameAccess = PotentialLocalNameAccessImpl;
 
 /**
  * A name node that is possibly a reference to a local name, but could also refer to a member
@@ -387,11 +512,31 @@ module Public {
  * }
  * ```
  */
-class PotentialLocalNameAccess extends IdentifierExpr {
-  LocalName getLocalName() { result = this.(LocalNameBindingOutput::LocalAccess).getLocal() }
+abstract private class PotentialLocalNameAccessImpl extends AstNode {
+  /** Gets the representative for the local name being accessed. */
+  LocalName getLocalName() { result = resolveId(this) }
 
-  string getName() { result = this.getValue() }
+  /** Gets the name being accessed. */
+  abstract string getName();
 
-  /** Holds if this is one of the declaration sites for a name, such as the `x` in `let x = 123`. */
-  predicate isDeclarationSite() { this instanceof NameDeclaration }
+  /** Holds if this is one of the binding sites for a name, such as the `x` in `let x = 123`. */
+  predicate isBindingSite() { this instanceof NameBinding }
+}
+
+private class IdentifierPotentialLocalNameAccess extends PotentialLocalNameAccessImpl,
+  IdentifierExpr
+{
+  override string getName() { result = this.getValue() }
+}
+
+private class SuperPotentialLocalNameAccess extends PotentialLocalNameAccessImpl, SuperExpr {
+  override string getName() { result = any(NameBindingPlugin p).getSuperLocalName(this) }
+}
+
+/** Gets the implicitly-declared variable through which the given callable refers to its receiver. */
+LocalVariable getImplicitReceiverVariable(Callable callable) {
+  exists(string name |
+    name = any(NameBindingPlugin p).getImplicitReceiverParameterName(callable) and
+    result.(LocalNameBindingOutput::ImplicitLocal).hasNameAndScope(name, callable)
+  )
 }

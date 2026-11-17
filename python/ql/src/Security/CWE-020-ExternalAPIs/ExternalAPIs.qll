@@ -6,10 +6,11 @@
 private import python
 import semmle.python.dataflow.new.DataFlow
 private import semmle.python.dataflow.new.TaintTracking
-private import semmle.python.dataflow.new.RemoteFlowSources
+private import semmle.python.Concepts
 private import semmle.python.ApiGraphs
 private import semmle.python.dataflow.new.internal.DataFlowPrivate as DataFlowPrivate
 private import semmle.python.dataflow.new.internal.TaintTrackingPrivate as TaintTrackingPrivate
+private import semmle.python.controlflow.internal.Cfg as Cfg
 
 /**
  * An external API that is considered "safe" from a security perspective.
@@ -71,7 +72,7 @@ string apiNodeToStringRepr(API::Node node) {
   )
 }
 
-predicate resolvedCall(CallNode call) {
+predicate resolvedCall(Cfg::CallNode call) {
   DataFlowPrivate::resolveCall(call, _, _) or
   DataFlowPrivate::resolveClassCall(call, _)
 }
@@ -168,7 +169,7 @@ class ExternalApiDataNode extends DataFlow::Node {
 }
 
 private module UntrustedDataToExternalApiConfig implements DataFlow::ConfigSig {
-  predicate isSource(DataFlow::Node source) { source instanceof RemoteFlowSource }
+  predicate isSource(DataFlow::Node source) { source instanceof ActiveThreatModelSource }
 
   predicate isSink(DataFlow::Node sink) { sink instanceof ExternalApiDataNode }
 
@@ -177,7 +178,7 @@ private module UntrustedDataToExternalApiConfig implements DataFlow::ConfigSig {
   }
 }
 
-/** Global taint-tracking from `RemoteFlowSource`s to `ExternalApiDataNode`s. */
+/** Global taint-tracking from active threat-model sources to `ExternalApiDataNode`s. */
 module UntrustedDataToExternalApiFlow = TaintTracking::Global<UntrustedDataToExternalApiConfig>;
 
 /** A node representing untrusted data being passed to an external API. */

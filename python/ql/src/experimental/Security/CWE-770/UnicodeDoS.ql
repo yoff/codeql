@@ -15,7 +15,7 @@ import semmle.python.ApiGraphs
 import semmle.python.Concepts
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.dataflow.new.internal.DataFlowPublic
-import semmle.python.dataflow.new.RemoteFlowSources
+private import semmle.python.controlflow.internal.Cfg as Cfg
 
 // The Unicode compatibility normalization calls from unicodedata, unidecode, pyunormalize
 // and textnorm modules. The use of argIdx is to constraint the argument being normalized.
@@ -52,8 +52,8 @@ class UnicodeCompatibilityNormalize extends API::CallNode {
   DataFlow::Node getPathArg() { result = this.getArg(argIdx) }
 }
 
-predicate underAValue(DataFlow::GuardNode g, ControlFlowNode node, boolean branch) {
-  exists(CompareNode cn | cn = g |
+predicate underAValue(DataFlow::GuardNode g, Cfg::ControlFlowNode node, boolean branch) {
+  exists(Cfg::CompareNode cn | cn = g |
     exists(API::CallNode lenCall, Cmpop op, Node n |
       lenCall = n.getALocalSource() and
       (
@@ -86,7 +86,7 @@ predicate underAValue(DataFlow::GuardNode g, ControlFlowNode node, boolean branc
 }
 
 private module UnicodeDoSConfig implements DataFlow::ConfigSig {
-  predicate isSource(DataFlow::Node source) { source instanceof RemoteFlowSource }
+  predicate isSource(DataFlow::Node source) { source instanceof ActiveThreatModelSource }
 
   predicate isBarrier(DataFlow::Node sanitizer) {
     // underAValue is a check to ensure that the length of the user-provided value is limited to a certain amount
