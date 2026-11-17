@@ -1522,6 +1522,14 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         else result.isAdditional(catch, catchClauseEmptyBodyTag())
       }
 
+      bindingset[ast, successor]
+      pragma[inline_late]
+      private predicate explicitAfterValue(
+        PreControlFlowNode node, AstNode ast, ConditionalSuccessor successor
+      ) {
+        node.isAfterValue(ast, successor)
+      }
+
       /** Holds if there is a local non-abrupt step from `n1` to `n2`. */
       private predicate explicitStep(PreControlFlowNode n1, PreControlFlowNode n2) {
         Input2::step(n1, n2)
@@ -1532,7 +1540,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           or
           exists(CallableContextOption ctx, Parameter p, int i | p = getRankedParameter(c, ctx, i) |
             exists(MatchingSuccessor t |
-              n1.isAfterValue(p.getPattern(), t) and
+              explicitAfterValue(n1, p.getPattern(), t) and
               if t.isMatch()
               then n2.isBefore(getParameterPatternOrBodyEntry(c, ctx, i + 1))
               else n2.isBefore(p.getDefaultValue())
@@ -1557,8 +1565,8 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
         exists(AstNode child, AstNode parent | propagatesValue(child, parent) |
           exists(ConditionalSuccessor t |
             inConditionalContext(parent, t.getKind()) and
-            n1.isAfterValue(child, t) and
-            n2.isAfterValue(parent, t)
+            explicitAfterValue(n1, child, t) and
+            explicitAfterValue(n2, parent, t)
           )
           or
           not inConditionalContext(parent, _) and
@@ -1572,11 +1580,11 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n1.isBefore(binexpr) and
           n2.isBefore(binexpr.getLeftOperand())
           or
-          n1.isAfterValue(binexpr.getLeftOperand(), shortcircuitValue.getDual()) and
+          explicitAfterValue(n1, binexpr.getLeftOperand(), shortcircuitValue.getDual()) and
           n2.isBefore(binexpr.getRightOperand())
           or
-          n1.isAfterValue(binexpr.getLeftOperand(), shortcircuitValue) and
-          n2.isAfterValue(binexpr, shortcircuitValue)
+          explicitAfterValue(n1, binexpr.getLeftOperand(), shortcircuitValue) and
+          explicitAfterValue(n2, binexpr, shortcircuitValue)
           or
           // short-circuiting operations with side-effects (e.g. `x &&= y`) are in post-order:
           n1.isAfter(binexpr.getRightOperand()) and
@@ -1591,8 +1599,8 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n2.isBefore(notexpr.getOperand())
           or
           exists(BooleanSuccessor t |
-            n1.isAfterValue(notexpr.getOperand(), t) and
-            n2.isAfterValue(notexpr, t.getDual())
+            explicitAfterValue(n1, notexpr.getOperand(), t) and
+            explicitAfterValue(n2, notexpr, t.getDual())
           )
         )
         or
@@ -1600,17 +1608,21 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n1.isBefore(condexpr) and
           n2.isBefore(condexpr.getCondition())
           or
-          n1.isAfterTrue(condexpr.getCondition()) and
+          explicitAfterValue(n1, condexpr.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = true)) and
           n2.isBefore(condexpr.getThen())
           or
-          n1.isAfterTrue(condexpr.getCondition()) and
+          explicitAfterValue(n1, condexpr.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = true)) and
           not exists(condexpr.getThen()) and
           n2.isAfter(condexpr)
           or
-          n1.isAfterFalse(condexpr.getCondition()) and
+          explicitAfterValue(n1, condexpr.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = false)) and
           n2.isBefore(condexpr.getElse())
           or
-          n1.isAfterFalse(condexpr.getCondition()) and
+          explicitAfterValue(n1, condexpr.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = false)) and
           not exists(condexpr.getElse()) and
           n2.isAfter(condexpr)
         )
@@ -1623,7 +1635,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n2.isIn(pme)
           or
           n1.isIn(pme) and
-          n2.isAfterValue(pme, any(BooleanSuccessor s | s.getValue() = false))
+          explicitAfterValue(n2, pme, any(BooleanSuccessor s | s.getValue() = false))
           or
           n1.isIn(pme) and
           n2.isAdditional(pme, patternMatchTrueTag())
@@ -1632,7 +1644,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n2.isBefore(pme.getPattern())
           or
           n1.isAfter(pme.getPattern()) and
-          n2.isAfterValue(pme, any(BooleanSuccessor s | s.getValue() = true))
+          explicitAfterValue(n2, pme, any(BooleanSuccessor s | s.getValue() = true))
         )
         or
         exists(IfStmt ifstmt |
@@ -1646,7 +1658,8 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n1.isAfter(getIfInit(ifstmt)) and
           n2.isBefore(ifstmt.getCondition())
           or
-          n1.isAfterTrue(ifstmt.getCondition()) and
+          explicitAfterValue(n1, ifstmt.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = true)) and
           (
             n2.isBefore(ifstmt.getThen())
             or
@@ -1654,7 +1667,8 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
             n2.isAfter(ifstmt)
           )
           or
-          n1.isAfterFalse(ifstmt.getCondition()) and
+          explicitAfterValue(n1, ifstmt.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = false)) and
           (
             n2.isBefore(ifstmt.getElse())
             or
@@ -1689,10 +1703,10 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n1.isAdditional(loopstmt, loopHeaderTag()) and
           n2.isBefore(cond)
           or
-          n1.isAfterValue(cond, any(BooleanSuccessor b | b.getValue() = while)) and
+          explicitAfterValue(n1, cond, any(BooleanSuccessor b | b.getValue() = while)) and
           n2.isBefore(loopstmt.getBody())
           or
-          n1.isAfterValue(cond, any(BooleanSuccessor b | b.getValue() = while.booleanNot())) and
+          explicitAfterValue(n1, cond, any(BooleanSuccessor b | b.getValue() = while.booleanNot())) and
           (
             n2.isBefore(getLoopElse(loopstmt))
             or
@@ -1712,7 +1726,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n1.isBefore(foreachstmt) and
           n2.isBefore(foreachstmt.getCollection())
           or
-          n1.isAfterValue(foreachstmt.getCollection(),
+          explicitAfterValue(n1, foreachstmt.getCollection(),
             any(EmptinessSuccessor t | t.getValue() = true)) and
           (
             n2.isBefore(getLoopElse(foreachstmt))
@@ -1720,7 +1734,7 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
             not exists(getLoopElse(foreachstmt)) and n2.isAfter(foreachstmt)
           )
           or
-          n1.isAfterValue(foreachstmt.getCollection(),
+          explicitAfterValue(n1, foreachstmt.getCollection(),
             any(EmptinessSuccessor t | t.getValue() = false)) and
           n2.isBefore(foreachstmt.getVariable())
           or
@@ -1772,10 +1786,12 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
             not exists(forstmt.getInit(i + 1)) and n2 = condentry
           )
           or
-          n1.isAfterTrue(forstmt.getCondition()) and
+          explicitAfterValue(n1, forstmt.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = true)) and
           n2.isBefore(forstmt.getBody())
           or
-          n1.isAfterFalse(forstmt.getCondition()) and
+          explicitAfterValue(n1, forstmt.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = false)) and
           n2.isAfter(forstmt)
           or
           n1.isAfter(forstmt.getBody()) and
@@ -1837,7 +1853,8 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n2.isAfter(trystmt)
           or
           exists(int i |
-            n1.isAfterValue(trystmt.getCatch(i), any(MatchingSuccessor t | t.getValue() = false)) and
+            explicitAfterValue(n1, trystmt.getCatch(i),
+              any(MatchingSuccessor t | t.getValue() = false)) and
             n2.isBefore(trystmt.getCatch(i + 1))
           )
         )
@@ -1868,22 +1885,24 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
             n2 = beforePattern
             or
             exists(MatchingSuccessor t |
-              n1.isAfterValue(catchclause.getPattern(), t) and
-              if t.isMatch() then n2 = beforeVar else n2.isAfterValue(catchclause, t)
+              explicitAfterValue(n1, catchclause.getPattern(), t) and
+              if t.isMatch() then n2 = beforeVar else explicitAfterValue(n2, catchclause, t)
             )
             or
-            n1.isAfterValue(catchclause, any(MatchingSuccessor t | t.getValue() = true)) and
+            explicitAfterValue(n1, catchclause, any(MatchingSuccessor t | t.getValue() = true)) and
             n2 = beforeVar
             or
             n1.isAfter(catchclause.getVariable()) and
             n2 = beforeCond
           )
           or
-          n1.isAfterTrue(catchclause.getCondition()) and
+          explicitAfterValue(n1, catchclause.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = true)) and
           n2 = getBeforeCatchBody(catchclause)
           or
-          n1.isAfterFalse(catchclause.getCondition()) and
-          n2.isAfterValue(catchclause, any(MatchingSuccessor t | t.getValue() = false))
+          explicitAfterValue(n1, catchclause.getCondition(),
+            any(BooleanSuccessor b | b.getValue() = false)) and
+          explicitAfterValue(n2, catchclause, any(MatchingSuccessor t | t.getValue() = false))
         )
         or
         exists(Switch switch, PreControlFlowNode firstCase |
@@ -1918,10 +1937,11 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           n2 = firstCase
           or
           exists(int i |
-            n1.isAfterValue(getRankedCaseCfgOrder(switch, i),
+            explicitAfterValue(n1, getRankedCaseCfgOrder(switch, i),
               any(MatchingSuccessor t | t.getValue() = false))
             or
-            n1.isAfterFalse(getRankedCaseCfgOrder(switch, i).getGuard())
+            explicitAfterValue(n1, getRankedCaseCfgOrder(switch, i).getGuard(),
+              any(BooleanSuccessor b | b.getValue() = false))
           |
             n2.isBefore(getRankedCaseCfgOrder(switch, i + 1))
             or
@@ -1935,15 +1955,15 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
           (
             if exists(case.getPattern(_))
             then n2.isBefore(case.getPattern(0))
-            else n2.isAfterValue(case, any(MatchingSuccessor t | t.getValue() = true))
+            else explicitAfterValue(n2, case, any(MatchingSuccessor t | t.getValue() = true))
           )
           or
-          exists(int i, MatchingSuccessor ms | n1.isAfterValue(case.getPattern(i), ms) |
+          exists(int i, MatchingSuccessor ms | explicitAfterValue(n1, case.getPattern(i), ms) |
             ms.getValue() = false and
             n2.isBefore(case.getPattern(i + 1))
             or
             (ms.getValue() = true or not exists(case.getPattern(i + 1))) and
-            n2.isAfterValue(case, ms)
+            explicitAfterValue(n2, case, ms)
           )
           or
           exists(PreControlFlowNode beforeGuard, PreControlFlowNode beforeBody |
@@ -1959,10 +1979,10 @@ module Make0<LocationSig Location, AstSig<Location> Ast> {
               beforeBody.isAfter(any(Switch s | s.getCase(_) = case))
             )
           |
-            n1.isAfterValue(case, any(MatchingSuccessor t | t.getValue() = true)) and
+            explicitAfterValue(n1, case, any(MatchingSuccessor t | t.getValue() = true)) and
             n2 = beforeGuard
             or
-            n1.isAfterTrue(case.getGuard()) and
+            explicitAfterValue(n1, case.getGuard(), any(BooleanSuccessor b | b.getValue() = true)) and
             n2 = beforeBody
           )
         )
