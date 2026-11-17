@@ -331,6 +331,10 @@ private module SsaInput implements Impl::SsaInputSig {
   predicate explicitWrite(VariableWrite def, CfgImpl::Cfg::BasicBlock bb, int i, SsaSourceVariable v) {
     def.writesAt(bb, i, v)
   }
+
+  predicate explicitRead(Expr e, SsaSourceVariable v) {
+    exists(Py::Name n | e.asExpr() = n and n.uses(v.getVariable()))
+  }
 }
 
 module Ssa = Impl::MakeSsa<SsaInput>;
