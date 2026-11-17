@@ -8,6 +8,7 @@ import semmle.python.dataflow.new.internal.DataFlowPublic
 import semmle.python.ApiGraphs
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.frameworks.Stdlib
+private import semmle.python.controlflow.internal.Cfg as Cfg
 
 /**
  * Handle those three cases of Tarfile opens:
@@ -110,8 +111,8 @@ module UnsafeUnpackConfig implements DataFlow::ConfigSig {
         call = atfo.getReturn().getMember("extractall").getACall() and
         arg = call.getArgByName("members") and
         if
-          arg.asCfgNode() instanceof NameConstantNode or
-          arg.asCfgNode() instanceof ListNode
+          arg.asCfgNode() instanceof Cfg::NameConstantNode or
+          arg.asCfgNode() instanceof Cfg::ListNode
         then sink = call.getObject()
         else
           if arg.(MethodCallNode).getMethodName() = "getmembers"
